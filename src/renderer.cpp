@@ -83,10 +83,9 @@ Renderer::Renderer() {
 }
 
 Renderer::~Renderer() {
-  // Cleanup VBO and shader
-  glDeleteBuffers(1, &_vbo);
+  // Cleanup
   glDeleteProgram(_program);
-  glDeleteVertexArrays(1, &_vao);
+  glDeleteTextures(1, &_texture);
 }
 
 void Renderer::update(const glm::mat4 &mvp) {
