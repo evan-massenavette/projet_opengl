@@ -1,5 +1,8 @@
 #include "vertex.hpp"
 
+Vertex::Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 uv)
+    : position(position), normal(normal), uv(uv) {}
+
 Vertex2dColor::Vertex2dColor(glm::vec2 position, glm::vec3 color)
     : position(position), color(color) {}
 
