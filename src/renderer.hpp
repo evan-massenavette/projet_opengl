@@ -1,6 +1,11 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 
+#include <memory>
+#include <vector>
+
+#include "globject.hpp"
+
 class Renderer {
 public:
   Renderer();
@@ -11,12 +16,10 @@ private:
   GLuint _program;
   GLuint _mvp;
 
-  GLuint _vbo;
-  GLuint _ibo;
-  GLuint _vao;
-
   GLuint _texture;
   GLuint _textureSampler;
+
+  std::vector<std::shared_ptr<GLObject>> _models;
 };
 
 #endif

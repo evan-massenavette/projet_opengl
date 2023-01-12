@@ -1,4 +1,4 @@
-#include <vector>
+#include <string>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -6,8 +6,8 @@
 
 #include <glm/glm.hpp>
 
-#include "buffer_data.hpp"
 #include "controls.hpp"
+#include "globject.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
 
@@ -43,43 +43,9 @@ Renderer::Renderer() {
   _texture = Texture::load("textures/uv_test_1.bmp");
   _textureSampler = glGetUniformLocation(_program, "textureSampler");
 
-  // VBO
-  glGenBuffers(1, &_vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-  // glBufferData(GL_ARRAY_BUFFER,
-  // sizeof(BufferData::textured_cube_indexed_data),
-  //              BufferData::textured_cube_indexed_data, GL_STATIC_DRAW);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(BufferData::textured_cube_data),
-               BufferData::textured_cube_data, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  // IBO
-  // glGenBuffers(1, &_ibo);
-  // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
-  // glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-  //              sizeof(BufferData::textured_cube_indexed_indices),
-  //              BufferData::textured_cube_indexed_indices, GL_STATIC_DRAW);
-  // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  // VAO
-  glGenVertexArrays(1, &_vao);
-
-  // Shader input attrib
-  glBindVertexArray(_vao);
-  // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
-  const GLuint VERTEX_ATTR_POSITION = 0;
-  const GLuint VERTEX_ATTR_UV = 1;
-  glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-  glEnableVertexAttribArray(VERTEX_ATTR_UV);
-  glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-  glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE,
-                        sizeof(Vertex3dUV),
-                        (const GLvoid *)offsetof(Vertex3dUV, position));
-  glVertexAttribPointer(VERTEX_ATTR_UV, 2, GL_FLOAT, GL_FALSE,
-                        sizeof(Vertex3dUV),
-                        (const GLvoid *)offsetof(Vertex3dUV, uv));
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
+  // Load model
+  std::shared_ptr<GLObject> model(new GLObject("sofa.obj"));
+  _models.push_back(model);
 }
 
 Renderer::~Renderer() {
@@ -104,7 +70,7 @@ void Renderer::update(const glm::mat4 &mvp) {
   // Set our texture sampler to use Texture Unit 0
   glUniform1i(_textureSampler, 0);
 
-  glBindVertexArray(_vao);
-  glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
-  glBindVertexArray(0);
+  for (auto &model : _models) {
+    model->draw();
+  }
 }
