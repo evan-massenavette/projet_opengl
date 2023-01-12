@@ -20,6 +20,5 @@ void main() {
 	attenuation = min(1, attenuation);
 
 	// Output color = color of the texture at the specified UV
-	// fFragColor = texture(textureSampler, vFragUV).rgb * attenuation;
-	fFragColor = vec3(1);
+	fFragColor = texture(textureSampler, vFragUV).rgb;// * attenuation;
 }
