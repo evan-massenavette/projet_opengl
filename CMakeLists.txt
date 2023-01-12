@@ -58,6 +58,10 @@ target_include_directories(HGL PRIVATE ${GLM_DIR})
 set(CIMG_DIR "${LIBS_DIR}/CImg")
 target_include_directories(HGL PRIVATE ${CIMG_DIR})
 
+# tinyobjloader
+set(TINYOBJLOADER_DIR "${LIBS_DIR}/tinyobjloader")
+target_include_directories(HGL PRIVATE ${TINYOBJLOADER_DIR})
+
 # Link libraries
 set(LIBS glfw GLAD)
 target_link_libraries(${PROJECT_NAME} ${LIBS})
@@ -80,6 +84,16 @@ if(EXISTS ${SHADERS_DIR})
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
 		${TEXTURES_DIR}
 		${TEXTURES_DEST_DIR})
+endif()
+
+# Copy textures
+set(MODELS_DIR "${PROJECT_SOURCE_DIR}/src/models")
+set(MODELS_DEST_DIR "$<TARGET_FILE_DIR:${PROJECT_NAME}>/models")
+if(EXISTS ${SHADERS_DIR})
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${MODELS_DIR}
+		${MODELS_DEST_DIR})
 endif()
 
 # Copy dlls
