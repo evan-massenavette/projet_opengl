@@ -73,7 +73,8 @@ void App::run() {
     // Compute MVP matrix from the controls
     glm::mat4 projectionMatrix = controls.getProjectionMatrix();
     glm::mat4 viewMatrix = controls.getViewMatrix();
-    glm::mat4 modelMatrix = glm::mat4(1.0);
+    auto scale = 1.0;
+    glm::mat4 modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(scale));
     glm::mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;
 
     // Update the render
