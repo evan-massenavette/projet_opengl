@@ -1,21 +1,28 @@
 #ifndef GLOBJECT_HPP
 #define GLOBJECT_HPP
 
+#include <vector>
+
+#include "vertex.hpp"
+
 class GLObject {
 public:
   GLuint vbo;
   GLuint vao;
-  GLuint ibo;
-  GLuint size;
+  std::vector<Vertex> vertices;
 
-  GLObject(
-      const std::vector<Vertex3dColor> &vertices,
-      [[maybe_unused]] const std::optional<std::vector<std::array<GLuint, 3>>>
-          &indices);
+  GLObject(const char *modelFilename);
+  GLObject(const GLObject &) = delete;
 
   ~GLObject();
 
   void draw();
+
+private:
+  std::string _modelsDirPath = "models/";
+
+  void _loadModel(const char *modelFilename);
+  void _bufferData();
 };
 
 #endif
