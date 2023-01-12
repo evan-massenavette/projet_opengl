@@ -7,25 +7,23 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
-#include "shader.hpp"
+#include "shaders.hpp"
 
-Shader::Shader(const char *filepath, GLenum shaderType)
-    : _filepath(filepath), _shaderType(shaderType) {}
+GLuint Shaders::_loadOne(const char *filepath, GLenum shaderType,
+                         GLuint program) {
 
-GLuint Shader::_load(GLuint program) {
-
-  printf("Loading shader: %s\n", _filepath);
+  printf("Loading shader: %s\n", filepath);
 
   // Read the shader code from file
   std::string shaderCode;
-  std::ifstream shaderStream(_filepath);
+  std::ifstream shaderStream(filepath);
   if (shaderStream.is_open()) {
     std::stringstream sstr;
     sstr << shaderStream.rdbuf();
     shaderCode = sstr.str();
     shaderStream.close();
   } else {
-    printf("Can't open shader: %s", _filepath);
+    printf("Can't open shader: %s", filepath);
     getchar();
     exit(EXIT_FAILURE);
   }
@@ -34,7 +32,7 @@ GLuint Shader::_load(GLuint program) {
   int infoLogLength;
 
   // Create the shader
-  GLuint shader = glCreateShader(_shaderType);
+  GLuint shader = glCreateShader(shaderType);
 
   // Compile the shader
   char const *shaderCodePtr = shaderCode.c_str();
@@ -67,20 +65,26 @@ GLuint Shader::_load(GLuint program) {
   return shader;
 }
 
-void Shader::loadAll(GLuint program, std::vector<Shader> &shaders) {
+GLuint Shaders::createProgram(const char *vertexShaderPath,
+                              const char *fragmentShaderPath) {
 
-  // Load all shaders and get their IDs
-  std::vector<GLuint> shaderIds(shaders.size());
-  for (auto &shader : shaders) {
-    shaderIds.push_back(shader._load(program));
-  }
+  // Create the program
+  GLuint program = glCreateProgram();
+
+  // Load both shaders
+  GLuint vertexShader =
+      Shaders::_loadOne(vertexShaderPath, GL_VERTEX_SHADER, program);
+  GLuint fragmentShader =
+      Shaders::_loadOne(fragmentShaderPath, GL_FRAGMENT_SHADER, program);
 
   // Link the program
   glLinkProgram(program);
 
   // Cleanup program and shaders
-  for (const auto &shaderId : shaderIds) {
-    glDetachShader(program, shaderId);
-    glDeleteShader(shaderId);
-  }
+  glDetachShader(program, vertexShader);
+  glDeleteShader(vertexShader);
+  glDetachShader(program, fragmentShader);
+  glDeleteShader(fragmentShader);
+
+  return program;
 }

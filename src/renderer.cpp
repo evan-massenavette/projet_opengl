@@ -8,8 +8,7 @@
 
 #include "controls.hpp"
 #include "globject.hpp"
-#include "shader.hpp"
-#include "texture.hpp"
+#include "shaders.hpp"
 
 #include "renderer.hpp"
 
@@ -29,18 +28,13 @@ Renderer::Renderer() {
   glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
 
   // Load shaders
-  _program = glCreateProgram();
-  std::vector<Shader> shaders = {
-      Shader("shaders/TextureTransform.vert", GL_VERTEX_SHADER),
-      Shader("shaders/Texture.frag", GL_FRAGMENT_SHADER),
-  };
-  Shader::loadAll(_program, shaders);
+  _program = Shaders::createProgram("shaders/TextureTransform.vert",
+                                    "shaders/Texture.frag");
 
   // Get MVP
   _mvp = glGetUniformLocation(_program, "MVP");
 
   // Texture
-  _texture = Texture::load("textures/uv_test_1.bmp");
   _textureSampler = glGetUniformLocation(_program, "textureSampler");
 
   // Load model
@@ -51,7 +45,6 @@ Renderer::Renderer() {
 Renderer::~Renderer() {
   // Cleanup
   glDeleteProgram(_program);
-  glDeleteTextures(1, &_texture);
 }
 
 void Renderer::update(const glm::mat4 &mvp) {
@@ -64,13 +57,7 @@ void Renderer::update(const glm::mat4 &mvp) {
   // Send MVP to the currently bound shader
   glUniformMatrix4fv(_mvp, 1, GL_FALSE, &mvp[0][0]);
 
-  // Bind our texture in Texture Unit 0
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, _texture);
-  // Set our texture sampler to use Texture Unit 0
-  glUniform1i(_textureSampler, 0);
-
   for (auto &model : _models) {
-    model->draw();
+    model->draw(_textureSampler);
   }
 }

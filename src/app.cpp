@@ -7,7 +7,7 @@
 #include "app.hpp"
 #include "controls.hpp"
 #include "renderer.hpp"
-#include "shader.hpp"
+#include "shaders.hpp"
 #include "texture.hpp"
 
 void App::_processResize(GLFWwindow *window, int width, int height) {
