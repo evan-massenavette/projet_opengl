@@ -38,7 +38,8 @@ Renderer::Renderer() {
   _textureSampler = glGetUniformLocation(_program, "textureSampler");
 
   // Load model
-  std::shared_ptr<GLObject> model(new GLObject("sofa.obj"));
+  std::shared_ptr<GLObject> model(new GLObject(
+      "models/barrel/barrel.obj", "models/barrel/textures/barrel_albedo.bmp"));
   _models.push_back(model);
 }
 

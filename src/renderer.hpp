@@ -16,7 +16,6 @@ private:
   GLuint _program;
   GLuint _mvp;
 
-  GLuint _texture;
   GLuint _textureSampler;
 
   std::vector<std::shared_ptr<GLObject>> _models;

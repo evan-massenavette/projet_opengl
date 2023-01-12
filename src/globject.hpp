@@ -10,18 +10,17 @@ public:
   GLuint vbo;
   GLuint vao;
   std::vector<Vertex> vertices;
+  GLuint texture;
 
-  GLObject(const char *modelFilename);
+  GLObject(const char *modelFilepath, const char *textureFilepath);
   GLObject(const GLObject &) = delete;
 
   ~GLObject();
 
-  void draw();
+  void draw(const GLuint textureSampler);
 
 private:
-  std::string _modelsDirPath = "models/";
-
-  void _loadModel(const char *modelFilename);
+  void _loadModel(const char *modelFilepath, const char *textureFilepath);
   void _bufferData();
 };
 

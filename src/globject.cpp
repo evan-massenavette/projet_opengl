@@ -10,12 +10,13 @@
 #include <tiny_obj_loader.h>
 
 #include "buffer_data.hpp"
+#include "texture.hpp"
 #include "vertex.hpp"
 
 #include "globject.hpp"
 
-GLObject::GLObject(const char *modelFilename) {
-  _loadModel(modelFilename);
+GLObject::GLObject(const char *modelFilepath, const char *textureFilepath) {
+  _loadModel(modelFilepath, textureFilepath);
   _bufferData();
 }
 
@@ -23,19 +24,21 @@ GLObject::~GLObject() {
   // Cleanup
   glDeleteBuffers(1, &vbo);
   glDeleteVertexArrays(1, &vao);
+  glDeleteTextures(1, &texture);
 }
 
-void GLObject::_loadModel(const char *modelFilename) {
-  std::string modelFilepath = _modelsDirPath + modelFilename;
-  printf("Loading model: %s\n", modelFilepath.c_str());
+void GLObject::_loadModel(const char *modelFilepath,
+                          const char *textureFilepath) {
+
+  printf("Loading model: %s\n", modelFilepath);
 
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
   std::vector<tinyobj::material_t> materials;
   std::string err;
 
-  bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err,
-                              modelFilepath.c_str());
+  bool ret =
+      tinyobj::LoadObj(&attrib, &shapes, &materials, &err, modelFilepath);
 
   if (!err.empty()) {
     std::cerr << err << std::endl;
@@ -45,9 +48,9 @@ void GLObject::_loadModel(const char *modelFilename) {
     exit(1);
   }
 
-  printf("Vertices : %d\n", attrib.vertices.size());
-  printf("Normals : %d\n", attrib.normals.size());
-  printf("Texture Coords : %d\n", attrib.texcoords.size());
+  printf("Vertices: %d\n", attrib.vertices.size());
+  printf("Normals: %d\n", attrib.normals.size());
+  printf("Texture Coords: %d\n", attrib.texcoords.size());
 
   // Loop over shapes
   for (size_t s = 0; s < shapes.size(); s++) {
@@ -106,6 +109,9 @@ void GLObject::_loadModel(const char *modelFilename) {
       // shapes[s].mesh.material_ids[f];
     }
   }
+
+  // Load texture
+  texture = Texture::load(textureFilepath);
 }
 
 void GLObject::_bufferData() {
@@ -140,7 +146,14 @@ void GLObject::_bufferData() {
   glBindVertexArray(0);
 }
 
-void GLObject::draw() {
+void GLObject::draw(const GLuint textureSampler) {
+
+  // Bind our texture in Texture Unit 0
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  // Set our texture sampler to use Texture Unit 0
+  glUniform1i(textureSampler, 0);
+
   glBindVertexArray(vao);
   glDrawArrays(GL_TRIANGLES, 0, vertices.size());
   glBindVertexArray(0);
