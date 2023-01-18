@@ -1,17 +1,12 @@
 #include <iostream>
 #include <string>
-#include <vector>
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
+#include <utility>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#include "buffer_data.hpp"
-#include "texture.hpp"
-#include "vertex.hpp"
+#include "../texture.hpp"
+#include "../vertex.hpp"
 
 #include "globject.hpp"
 
@@ -48,9 +43,9 @@ void GLObject::_loadModel(const char *modelFilepath,
     exit(1);
   }
 
-  printf("Vertices: %d\n", attrib.vertices.size());
-  printf("Normals: %d\n", attrib.normals.size());
-  printf("Texture Coords: %d\n", attrib.texcoords.size());
+  printf("Vertices: %llu\n", attrib.vertices.size());
+  printf("Normals: %llu\n", attrib.normals.size());
+  printf("Texture Coords: %llu\n", attrib.texcoords.size());
 
   // Loop over shapes
   for (size_t s = 0; s < shapes.size(); s++) {
