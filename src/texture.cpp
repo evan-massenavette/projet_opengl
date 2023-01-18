@@ -24,6 +24,9 @@ GLuint Texture::load(const char *filepath) {
                textureImage.height(), 0, GL_BGR, GL_UNSIGNED_BYTE,
                textureImage.data());
 
+  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
+  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
+
   // Texture properties
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
