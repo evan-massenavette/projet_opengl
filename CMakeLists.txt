@@ -76,17 +76,7 @@ if(EXISTS ${SHADERS_DIR})
 		${SHADERS_DEST_DIR})
 endif()
 
-# Copy textures
-set(TEXTURES_DIR "${PROJECT_SOURCE_DIR}/src/textures")
-set(TEXTURES_DEST_DIR "$<TARGET_FILE_DIR:${PROJECT_NAME}>/textures")
-if(EXISTS ${SHADERS_DIR})
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_directory
-		${TEXTURES_DIR}
-		${TEXTURES_DEST_DIR})
-endif()
-
-# Copy textures
+# Copy models
 set(MODELS_DIR "${PROJECT_SOURCE_DIR}/src/models")
 set(MODELS_DEST_DIR "$<TARGET_FILE_DIR:${PROJECT_NAME}>/models")
 if(EXISTS ${SHADERS_DIR})
