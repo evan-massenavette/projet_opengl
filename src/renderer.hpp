@@ -21,7 +21,6 @@ public:
 private:
   GLuint _program;
 
-  GLuint _uboMatrices;
   GLuint _uboDirectionalLights;
 
   GLuint _projection;

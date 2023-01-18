@@ -35,7 +35,7 @@ Renderer::Renderer() {
   auto directionalLightsBufferSize =
       sizeof(GLuint) +
       Scene::MAX_NUM_DIRECTIONAL_LIGHTS * sizeof(DirectionalLight);
-  _uboDirectionalLights = getUBO("Lighting", 1, directionalLightsBufferSize);
+  _uboDirectionalLights = getUBO("Lighting", 0, directionalLightsBufferSize);
 
   // Texture
   _textureSampler = glGetUniformLocation(_program, "textureSampler");
@@ -44,18 +44,19 @@ Renderer::Renderer() {
 GLuint Renderer::getUBO(const char *uniformBlockName,
                         GLuint uniformBlockBinding,
                         GLsizeiptr uniformBlockSize) {
+  // Create UBO
+  GLuint ubo;
+  glGenBuffers(1, &ubo);
+
   // Set the uniform block to point to the given binding point
   auto uniformBlockIndex = glGetUniformBlockIndex(_program, uniformBlockName);
   glUniformBlockBinding(_program, uniformBlockIndex, uniformBlockBinding);
+  glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);
 
-  // Create UBO and bind it to binding point 0
-  GLuint ubo;
-  glGenBuffers(1, &ubo);
+  // Buffer empty data
   glBindBuffer(GL_UNIFORM_BUFFER, ubo);
   glBufferData(GL_UNIFORM_BUFFER, uniformBlockSize, NULL, GL_STATIC_DRAW);
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-  glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, uniformBlockSize);
 
   return ubo;
 }
