@@ -39,8 +39,7 @@ Renderer::Renderer() {
 
   // Load model
   std::shared_ptr<GLObject> model(new GLObject(
-      "models/rusty_barrel/rusty_barrel.obj",
-      "models/rusty_barrel/textures/varil_low_lambert1_BaseColor.bmp"));
+      "models/cube/cube.obj", "models/cube/textures/cube_albedo.bmp"));
   _models.push_back(model);
 }
 
