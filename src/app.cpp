@@ -7,6 +7,7 @@
 #include "app.hpp"
 #include "controls.hpp"
 #include "renderer.hpp"
+#include "scene/scene.hpp"
 #include "shaders.hpp"
 #include "texture.hpp"
 
@@ -64,21 +65,19 @@ void App::run() {
 
   Controls controls;
   Renderer renderer;
+  Scene scene;
 
   // Main loop
   while (!glfwWindowShouldClose(_window)) {
     // Process inputs
     controls.processInputs(_window);
 
-    // Compute MVP matrix from the controls
-    glm::mat4 projectionMatrix = controls.getProjectionMatrix();
-    glm::mat4 viewMatrix = controls.getViewMatrix();
-    auto scale = 1.0;
-    glm::mat4 modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(scale));
-    glm::mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;
+    // Matrices from the controls
+    glm::mat4 projection = controls.getProjectionMatrix();
+    glm::mat4 view = controls.getViewMatrix();
 
     // Update the render
-    renderer.update(mvp);
+    renderer.update(scene, projection, view);
 
     // Swap buffers
     glfwSwapBuffers(_window);

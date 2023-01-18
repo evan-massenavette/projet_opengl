@@ -1,13 +1,7 @@
-#include <string>
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-
-#include <glm/glm.hpp>
+#include <cstdint>
 
 #include "controls.hpp"
-#include "globject.hpp"
+#include "scene/scene.hpp"
 #include "shaders.hpp"
 
 #include "renderer.hpp"
@@ -30,17 +24,40 @@ Renderer::Renderer() {
   // Load shaders
   _program = Shaders::createProgram("shaders/TextureTransform.vert",
                                     "shaders/Texture.frag");
+  glUseProgram(_program);
 
-  // Get MVP
-  _mvp = glGetUniformLocation(_program, "MVP");
+  // Matrices
+  _projection = glGetUniformLocation(_program, "projection");
+  _view = glGetUniformLocation(_program, "view");
+  _model = glGetUniformLocation(_program, "model");
+
+  // Directional lights
+  auto directionalLightsBufferSize =
+      sizeof(GLuint) +
+      Scene::MAX_NUM_DIRECTIONAL_LIGHTS * sizeof(DirectionalLight);
+  _uboDirectionalLights = getUBO("Lighting", 1, directionalLightsBufferSize);
 
   // Texture
   _textureSampler = glGetUniformLocation(_program, "textureSampler");
+}
 
-  // Load model
-  std::shared_ptr<GLObject> model(new GLObject(
-      "models/cube/cube.obj", "models/cube/textures/cube_albedo.bmp"));
-  _models.push_back(model);
+GLuint Renderer::getUBO(const char *uniformBlockName,
+                        GLuint uniformBlockBinding,
+                        GLsizeiptr uniformBlockSize) {
+  // Set the uniform block to point to the given binding point
+  auto uniformBlockIndex = glGetUniformBlockIndex(_program, uniformBlockName);
+  glUniformBlockBinding(_program, uniformBlockIndex, uniformBlockBinding);
+
+  // Create UBO and bind it to binding point 0
+  GLuint ubo;
+  glGenBuffers(1, &ubo);
+  glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+  glBufferData(GL_UNIFORM_BUFFER, uniformBlockSize, NULL, GL_STATIC_DRAW);
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+  glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, uniformBlockSize);
+
+  return ubo;
 }
 
 Renderer::~Renderer() {
@@ -48,17 +65,30 @@ Renderer::~Renderer() {
   glDeleteProgram(_program);
 }
 
-void Renderer::update(const glm::mat4 &mvp) {
+void Renderer::update(const Scene &scene, const glm::mat4 &projection,
+                      const glm::mat4 &view) {
   // Clear the screen
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // Use our shader
-  glUseProgram(_program);
+  // Send Matrices to shader
+  glUniformMatrix4fv(_projection, 1, GL_FALSE, &projection[0][0]);
+  glUniformMatrix4fv(_view, 1, GL_FALSE, &view[0][0]);
 
-  // Send MVP to the currently bound shader
-  glUniformMatrix4fv(_mvp, 1, GL_FALSE, &mvp[0][0]);
+  // Send directional lights to shader
+  glBindBuffer(GL_UNIFORM_BUFFER, _uboDirectionalLights);
+  GLuint numDirectionalLights = scene.directionalLights.size();
+  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLuint), &numDirectionalLights);
+  glBufferSubData(GL_UNIFORM_BUFFER, sizeof(GLuint),
+                  numDirectionalLights * sizeof(DirectionalLight),
+                  &scene.directionalLights[0]);
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-  for (auto &model : _models) {
-    model->draw(_textureSampler);
+  for (auto &object : scene.objects) {
+
+    // Use this object's model matrix as the model uniform
+    glUniformMatrix4fv(_model, 1, GL_FALSE, &object->model[0][0]);
+
+    // Draw the object
+    object->draw(_textureSampler);
   }
 }
