@@ -3,10 +3,6 @@
 #include <string>
 #include <vector>
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-
 #include "shaders.hpp"
 
 GLuint Shaders::_loadOne(const char *filepath, GLenum shaderType,

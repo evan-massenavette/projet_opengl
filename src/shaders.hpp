@@ -1,6 +1,10 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+
 class Shaders {
 
 private:
