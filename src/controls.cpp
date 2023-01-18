@@ -83,5 +83,5 @@ void Controls::_computeMatrices(GLFWwindow *window) {
   lastTime = currentTime;
 }
 
-glm::mat4 Controls::getViewMatrix() { return _viewMatrix; }
-glm::mat4 Controls::getProjectionMatrix() { return _projectionMatrix; }
+glm::mat4 Controls::getViewMatrix() const { return _viewMatrix; }
+glm::mat4 Controls::getProjectionMatrix() const { return _projectionMatrix; }

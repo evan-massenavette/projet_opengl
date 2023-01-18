@@ -27,8 +27,8 @@ private:
 
 public:
   void processInputs(GLFWwindow *window);
-  glm::mat4 getViewMatrix();
-  glm::mat4 getProjectionMatrix();
+  glm::mat4 getViewMatrix() const;
+  glm::mat4 getProjectionMatrix() const;
 };
 
 #endif
