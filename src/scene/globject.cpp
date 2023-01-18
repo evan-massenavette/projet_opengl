@@ -85,7 +85,7 @@ void GLObject::_loadModel(const char *modelFilepath,
               attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
           tinyobj::real_t ty =
               attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
-          uv = glm::vec2(tx, ty);
+          uv = glm::vec2(tx,1-ty);
         } else {
           uv = glm::vec2(-1);
         }
