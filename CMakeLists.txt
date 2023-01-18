@@ -54,9 +54,9 @@ target_include_directories(HGL PRIVATE "${GLAD_DIR}/include")
 set(GLM_DIR "${LIBS_DIR}/glm")
 target_include_directories(HGL PRIVATE ${GLM_DIR})
 
-# CImg
-set(CIMG_DIR "${LIBS_DIR}/CImg")
-target_include_directories(HGL PRIVATE ${CIMG_DIR})
+# stb_image
+set(STB_DIR "${LIBS_DIR}/stb")
+target_include_directories(HGL PRIVATE ${STB_DIR})
 
 # tinyobjloader
 set(TINYOBJLOADER_DIR "${LIBS_DIR}/tinyobjloader")

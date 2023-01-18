@@ -2,8 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
-#include <CImg.h>
-using namespace cimg_library;
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 #include "texture.hpp"
 
@@ -12,7 +12,8 @@ GLuint Texture::load(const char *filepath) {
   printf("Loading texture: %s\n", filepath);
 
   // Read image file
-  CImg<unsigned char> textureImage(filepath);
+  int width, height, nrChannels;
+  unsigned char *data = stbi_load(filepath, &width, &height, &nrChannels, 0);
 
   // Create texture and bind it
   GLuint texture;
@@ -20,9 +21,9 @@ GLuint Texture::load(const char *filepath) {
   glBindTexture(GL_TEXTURE_2D, texture);
 
   // Give the image to OpenGL
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureImage.width(),
-               textureImage.height(), 0, GL_BGR, GL_UNSIGNED_BYTE,
-               textureImage.data());
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width,
+               height, 0, GL_RGB, GL_UNSIGNED_BYTE,
+               data);
 
   // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
   // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
@@ -44,6 +45,7 @@ GLuint Texture::load(const char *filepath) {
   // Generate mipmaps automatically
   glGenerateMipmap(GL_TEXTURE_2D);
 
+  stbi_image_free(data);
   // Return the ID of the texture we just created
   return texture;
 }
