@@ -9,29 +9,32 @@
 
 #include <glm/glm.hpp>
 
+#include "../buffer_objects/vertex_buffer_object.hpp"
+#include "../uniform.hpp"
+
 #include "../vertex.hpp"
 
 class GLObject {
-public:
-  GLuint vbo;
+ public:
+  VertexBufferObject vbo;
   GLuint vao;
   std::vector<Vertex> vertices;
   GLuint texture;
-  glm::mat4 model = glm::mat4(1);
+  glm::mat4 modelMatrix = glm::mat4(1);
 
   // Regular constructor
-  GLObject(const char *modelFilepath, const char *textureFilepath);
+  GLObject(const char* modelFilepath, const char* textureFilepath);
 
   // Disable copy constructors
-  GLObject(const GLObject &) = delete;
-  GLObject &operator=(const GLObject &) = delete;
+  GLObject(const GLObject&) = delete;
+  GLObject& operator=(const GLObject&) = delete;
 
   ~GLObject();
 
-  void draw(const GLuint textureSampler);
+  void draw(Uniform textureSampler);
 
-private:
-  void _loadModel(const char *modelFilepath, const char *textureFilepath);
+ private:
+  void _loadModel(const char* modelFilepath, const char* textureFilepath);
   void _bufferData();
 };
 

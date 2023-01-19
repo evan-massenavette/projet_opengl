@@ -10,21 +10,20 @@
 
 #include "globject.hpp"
 
-GLObject::GLObject(const char *modelFilepath, const char *textureFilepath) {
+GLObject::GLObject(const char* modelFilepath, const char* textureFilepath) {
   _loadModel(modelFilepath, textureFilepath);
   _bufferData();
 }
 
 GLObject::~GLObject() {
   // Cleanup
-  glDeleteBuffers(1, &vbo);
+  vbo.deleteVBO();
   glDeleteVertexArrays(1, &vao);
   glDeleteTextures(1, &texture);
 }
 
-void GLObject::_loadModel(const char *modelFilepath,
-                          const char *textureFilepath) {
-
+void GLObject::_loadModel(const char* modelFilepath,
+                          const char* textureFilepath) {
   printf("Loading model: %s\n", modelFilepath);
 
   tinyobj::attrib_t attrib;
@@ -110,44 +109,42 @@ void GLObject::_loadModel(const char *modelFilepath,
 }
 
 void GLObject::_bufferData() {
-  // VBO
-  glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0],
-               GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
   // VAO
   glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+
+  // VBO
+  vbo.createVBO();
+  vbo.bindVBO();
+  vbo.addRawData(vertices.data(), vertices.size() * sizeof(Vertex));
+  vbo.uploadDataToGPU(GL_STATIC_DRAW);
 
   // Shader input attrib
-  glBindVertexArray(vao);
   const GLuint VERTEX_ATTR_POSITION = 0;
   const GLuint VERTEX_ATTR_NORMAL = 1;
   const GLuint VERTEX_ATTR_UV = 2;
   glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
   glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
   glEnableVertexAttribArray(VERTEX_ATTR_UV);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE,
                         sizeof(Vertex),
-                        (const GLvoid *)offsetof(Vertex, position));
+                        (const GLvoid*)offsetof(Vertex, position));
   glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE,
                         sizeof(Vertex),
-                        (const GLvoid *)offsetof(Vertex, normal));
+                        (const GLvoid*)offsetof(Vertex, normal));
   glVertexAttribPointer(VERTEX_ATTR_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        (const GLvoid *)offsetof(Vertex, uv));
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+                        (const GLvoid*)offsetof(Vertex, uv));
+
+  vbo.unbindVBO();
   glBindVertexArray(0);
 }
 
-void GLObject::draw(const GLuint textureSampler) {
-
+void GLObject::draw(Uniform textureSampler) {
   // Bind our texture in Texture Unit 0
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture);
   // Set our texture sampler to use Texture Unit 0
-  glUniform1i(textureSampler, 0);
+  textureSampler = 0;
 
   glBindVertexArray(vao);
   glDrawArrays(GL_TRIANGLES, 0, vertices.size());
