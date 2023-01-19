@@ -4,17 +4,28 @@
 #include <memory>
 #include <vector>
 
-#include "../lighting/directional_light.hpp"
+#include <glm/glm.hpp>
+
+#include "../shader_structs/directional_light.hpp"
+
 #include "globject.hpp"
 
 class Scene {
-public:
+ public:
+  glm::vec4 backgroundColor;
+
+  // Objects
   std::vector<std::unique_ptr<GLObject>> objects;
 
-  static constexpr size_t MAX_NUM_DIRECTIONAL_LIGHTS = 8;
-  std::vector<DirectionalLight> directionalLights;
+  // Directional lights
+  static const size_t MAX_DIRECTIONAL_LIGHTS = 8;
+  std::vector<shader_structs::DirectionalLight> directionalLights;
 
-  Scene();
+  Scene(bool isDefault = false);
+  Scene(glm::vec4 backgroundColor, bool isDefault);
+
+ private:
+  void _initDefaultScene();
 };
 
 #endif

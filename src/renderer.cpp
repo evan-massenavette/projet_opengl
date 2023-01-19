@@ -1,12 +1,14 @@
 #include <cstdint>
+#include <iostream>
 
 #include "controls.hpp"
 #include "scene/scene.hpp"
-#include "shaders.hpp"
+#include "shader_program_manager.hpp"
+#include "shader_structs/directional_light.hpp"
 
 #include "renderer.hpp"
 
-Renderer::Renderer() {
+Renderer::Renderer(Scene& scene) : _scene(scene) {
   // Enable depth test
   glEnable(GL_DEPTH_TEST);
   // Accept fragment if it closer to the camera than the former one
@@ -19,77 +21,75 @@ Renderer::Renderer() {
   glEnable(GL_MULTISAMPLE);
 
   // Background color
-  glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
+  glClearColor(scene.backgroundColor.r, scene.backgroundColor.g,
+               scene.backgroundColor.b, scene.backgroundColor.a);
 
   // Load shaders
-  _program = Shaders::createProgram("shaders/TextureTransform.vert",
-                                    "shaders/Texture.frag");
-  glUseProgram(_program);
+  _loadShaderProgram();
 
-  // Matrices
-  _projection = glGetUniformLocation(_program, "projection");
-  _view = glGetUniformLocation(_program, "view");
-  _model = glGetUniformLocation(_program, "model");
-
-  // Directional lights
-  auto directionalLightsBufferSize =
-      sizeof(GLuint) +
-      Scene::MAX_NUM_DIRECTIONAL_LIGHTS * sizeof(DirectionalLight);
-  _uboDirectionalLights = getUBO("Lighting", 0, directionalLightsBufferSize);
-
-  // Texture
-  _textureSampler = glGetUniformLocation(_program, "textureSampler");
+  // Directional lights UBO
+  _uboDirectionalLights.createUBO(
+      Scene::MAX_DIRECTIONAL_LIGHTS *
+      shader_structs::DirectionalLight::getDataSizeStd140());
+  _uboDirectionalLights.bindBufferBaseToBindingPoint(
+      UniformBlockBindingPoints::DIRECTIONAL_LIGHTS);
+  _shaderProgram.bindUniformBlockToBindingPoint(
+      "DirectionalLightsBlock", UniformBlockBindingPoints::DIRECTIONAL_LIGHTS);
 }
 
-GLuint Renderer::getUBO(const char *uniformBlockName,
-                        GLuint uniformBlockBinding,
-                        GLsizeiptr uniformBlockSize) {
-  // Create UBO
-  GLuint ubo;
-  glGenBuffers(1, &ubo);
+void Renderer::_loadShaderProgram() {
+  // Create shader program using manager
+  auto& programManager = ShaderProgramManager::getInstance();
+  programManager.createShaderProgram("main");
+  _shaderProgram = programManager.getShaderProgram("main");
 
-  // Set the uniform block to point to the given binding point
-  auto uniformBlockIndex = glGetUniformBlockIndex(_program, uniformBlockName);
-  glUniformBlockBinding(_program, uniformBlockIndex, uniformBlockBinding);
-  glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockBinding, ubo);
+  // Load vert and frag shaders
+  Shader vert;
+  Shader frag;
+  vert.loadShaderFromFile("shaders/TextureTransform.vert", GL_VERTEX_SHADER);
+  frag.loadShaderFromFile("shaders/Texture.frag", GL_FRAGMENT_SHADER);
 
-  // Buffer empty data
-  glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-  glBufferData(GL_UNIFORM_BUFFER, uniformBlockSize, NULL, GL_STATIC_DRAW);
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+  if (!(vert.isCompiled() && frag.isCompiled())) {
+    exit(EXIT_FAILURE);
+  }
 
-  return ubo;
+  _shaderProgram.addShaderToProgram(vert);
+  _shaderProgram.addShaderToProgram(frag);
+
+  _shaderProgram.linkProgram();
+  _shaderProgram.useProgram();
 }
 
-Renderer::~Renderer() {
-  // Cleanup
-  glDeleteProgram(_program);
-}
+Renderer::~Renderer() {}
 
-void Renderer::update(const Scene &scene, const glm::mat4 &projection,
-                      const glm::mat4 &view) {
+void Renderer::update(const glm::mat4& projection, const glm::mat4& view) {
   // Clear the screen
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Send Matrices to shader
-  glUniformMatrix4fv(_projection, 1, GL_FALSE, &projection[0][0]);
-  glUniformMatrix4fv(_view, 1, GL_FALSE, &view[0][0]);
+  _shaderProgram[ShaderConstants::projectionMatrix()] = projection;
+  _shaderProgram[ShaderConstants::viewMatrix()] = view;
 
-  // Send directional lights to shader
-  glBindBuffer(GL_UNIFORM_BUFFER, _uboDirectionalLights);
-  GLuint numDirectionalLights = scene.directionalLights.size();
-  glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GLuint), &numDirectionalLights);
-  glBufferSubData(GL_UNIFORM_BUFFER, sizeof(GLuint),
-                  numDirectionalLights * sizeof(DirectionalLight),
-                  &scene.directionalLights[0]);
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+  // Send Directional Lights to shader
+  GLsizeiptr offset = 0;
+  // Send count
+  GLint directionalLightsCount = _scene.directionalLights.size();
+  _uboDirectionalLights.setBufferData(offset, &directionalLightsCount,
+                                      sizeof(GLint));
+  offset += sizeof(glm::vec4);
+  // Send data
+  for (const auto& light : _scene.directionalLights) {
+    auto size = light.getDataSizeStd140();
+    _uboDirectionalLights.setBufferData(offset, light.getDataPointer(), size);
+    offset += size;
+  }
+  _uboDirectionalLights.unbindUBO();
 
-  for (auto &object : scene.objects) {
-
-    // Use this object's model matrix as the model uniform
-    glUniformMatrix4fv(_model, 1, GL_FALSE, &object->model[0][0]);
+  for (auto& object : _scene.objects) {
+    // Send the model and normal matrices
+    _shaderProgram.setModelAndNormalMatrix(object->modelMatrix);
 
     // Draw the object
-    object->draw(_textureSampler);
+    object->draw(_shaderProgram["textureSampler"]);
   }
 }

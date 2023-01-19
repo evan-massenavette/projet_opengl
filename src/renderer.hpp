@@ -3,34 +3,29 @@
 
 #include <vector>
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
 #include <glm/glm.hpp>
 
+#include "buffer_objects/uniform_buffer_object.hpp"
+#include "shader_program.hpp"
+
 #include "scene/scene.hpp"
 
 class Renderer {
-public:
-  Renderer();
+ public:
+  Renderer(Scene& scene);
   ~Renderer();
-  void update(const Scene &scene, const glm::mat4 &projection,
-              const glm::mat4 &view);
+  void update(const glm::mat4& projection, const glm::mat4& view);
 
-private:
-  GLuint _program;
+ private:
+  Scene& _scene;
 
-  GLuint _uboDirectionalLights;
+  ShaderProgram _shaderProgram;
 
-  GLuint _projection;
-  GLuint _view;
-  GLuint _model;
+  UniformBufferObject _uboDirectionalLights;
 
-  GLuint _textureSampler;
-
-  GLuint getUBO(const char *uniformBlockName, GLuint uniformBlockBinding,
-                GLsizeiptr uniformBlockSize);
+  void _loadShaderProgram();
 };
 
 #endif

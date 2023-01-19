@@ -8,10 +8,9 @@
 #include "controls.hpp"
 #include "renderer.hpp"
 #include "scene/scene.hpp"
-#include "shaders.hpp"
 #include "texture.hpp"
 
-void App::_processResize(GLFWwindow *window, int width, int height) {
+void App::_processResize(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
   printf("Window resized to %d x %d\n", width, height);
 }
@@ -64,8 +63,8 @@ void App::run() {
   _openWindow();
 
   Controls controls;
-  Renderer renderer;
-  Scene scene;
+  Scene scene(glm::vec4(0.0, 0.0, 0.2, 0.0), true);
+  Renderer renderer(scene);
 
   // Main loop
   while (!glfwWindowShouldClose(_window)) {
@@ -77,7 +76,7 @@ void App::run() {
     glm::mat4 view = controls.getViewMatrix();
 
     // Update the render
-    renderer.update(scene, projection, view);
+    renderer.update(projection, view);
 
     // Swap buffers
     glfwSwapBuffers(_window);
