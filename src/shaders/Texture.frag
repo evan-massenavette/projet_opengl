@@ -4,24 +4,38 @@
 struct DirectionalLight {
 	vec3 direction;
 	vec3 color;
+	float factor;
+	bool isOn;
 };
 
-// Inputs (interpolated values from vertex shader)
-in vec3 vPosition;
-in vec3 vNormal;
-in vec2 vUV;
+vec3 getDirectionalLightColor(DirectionalLight directionalLight, vec3 normal)
+{
+    if(!directionalLight.isOn) return vec3(0);
+    
+    float finalIntensity = max(0.0, dot(normal, -directionalLight.direction));
+    finalIntensity = clamp(finalIntensity*directionalLight.factor, 0.0, 1.0);
+    return vec3(directionalLight.color*finalIntensity);
+}
+
+
+
+// Inputs
+in vec3 vVertexNormal;
+in vec2 vVertexUV;
+in vec3 vVertexWorldPosition;
+in vec3 vVertexCameraSpacePosition;
 
 // Outputs
-out vec3 fColor;
+out vec3 fFinalColor;
 
 // Texturing uniforms
 uniform sampler2D textureSampler;
 
 // Lighting uniforms
-layout (std140) uniform Lighting {
-	uint numDirectionalLights;
-	DirectionalLight directionalLights[MAX_NUM_DIRECTIONAL_LIGHTS];
-};
+layout (std140) uniform DirectionalLightsBlock {
+	int count;
+	DirectionalLight data[MAX_NUM_DIRECTIONAL_LIGHTS];
+} directionalLights;
 
 float max3(vec3 v) {
 	return max(v.x, max(v.y, v.z));
@@ -31,20 +45,29 @@ float min3(vec3 v) {
 }
 
 void main() {
-	// Ambient
-	vec3 ambient = texture(textureSampler, vUV).rgb;
+	// Normal and texture color
+	vec3 normal = normalize(vVertexNormal);
+    vec3 textureColor = texture(textureSampler, vVertexUV).rgb;
 
-	// Diffuse
-	vec3 diffuse = vec3(0);
-	for (uint i = 0u; i < numDirectionalLights; i++) {
-		DirectionalLight light = directionalLights[i];
-		diffuse += max(dot(vNormal, light.direction), 0.0) * light.color;
+	// Ambient lights
+    // vec3 ambientColor = getAmbientLightColor(ambientLight);
+
+	// Directional lights
+	vec3 diffuseColor = vec3(0,0,0);
+	for (int i = 0; i < directionalLights.count; i++) {
+		diffuseColor += getDirectionalLightColor(directionalLights.data[i], normal);
 	}
 
-	// fColor = ambient + diffuse;
-	fColor = diffuse;
-	if (directionalLights[0].color.r > 0) {
-	// if (numDirectionalLights == 1u) {
-		fColor = vec3(1,0,0);
-	}
+	// Specular lights
+	// vec3 specularHighlightColor = getSpecularHighlightColor(ioWorldPosition.xyz, normal, eyePosition, material, directionalLight);
+
+	// vec3 lightColor = ambientColor + diffuseColor + specularHighlightColor;
+	vec3 lightColor = diffuseColor;
+
+	// Point lights
+	// for(int i = 0; i < numPointLights; i++) {
+	// 	lightColor += getPointLightColor(block_pointLights.lights[i], ioWorldPosition.xyz, normal);
+	// }
+    
+    fFinalColor = textureColor * lightColor;
 }
