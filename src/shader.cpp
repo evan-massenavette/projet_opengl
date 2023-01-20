@@ -5,9 +5,11 @@
 #include "shader.hpp"
 #include "string_utils.hpp"
 
-Shader::~Shader() { deleteShader(); }
+Shader::~Shader() {
+  deleteShader();
+}
 
-bool Shader::loadShaderFromFile(const std::string &fileName,
+bool Shader::loadShaderFromFile(const std::string& fileName,
                                 GLenum shaderType) {
   std::vector<std::string> fileLines;
   std::set<std::string> filesIncludedAlready;
@@ -15,73 +17,74 @@ bool Shader::loadShaderFromFile(const std::string &fileName,
   if (!getLinesFromFile(fileName, fileLines, filesIncludedAlready))
     return false;
 
-  std::vector<const char *> programSource;
-  for (const auto &line : fileLines) {
+  std::vector<const char*> programSource;
+  for (const auto& line : fileLines) {
     programSource.push_back(line.c_str());
   }
 
   // Create and compile shader
-  shaderID_ = glCreateShader(shaderType);
-  glShaderSource(shaderID_, static_cast<GLsizei>(fileLines.size()),
+  _shaderID = glCreateShader(shaderType);
+  glShaderSource(_shaderID, static_cast<GLsizei>(fileLines.size()),
                  programSource.data(), nullptr);
-  glCompileShader(shaderID_);
+  glCompileShader(_shaderID);
 
   // Get and check the compilation status
   GLint compilationStatus;
-  glGetShaderiv(shaderID_, GL_COMPILE_STATUS, &compilationStatus);
+  glGetShaderiv(_shaderID, GL_COMPILE_STATUS, &compilationStatus);
   if (compilationStatus == GL_FALSE) {
-    std::cerr << "Error! Shader file " << fileName << " wasn't compiled!";
+    std::cerr << "Error during compilation of shader file " << fileName;
 
     // Get length of the error log first
     GLint logLength;
-    glGetShaderiv(shaderID_, GL_INFO_LOG_LENGTH, &logLength);
+    glGetShaderiv(_shaderID, GL_INFO_LOG_LENGTH, &logLength);
 
     // If there is some log, then retrieve it and output extra information
     if (logLength > 0) {
-      GLchar *logMessage = new GLchar[logLength];
-      glGetShaderInfoLog(shaderID_, logLength, nullptr, logMessage);
-      std::cerr << " The compiler returned: " << std::endl
-                << std::endl
-                << logMessage;
+      GLchar* logMessage = new GLchar[logLength];
+      glGetShaderInfoLog(_shaderID, logLength, nullptr, logMessage);
+      std::cerr << logMessage;
       delete[] logMessage;
     }
 
-    std::cerr << std::endl;
+    std::cerr << "\n";
     return false;
   }
 
-  shaderType_ = shaderType;
-  isCompiled_ = true;
+  _shaderType = shaderType;
+  _isCompiled = true;
   return true;
 }
 
-bool Shader::isCompiled() const { return isCompiled_; }
+bool Shader::isCompiled() const {
+  return _isCompiled;
+}
 
 void Shader::deleteShader() {
-  if (shaderID_ == 0) {
+  if (_shaderID == 0) {
     return;
   }
 
-  std::cout << "Deleting shader with ID " << shaderID_ << std::endl;
-  glDeleteShader(shaderID_);
-  isCompiled_ = false;
-  shaderID_ = 0;
+  std::cout << "Deleting shader with ID " << _shaderID << std::endl;
+  glDeleteShader(_shaderID);
+  _isCompiled = false;
+  _shaderID = 0;
 }
 
-GLuint Shader::getShaderID() const { return shaderID_; }
+GLuint Shader::getShaderID() const {
+  return _shaderID;
+}
 
-GLenum Shader::getShaderType() const { return shaderType_; }
+GLenum Shader::getShaderType() const {
+  return _shaderType;
+}
 
-bool Shader::getLinesFromFile(const std::string &fileName,
-                              std::vector<std::string> &result,
-                              std::set<std::string> &filesIncludedAlready,
+bool Shader::getLinesFromFile(const std::string& fileName,
+                              std::vector<std::string>& result,
+                              std::set<std::string>& filesIncludedAlready,
                               bool isReadingIncludedFile) const {
   std::ifstream file(fileName);
   if (!file.good()) {
-    std::cout << "File " << fileName
-              << " not found! (Have you set the working directory of the "
-                 "application to $(SolutionDir)bin/?)"
-              << std::endl;
+    std::cout << "File not found: " << fileName << "\n";
     return false;
   }
 
@@ -105,7 +108,7 @@ bool Shader::getLinesFromFile(const std::string &fileName,
   auto isInsideIncludePart = false;
 
   while (std::getline(file, line)) {
-    line += "\n"; // getline does not keep newline character
+    line += "\n";  // getline does not keep newline character
     std::stringstream ss(line);
     std::string firstToken;
     ss >> firstToken;
@@ -121,7 +124,7 @@ bool Shader::getLinesFromFile(const std::string &fileName,
         std::vector<std::string> subPaths =
             string_utils::split(includeFileName, slashCharacter);
         std::string sFinalFileName = "";
-        for (const std::string &subPath : subPaths) {
+        for (const std::string& subPath : subPaths) {
           if (subPath == "..")
             directory = string_utils::upOneDirectory(directory, slashCharacter);
           else {

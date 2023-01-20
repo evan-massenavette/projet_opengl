@@ -121,10 +121,10 @@ class Shader {
                         std::set<std::string>& filesIncludedAlready,
                         bool isReadingIncludedFile = false) const;
 
-  GLuint shaderID_ = 0;  // OpenGL-assigned shader ID
-  GLenum shaderType_ =
+  GLuint _shaderID = 0;  // OpenGL-assigned shader ID
+  GLenum _shaderType =
       0;  // Type of shader (GL_VERTEX_SHADER, GL_FRAGMENT_SHADER...)
-  bool isCompiled_ = false;  // Flag telling, whether shader has been loaded and
+  bool _isCompiled = false;  // Flag telling, whether shader has been loaded and
                              // compiled successfully
 };
 
