@@ -65,9 +65,9 @@ class UniformBufferObject {
  */
 class UniformBlockBindingPoints {
  public:
-  static const int AMBIENT_LIGHTS = 0;
-  static const int DIRECTIONAL_LIGHTS = 1;
-  static const int POINT_LIGHTS = 2;
+  static constexpr int AMBIENT_LIGHTS = 0;
+  static constexpr int DIRECTIONAL_LIGHTS = 1;
+  static constexpr int POINT_LIGHTS = 2;
 };
 
 #endif
