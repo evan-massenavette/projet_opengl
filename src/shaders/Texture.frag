@@ -40,7 +40,7 @@ vec3 getAmbientLightColor(AmbientLight ambientLight, Material material) {
 	return clamp(finalColor, 0.0, 1.0);
 }
 
-vec3 getDirectionalLightColor(DirectionalLight directionalLight, Material material, vec3 normal, vec3 cameraPosition, vec3 fragPosition) {
+vec3 getDirectionalLightColor(DirectionalLight directionalLight, Material material, vec3 normal, vec3 cameraPos, vec3 fragPos) {
 
 	// If light is off, return black
 	if(!directionalLight.isOn)
@@ -51,9 +51,9 @@ vec3 getDirectionalLightColor(DirectionalLight directionalLight, Material materi
 	vec3 diffuseColor = directionalLight.color * diffuseIntensity * material.diffuse;
 
 	// Specular lighting
-	vec3 viewDirection = normalize(cameraPosition - fragPosition);
-	vec3 reflectDirection = reflect(directionalLight.direction, normal);
-	float specularIntensity = pow(max(dot(viewDirection, reflectDirection), 0.0), material.shininess);
+	vec3 viewDir = normalize(cameraPos - fragPos);
+	vec3 reflectDir = reflect(directionalLight.direction, normal);
+	float specularIntensity = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	vec3 specularColor = directionalLight.color * specularIntensity * material.specular;
 
 	vec3 finalColor = (diffuseColor + specularColor) * directionalLight.intensityFactor;
@@ -67,16 +67,16 @@ vec3 getPointLightColor(PointLight pointLight, Material material, vec3 normal, v
 	if(!pointLight.isOn)
 		return vec3(0);
 
-	vec3 lightToFragDirection = normalize(fragPosition - pointLight.position);
+	vec3 lightToFragDir = normalize(fragPos - pointLight.position);
 
 	// Diffuse lighting
-	float diffuseIntensity = clamp(dot(normal, -lightToFragDirection), 0.0, 1.0);
+	float diffuseIntensity = clamp(dot(normal, -lightToFragDir), 0.0, 1.0);
 	vec3 diffuseColor = pointLight.color * diffuseIntensity * material.diffuse;
 
 	// Specular lighting
-	vec3 viewDirection = normalize(cameraPosition - fragPosition);
-	vec3 reflectDirection = reflect(lightToFragDirection, normal);
-	float specularIntensity = pow(max(dot(viewDirection, reflectDirection), 0.0), material.shininess);
+	vec3 viewDir = normalize(cameraPos - fragPos);
+	vec3 reflectDir = reflect(lightToFragDir, normal);
+	float specularIntensity = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	vec3 specularColor = pointLight.color * specularIntensity * material.specular;
 
 	return clamp(diffuseColor + specularColor, 0.0, 1.0);
@@ -85,8 +85,8 @@ vec3 getPointLightColor(PointLight pointLight, Material material, vec3 normal, v
 // Inputs
 in vec3 vFragNormal;
 in vec2 vFragUV;
-in vec3 vFragWorldPosition;
-in vec3 vFragCameraSpacePosition;
+in vec3 vFragWorldPos;
+in vec3 vFragCameraSpacePos;
 
 // Outputs
 out vec3 fFinalColor;
@@ -95,7 +95,7 @@ out vec3 fFinalColor;
 uniform sampler2D textureSampler;
 
 // Other uniforms
-uniform vec3 cameraPosition;
+uniform vec3 cameraWorldPos;
 uniform Material material;
 
 // Lighting uniforms
@@ -133,13 +133,13 @@ void main() {
 	// Directional lights
 	for(int i = 0; i < directionalLights.count; i++) {
 		DirectionalLight directionalLight = directionalLights.data[i];
-		fFinalColor += getDirectionalLightColor(directionalLight, material, normal, cameraPosition, vFragWorldPosition);
+		fFinalColor += getDirectionalLightColor(directionalLight, material, normal, cameraWorldPos, vFragWorldPos);
 	}
 
 	// Point lights
 	for(int i = 0; i < pointLights.count; i++) {
 		PointLight pointLight = pointLights.data[i];
-		fFinalColor += getPointLightColor(pointLight, material, normal, cameraPosition, vFragWorldPosition);
+		fFinalColor += getPointLightColor(pointLight, material, normal, cameraWorldPos, vFragWorldPos);
 	}
 
 	fFinalColor *= textureColor;
