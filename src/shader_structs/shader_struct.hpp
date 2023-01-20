@@ -17,7 +17,7 @@ struct ShaderStruct {
    * @param uniformName    Name of the uniform variable
    */
   virtual void setUniform(ShaderProgram& shaderProgram,
-                          const std::string& uniformName) const = 0;
+                          const std::string& uniformName) const {}
 
   virtual void* getDataPointer() const { return nullptr; }
 
