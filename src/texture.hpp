@@ -4,8 +4,8 @@
 #include <glad/glad.h>
 
 class Texture {
-public:
-  static GLuint load(const char *filepath);
+ public:
+  static GLuint load(const char* filepath);
 };
 
 #endif

@@ -5,13 +5,12 @@
 
 #include "texture.hpp"
 
-GLuint Texture::load(const char *filepath) {
-
+GLuint Texture::load(const char* filepath) {
   printf("Loading texture: %s\n", filepath);
 
   // Read image file
   int width, height, nrChannels;
-  unsigned char *data = stbi_load(filepath, &width, &height, &nrChannels, 0);
+  unsigned char* data = stbi_load(filepath, &width, &height, &nrChannels, 0);
 
   // Create texture and bind it
   GLuint texture;
