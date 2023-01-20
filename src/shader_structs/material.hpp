@@ -9,13 +9,15 @@ namespace shader_structs {
  * Represents material in a shader.
  */
 struct Material : ShaderStruct {
-  Material(const float specularIntensity, const float specularPower,
-           const bool isEnabled = true);
+  Material(const glm::vec3& ambient,
+           const glm::vec3& diffuse,
+           const glm::vec3& specular,
+           const float shininess);
 
   /**
    * Material that does no calculations (is not enabled).
    */
-  static const Material &none();
+  static const Material& default();
 
   /**
    * Sets material structure in a shader program.
@@ -23,14 +25,24 @@ struct Material : ShaderStruct {
    * @param shaderProgram  Shader program to set material in
    * @param uniformName    Name of the uniform variable
    */
-  void setUniform(ShaderProgram &shaderProgram,
-                  const std::string &uniformName) const override;
+  void setUniform(ShaderProgram& shaderProgram,
+                  const std::string& uniformName) const override;
 
-  bool isEnabled; // Flag telling if calculations with material are enabled
-  float specularIntensity; // Factor to multiply specular highlight by
-  float specularPower;     // Number to raise calculated specular factor to
+  /**
+   * Gets data size of the structure (in bytes) according to std140 layout
+   * rules.
+   */
+  static GLsizeiptr getDataSizeStd140();
+  void* getDataPointer() const override;
+
+  glm::vec3 ambient;  // Color the material reflects under ambient lighting
+  float __DUMMY_PADDING0__;  // Needed because of std140 layout padding rules
+  glm::vec3 diffuse;  // Color the material reflects under diffuse lighting
+  float __DUMMY_PADDING1__;  // Needed because of std140 layout padding rules
+  glm::vec3 specular;  // Color the material reflects under specular lighting
+  float shininess;  // Impacts the scattering/radius of the specular highlight
 };
 
-} // namespace shader_structs
+}  // namespace shader_structs
 
 #endif

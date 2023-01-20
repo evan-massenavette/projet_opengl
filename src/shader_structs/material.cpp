@@ -2,27 +2,38 @@
 
 namespace shader_structs {
 
-Material::Material(const float specularIntensity, const float specularPower,
-                   const bool isEnabled)
-    : specularIntensity(specularIntensity), specularPower(specularPower),
-      isEnabled(isEnabled) {}
+Material::Material(const glm::vec3& ambient,
+                   const glm::vec3& diffuse,
+                   const glm::vec3& specular,
+                   const float shininess)
+    : ambient(ambient),
+      diffuse(diffuse),
+      specular(specular),
+      shininess(shininess) {}
 
-const Material &Material::none() {
-  static Material noMaterial(0.0f, 0.0f, false);
-  return noMaterial;
+const Material& Material::default() {
+  static Material defaultMaterial(glm::vec3(1), glm::vec3(1), glm::vec3(1), 50);
+  return defaultMaterial;
 }
 
-void Material::setUniform(ShaderProgram &shaderProgram,
-                          const std::string &uniformName) const {
-  shaderProgram[constructAttributeName(uniformName, "isEnabled")] = isEnabled;
-  if (!isEnabled) {
-    return; // Skip settings other parameters if material is not enabled
-  }
-
-  shaderProgram[constructAttributeName(uniformName, "specularIntensity")] =
-      specularIntensity;
-  shaderProgram[constructAttributeName(uniformName, "specularPower")] =
-      specularPower;
+void Material::setUniform(ShaderProgram& shaderProgram,
+                          const std::string& uniformName) const {
+  shaderProgram[getAttributeName(uniformName, "ambient")] = ambient;
+  shaderProgram[getAttributeName(uniformName, "diffuse")] = diffuse;
+  shaderProgram[getAttributeName(uniformName, "specular")] = specular;
+  shaderProgram[getAttributeName(uniformName, "shininess")] = shininess;
 }
 
-} // namespace shader_structs
+GLsizeiptr Material::getDataSizeStd140() {
+  // Explaination of size :
+  // - ambient + dummy padding make first vec4
+  // - diffuse + dummy padding make second vec4
+  // - specular + shininess make third vec4
+  return sizeof(glm::vec4) * 3;
+}
+
+void* Material::getDataPointer() const {
+  return (void*)&ambient;
+}
+
+}  // namespace shader_structs

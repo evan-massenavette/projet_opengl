@@ -9,13 +9,16 @@ namespace shader_structs {
  * Represents ambient light in a shader.
  */
 struct AmbientLight : ShaderStruct {
-  AmbientLight(const glm::vec3 &color, const bool isOn = true);
+  AmbientLight(const glm::vec3& color,
+               const float intensityFactor,
+               const bool isOn = true);
 
   /**
-   * Sets ambient light in a shader program.
+   * Gets data size of the structure (in bytes) according to std140 layout
+   * rules.
    */
-  void setUniform(ShaderProgram &shaderProgram,
-                  const std::string &uniformName) const override;
+  static GLsizeiptr getDataSizeStd140();
+  void* getDataPointer() const override;
 
   /**
    * Gets the final contributed color of this ambient light (depending if light
@@ -23,10 +26,11 @@ struct AmbientLight : ShaderStruct {
    */
   glm::vec3 getColorContribution() const;
 
-  glm::vec3 color; // Color of the ambient light
-  bool isOn;       // Flag telling, if the light is on
+  glm::vec3 color;        // Color of the ambient light
+  float intensityFactor;  // Strength of light
+  GLint isOn;             // Flag telling, if the light is on
 };
 
-} // namespace shader_structs
+}  // namespace shader_structs
 
 #endif

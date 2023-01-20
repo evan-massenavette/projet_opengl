@@ -2,17 +2,24 @@
 
 namespace shader_structs {
 
-AmbientLight::AmbientLight(const glm::vec3 &color, const bool isOn)
-    : color(color), isOn(isOn) {}
+AmbientLight::AmbientLight(const glm::vec3& color,
+                           const float intensityFactor,
+                           const bool isOn)
+    : color(color), intensityFactor(intensityFactor), isOn(isOn) {}
 
-void AmbientLight::setUniform(ShaderProgram &shaderProgram,
-                              const std::string &uniformName) const {
-  shaderProgram[constructAttributeName(uniformName, "color")] = color;
-  shaderProgram[constructAttributeName(uniformName, "isOn")] = isOn;
+GLsizeiptr AmbientLight::getDataSizeStd140() {
+  // Explaination of size :
+  // - color + factor factor make vec4
+  // - isOn gets rounded to make second vec4
+  return sizeof(glm::vec4) * 2;
+}
+
+void* AmbientLight::getDataPointer() const {
+  return (void*)&color;
 }
 
 glm::vec3 AmbientLight::getColorContribution() const {
   return isOn ? color : glm::vec3(0.0f);
 }
 
-} // namespace shader_structs
+}  // namespace shader_structs
