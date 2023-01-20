@@ -3,13 +3,10 @@
 
 #include "scene.hpp"
 
-Scene::Scene(bool isDefault) {
+Scene::Scene(const glm::vec4& backgroundColor, const bool isDefault)
+    : backgroundColor(backgroundColor) {
   if (isDefault)
     _initDefaultScene();
-}
-
-Scene::Scene(glm::vec4 backgroundColor, bool isDefault) : Scene(isDefault) {
-  this->backgroundColor = backgroundColor;
 }
 
 void Scene::_initDefaultScene() {

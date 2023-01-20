@@ -21,8 +21,8 @@ class Scene {
   static const size_t MAX_DIRECTIONAL_LIGHTS = 8;
   std::vector<shader_structs::DirectionalLight> directionalLights;
 
-  Scene(bool isDefault = false);
-  Scene(glm::vec4 backgroundColor, bool isDefault);
+  Scene(const glm::vec4& backgroundColor = glm::vec4(0),
+        const bool isDefault = false);
 
  private:
   void _initDefaultScene();
