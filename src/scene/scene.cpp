@@ -16,17 +16,11 @@ void Scene::_initDefaultScene() {
   objects.emplace_back(object);
 
   // Directional lights
-  glm::vec3 direction1(1, 1, 1);
-  glm::vec3 color1(1, 0, 0);
-  float factor1 = 1;
-  shader_structs::DirectionalLight directionalLight1(direction1, color1,
-                                                     factor1);
+  shader_structs::DirectionalLight directionalLight1(glm::vec3(1, 1, 1),
+                                                     glm::vec3(1, 0, 0), 1);
 
-  glm::vec3 direction2(1, 0, 1);
-  glm::vec3 color2(0, 1, 0);
-  float factor2 = 1;
-  shader_structs::DirectionalLight directionalLight2(direction2, color2,
-                                                     factor2);
+  shader_structs::DirectionalLight directionalLight2(glm::vec3(1, 0, 1),
+                                                     glm::vec3(0, 1, 0), 1);
 
   directionalLights.emplace_back(directionalLight1);
   directionalLights.emplace_back(directionalLight2);
