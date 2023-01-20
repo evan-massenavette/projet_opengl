@@ -8,22 +8,29 @@ const int FogParameters::FOG_EQUATION_EXP2 = 2;
 
 FogParameters::FogParameters() : isEnabled(false) {}
 
-FogParameters::FogParameters(const glm::vec3 &color, float linearStart,
-                             float linearEnd, float density, int equation,
+FogParameters::FogParameters(const glm::vec3& color,
+                             float linearStart,
+                             float linearEnd,
+                             float density,
+                             int equation,
                              const bool isEnabled)
-    : color(color), linearStart(linearStart), linearEnd(linearEnd),
-      density(density), equation(equation), isEnabled(isEnabled) {}
+    : color(color),
+      linearStart(linearStart),
+      linearEnd(linearEnd),
+      density(density),
+      equation(equation),
+      isEnabled(isEnabled) {}
 
-const FogParameters &FogParameters::noFog() {
+const FogParameters& FogParameters::noFog() {
   static FogParameters noFogParameters;
   return noFogParameters;
 }
 
-void FogParameters::setUniform(ShaderProgram &shaderProgram,
-                               const std::string &uniformName) const {
+void FogParameters::setUniform(ShaderProgram& shaderProgram,
+                               const std::string& uniformName) const {
   shaderProgram[constructAttributeName(uniformName, "isEnabled")] = isEnabled;
   if (!isEnabled) {
-    return; // Skip settings other parameters if fog is not enabled
+    return;  // Skip settings other parameters if fog is not enabled
   }
 
   shaderProgram[constructAttributeName(uniformName, "color")] = color;
@@ -40,4 +47,4 @@ std::string FogParameters::getFogEquationName() const {
                                          : "Exp2";
 }
 
-} // namespace shader_structs
+}  // namespace shader_structs
