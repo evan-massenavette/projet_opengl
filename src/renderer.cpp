@@ -111,9 +111,10 @@ void Renderer::_sendShaderStructsToProgram() {
 
   // Variables used when sending UBOs
   GLsizeiptr offset = 0;
-  size_t size;
+  size_t size = 0;
 
   // Send Ambient Lights
+  _uboAmbientLights.bindUBO();
   offset = 0;
   // Send count
   GLint ambientLightsCount = (GLint)_scene.ambientLights.size();
@@ -128,6 +129,7 @@ void Renderer::_sendShaderStructsToProgram() {
   _uboAmbientLights.unbindUBO();
 
   // Send Directional Lights
+  _uboDirectionalLights.bindUBO();
   offset = 0;
   // Send count
   GLint directionalLightsCount = (GLint)_scene.directionalLights.size();
@@ -142,7 +144,8 @@ void Renderer::_sendShaderStructsToProgram() {
   }
   _uboDirectionalLights.unbindUBO();
 
-  // Send Point Lights
+  // // Send Point Lights
+  _uboPointLights.bindUBO();
   offset = 0;
   // Send count
   GLint pointLightsCount = (GLint)_scene.pointLights.size();
