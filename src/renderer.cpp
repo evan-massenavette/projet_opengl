@@ -27,14 +27,8 @@ Renderer::Renderer(Scene& scene) : _scene(scene) {
   // Load shaders
   _loadShaderProgram();
 
-  // Directional lights UBO
-  _uboDirectionalLights.createUBO(
-      Scene::MAX_DIRECTIONAL_LIGHTS *
-      shader_structs::DirectionalLight::getDataSizeStd140());
-  _uboDirectionalLights.bindBufferBaseToBindingPoint(
-      UniformBlockBindingPoints::DIRECTIONAL_LIGHTS);
-  _shaderProgram.bindUniformBlockToBindingPoint(
-      "DirectionalLightsBlock", UniformBlockBindingPoints::DIRECTIONAL_LIGHTS);
+  // Create UBOs for shaders structs
+  _createShaderStructsUBOs();
 }
 
 void Renderer::_loadShaderProgram() {
@@ -60,6 +54,34 @@ void Renderer::_loadShaderProgram() {
   _shaderProgram.useProgram();
 }
 
+void Renderer::_createShaderStructsUBOs() {
+  // Ambient lights UBO
+  _uboAmbientLights.createUBO(
+      Scene::MAX_AMBIENT_LIGHTS *
+      shader_structs::AmbientLight::getDataSizeStd140());
+  _uboAmbientLights.bindBufferBaseToBindingPoint(
+      UniformBlockBindingPoints::AMBIENT_LIGHTS);
+  _shaderProgram.bindUniformBlockToBindingPoint(
+      "AmbientLightsBlock", UniformBlockBindingPoints::AMBIENT_LIGHTS);
+
+  // Directional lights UBO
+  _uboDirectionalLights.createUBO(
+      Scene::MAX_DIRECTIONAL_LIGHTS *
+      shader_structs::DirectionalLight::getDataSizeStd140());
+  _uboDirectionalLights.bindBufferBaseToBindingPoint(
+      UniformBlockBindingPoints::DIRECTIONAL_LIGHTS);
+  _shaderProgram.bindUniformBlockToBindingPoint(
+      "DirectionalLightsBlock", UniformBlockBindingPoints::DIRECTIONAL_LIGHTS);
+
+  // Point lights UBO
+  _uboPointLights.createUBO(Scene::MAX_POINT_LIGHTS *
+                            shader_structs::PointLight::getDataSizeStd140());
+  _uboPointLights.bindBufferBaseToBindingPoint(
+      UniformBlockBindingPoints::POINT_LIGHTS);
+  _shaderProgram.bindUniformBlockToBindingPoint(
+      "PointLightsBlock", UniformBlockBindingPoints::POINT_LIGHTS);
+}
+
 Renderer::~Renderer() {}
 
 void Renderer::update(const glm::mat4& projection, const glm::mat4& view) {
@@ -70,20 +92,7 @@ void Renderer::update(const glm::mat4& projection, const glm::mat4& view) {
   _shaderProgram[ShaderConstants::projectionMatrix()] = projection;
   _shaderProgram[ShaderConstants::viewMatrix()] = view;
 
-  // Send Directional Lights to shader
-  GLsizeiptr offset = 0;
-  // Send count
-  GLint directionalLightsCount = _scene.directionalLights.size();
-  _uboDirectionalLights.setBufferData(offset, &directionalLightsCount,
-                                      sizeof(GLint));
-  offset += sizeof(glm::vec4);
-  // Send data
-  for (const auto& light : _scene.directionalLights) {
-    auto size = light.getDataSizeStd140();
-    _uboDirectionalLights.setBufferData(offset, light.getDataPointer(), size);
-    offset += size;
-  }
-  _uboDirectionalLights.unbindUBO();
+  _sendShaderStructsToProgram();
 
   for (auto& object : _scene.objects) {
     // Send the model and normal matrices
@@ -92,4 +101,58 @@ void Renderer::update(const glm::mat4& projection, const glm::mat4& view) {
     // Draw the object
     object->draw(_shaderProgram["textureSampler"]);
   }
+}
+
+void Renderer::_sendShaderStructsToProgram() {
+  // Send Material
+  // TODO: Have GLObjects send their own material in their draw() method
+  auto material = shader_structs::Material::default();
+  material.setUniform(_shaderProgram, "material");
+
+  // Variables used when sending UBOs
+  GLsizeiptr offset = 0;
+  size_t size;
+
+  // Send Ambient Lights
+  offset = 0;
+  // Send count
+  GLint ambientLightsCount = (GLint)_scene.ambientLights.size();
+  _uboAmbientLights.setBufferData(offset, &ambientLightsCount, sizeof(GLint));
+  offset += sizeof(glm::vec4);
+  // Send data
+  size = shader_structs::AmbientLight::getDataSizeStd140();
+  for (const auto& light : _scene.ambientLights) {
+    _uboAmbientLights.setBufferData(offset, light.getDataPointer(), size);
+    offset += size;
+  }
+  _uboAmbientLights.unbindUBO();
+
+  // Send Directional Lights
+  offset = 0;
+  // Send count
+  GLint directionalLightsCount = (GLint)_scene.directionalLights.size();
+  _uboDirectionalLights.setBufferData(offset, &directionalLightsCount,
+                                      sizeof(GLint));
+  offset += sizeof(glm::vec4);
+  // Send data
+  size = shader_structs::DirectionalLight::getDataSizeStd140();
+  for (const auto& light : _scene.directionalLights) {
+    _uboDirectionalLights.setBufferData(offset, light.getDataPointer(), size);
+    offset += size;
+  }
+  _uboDirectionalLights.unbindUBO();
+
+  // Send Point Lights
+  offset = 0;
+  // Send count
+  GLint pointLightsCount = (GLint)_scene.pointLights.size();
+  _uboPointLights.setBufferData(offset, &pointLightsCount, sizeof(GLint));
+  offset += sizeof(glm::vec4);
+  // Send data
+  size = shader_structs::PointLight::getDataSizeStd140();
+  for (const auto& light : _scene.pointLights) {
+    _uboPointLights.setBufferData(offset, light.getDataPointer(), size);
+    offset += size;
+  }
+  _uboPointLights.unbindUBO();
 }

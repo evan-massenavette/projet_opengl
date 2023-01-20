@@ -23,9 +23,13 @@ class Renderer {
 
   ShaderProgram _shaderProgram;
 
+  UniformBufferObject _uboAmbientLights;
   UniformBufferObject _uboDirectionalLights;
+  UniformBufferObject _uboPointLights;
 
   void _loadShaderProgram();
+  void _createShaderStructsUBOs();
+  void _sendShaderStructsToProgram();
 };
 
 #endif
