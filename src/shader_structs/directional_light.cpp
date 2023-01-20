@@ -4,12 +4,12 @@
 
 namespace shader_structs {
 
-DirectionalLight::DirectionalLight(const glm::vec3& color,
-                                   const glm::vec3& direction,
+DirectionalLight::DirectionalLight(const glm::vec3& direction,
+                                   const glm::vec3& color,
                                    const float intensityFactor,
                                    const bool isOn)
-    : color(color),
-      direction(glm::normalize(direction)),
+    : direction(glm::normalize(direction)),
+      color(color),
       intensityFactor(intensityFactor),
       isOn(isOn) {}
 
