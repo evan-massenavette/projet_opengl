@@ -31,8 +31,8 @@ struct ShaderStruct {
    *
    * @return Full uniform name.
    */
-  static std::string constructAttributeName(const std::string& uniformName,
-                                            const std::string& attributeName);
+  static std::string getAttributeName(const std::string& uniformName,
+                                      const std::string& attributeName);
 };
 
 }  // namespace shader_structs

@@ -28,17 +28,17 @@ const FogParameters& FogParameters::noFog() {
 
 void FogParameters::setUniform(ShaderProgram& shaderProgram,
                                const std::string& uniformName) const {
-  shaderProgram[constructAttributeName(uniformName, "isEnabled")] = isEnabled;
+  shaderProgram[getAttributeName(uniformName, "isEnabled")] = isEnabled;
   if (!isEnabled) {
     return;  // Skip settings other parameters if fog is not enabled
   }
 
-  shaderProgram[constructAttributeName(uniformName, "color")] = color;
-  shaderProgram[constructAttributeName(uniformName, "linearStart")] =
+  shaderProgram[getAttributeName(uniformName, "color")] = color;
+  shaderProgram[getAttributeName(uniformName, "linearStart")] =
       linearStart;
-  shaderProgram[constructAttributeName(uniformName, "linearEnd")] = linearEnd;
-  shaderProgram[constructAttributeName(uniformName, "density")] = density;
-  shaderProgram[constructAttributeName(uniformName, "equation")] = equation;
+  shaderProgram[getAttributeName(uniformName, "linearEnd")] = linearEnd;
+  shaderProgram[getAttributeName(uniformName, "density")] = density;
+  shaderProgram[getAttributeName(uniformName, "equation")] = equation;
 }
 
 std::string FogParameters::getFogEquationName() const {
