@@ -21,7 +21,7 @@ class Renderer {
  private:
   Scene& _scene;
 
-  ShaderProgram _shaderProgram;
+  const std::string MAIN_PROGRAM_KEY = "main";
 
   UniformBufferObject _uboAmbientLights;
   UniformBufferObject _uboDirectionalLights;

@@ -3,6 +3,7 @@
 
 #include "controls.hpp"
 #include "scene/scene.hpp"
+#include "shader_manager.hpp"
 #include "shader_program_manager.hpp"
 #include "shader_structs/directional_light.hpp"
 
@@ -31,36 +32,37 @@ Renderer::Renderer(Scene& scene) : _scene(scene) {
 }
 
 void Renderer::_loadShaderProgram() {
-  // Create shader program using manager
+  // Create shader program
   auto& programManager = ShaderProgramManager::getInstance();
-  programManager.createShaderProgram("main");
-  _shaderProgram = programManager.getShaderProgram("main");
+  auto& mainProgram = programManager.createShaderProgram(MAIN_PROGRAM_KEY);
 
-  // Load vert and frag shaders
-  Shader vert;
-  Shader frag;
-  vert.loadShaderFromFile("shaders/TextureTransform.vert", GL_VERTEX_SHADER);
-  frag.loadShaderFromFile("shaders/Texture.frag", GL_FRAGMENT_SHADER);
+  // Load shaders
+  ShaderManager& shaderManager = ShaderManager::getInstance();
+  shaderManager.loadVertexShader(MAIN_PROGRAM_KEY, "shaders/main.vert");
+  shaderManager.loadFragmentShader(MAIN_PROGRAM_KEY, "shaders/main.frag");
 
-  if (!(vert.isCompiled() && frag.isCompiled())) {
-    exit(EXIT_FAILURE);
-  }
+  // Add loaded shaders to the program
+  mainProgram.addShaderToProgram(
+      shaderManager.getVertexShader(MAIN_PROGRAM_KEY));
+  mainProgram.addShaderToProgram(
+      shaderManager.getFragmentShader(MAIN_PROGRAM_KEY));
 
-  _shaderProgram.addShaderToProgram(vert);
-  _shaderProgram.addShaderToProgram(frag);
-
-  _shaderProgram.linkProgram();
-  _shaderProgram.useProgram();
+  // Link program and use it
+  mainProgram.linkProgram();
+  mainProgram.useProgram();
 }
 
 void Renderer::_createShaderStructsUBOs() {
+  auto& mainProgram =
+      ShaderProgramManager::getInstance().getShaderProgram(MAIN_PROGRAM_KEY);
+
   // Ambient lights UBO
   _uboAmbientLights.createUBO(
       Scene::MAX_AMBIENT_LIGHTS *
       shader_structs::AmbientLight::getDataSizeStd140());
   _uboAmbientLights.bindBufferBaseToBindingPoint(
       UniformBlockBindingPoints::AMBIENT_LIGHTS);
-  _shaderProgram.bindUniformBlockToBindingPoint(
+  mainProgram.bindUniformBlockToBindingPoint(
       "AmbientLightsBlock", UniformBlockBindingPoints::AMBIENT_LIGHTS);
 
   // Directional lights UBO
@@ -69,7 +71,7 @@ void Renderer::_createShaderStructsUBOs() {
       shader_structs::DirectionalLight::getDataSizeStd140());
   _uboDirectionalLights.bindBufferBaseToBindingPoint(
       UniformBlockBindingPoints::DIRECTIONAL_LIGHTS);
-  _shaderProgram.bindUniformBlockToBindingPoint(
+  mainProgram.bindUniformBlockToBindingPoint(
       "DirectionalLightsBlock", UniformBlockBindingPoints::DIRECTIONAL_LIGHTS);
 
   // Point lights UBO
@@ -77,7 +79,7 @@ void Renderer::_createShaderStructsUBOs() {
                             shader_structs::PointLight::getDataSizeStd140());
   _uboPointLights.bindBufferBaseToBindingPoint(
       UniformBlockBindingPoints::POINT_LIGHTS);
-  _shaderProgram.bindUniformBlockToBindingPoint(
+  mainProgram.bindUniformBlockToBindingPoint(
       "PointLightsBlock", UniformBlockBindingPoints::POINT_LIGHTS);
 }
 
@@ -87,26 +89,33 @@ void Renderer::update(const glm::mat4& projection, const glm::mat4& view) {
   // Clear the screen
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  // Get shader program
+  auto& mainProgram =
+      ShaderProgramManager::getInstance().getShaderProgram(MAIN_PROGRAM_KEY);
+
   // Send Matrices to shader
-  _shaderProgram[ShaderConstants::projectionMatrix()] = projection;
-  _shaderProgram[ShaderConstants::viewMatrix()] = view;
+  mainProgram[ShaderConstants::projectionMatrix()] = projection;
+  mainProgram[ShaderConstants::viewMatrix()] = view;
 
   _sendShaderStructsToProgram();
 
   for (auto& object : _scene.objects) {
     // Send the model and normal matrices
-    _shaderProgram.setModelAndNormalMatrix(object->modelMatrix);
+    mainProgram.setModelAndNormalMatrix(object->modelMatrix);
 
     // Draw the object
-    object->draw(_shaderProgram["textureSampler"]);
+    object->draw(mainProgram["textureSampler"]);
   }
 }
 
 void Renderer::_sendShaderStructsToProgram() {
+  auto& mainProgram =
+      ShaderProgramManager::getInstance().getShaderProgram(MAIN_PROGRAM_KEY);
+
   // Send Material
   // TODO: Have GLObjects send their own material in their draw() method
   auto material = shader_structs::Material::default();
-  material.setUniform(_shaderProgram, "material");
+  material.setUniform(mainProgram, "material");
 
   // Variables used when sending UBOs
   GLsizeiptr offset = 0;
