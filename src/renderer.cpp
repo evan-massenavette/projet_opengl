@@ -20,8 +20,8 @@ Renderer::Renderer(Scene& scene) : _scene(scene) {
   glEnable(GL_MULTISAMPLE);
 
   // Background color
-  glClearColor(scene.backgroundColor.r, scene.backgroundColor.g,
-               scene.backgroundColor.b, scene.backgroundColor.a);
+  glClearColor(_scene.backgroundColor.r, _scene.backgroundColor.g,
+               _scene.backgroundColor.b, _scene.backgroundColor.a);
 
   // Load shaders
   _loadShaderProgram();
