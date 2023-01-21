@@ -1,7 +1,7 @@
 
 # Project info
 cmake_minimum_required(VERSION 3.0.0)
-project(HGL VERSION 0.1.0)
+project(EVGL VERSION 0.1.0)
 
 # C++ Standard
 set(CMAKE_CXX_STANDARD 17)
@@ -42,25 +42,25 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_DIR "${LIBS_DIR}/glfw")
 add_subdirectory(${GLFW_DIR})
-target_include_directories(HGL PRIVATE "${GLFW_DIR}/include")
+target_include_directories(${PROJECT_NAME} PRIVATE "${GLFW_DIR}/include")
 
 # GLAD
 set(GLAD_DIR "${LIBS_DIR}/glad")
 add_library(GLAD "${GLAD_DIR}/src/glad.c")
 target_include_directories(GLAD PRIVATE "${GLAD_DIR}/include")
-target_include_directories(HGL PRIVATE "${GLAD_DIR}/include")
+target_include_directories(${PROJECT_NAME} PRIVATE "${GLAD_DIR}/include")
 
 # GLM
 set(GLM_DIR "${LIBS_DIR}/glm")
-target_include_directories(HGL PRIVATE ${GLM_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${GLM_DIR})
 
 # stb_image
 set(STB_DIR "${LIBS_DIR}/stb")
-target_include_directories(HGL PRIVATE ${STB_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${STB_DIR})
 
 # tinyobjloader
 set(TINYOBJLOADER_DIR "${LIBS_DIR}/tinyobjloader")
-target_include_directories(HGL PRIVATE ${TINYOBJLOADER_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${TINYOBJLOADER_DIR})
 
 # Link libraries
 set(LIBS glfw GLAD)
