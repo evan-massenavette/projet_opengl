@@ -10,21 +10,20 @@
 
 #include "globject.hpp"
 
-GLObject::GLObject(const char* modelFilepath, const char* textureFilepath) {
-  _loadModel(modelFilepath, textureFilepath);
-  _bufferData();
+GLObject::GLObject(const std::string &modelFilepath)
+{
+  _loadModel(modelFilepath);
 }
 
-GLObject::~GLObject() {
+GLObject::~GLObject()
+{
   // Cleanup
-  vbo.deleteVBO();
-  glDeleteVertexArrays(1, &vao);
-  glDeleteTextures(1, &texture);
+  faces.clear();
 }
 
-void GLObject::_loadModel(const char* modelFilepath,
-                          const char* textureFilepath) {
-  printf("Loading model: %s\n", modelFilepath);
+void GLObject::_loadModel(const std::string &modelFilepath)
+{
+  printf("Loading model: %s\n", modelFilepath.c_str());
 
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
@@ -32,13 +31,15 @@ void GLObject::_loadModel(const char* modelFilepath,
   std::string err;
 
   bool ret =
-      tinyobj::LoadObj(&attrib, &shapes, &materials, &err, modelFilepath);
+      tinyobj::LoadObj(&attrib, &shapes, &materials, &err, modelFilepath.c_str());
 
-  if (!err.empty()) {
+  if (!err.empty())
+  {
     std::cerr << err << std::endl;
   }
 
-  if (!ret) {
+  if (!ret)
+  {
     exit(1);
   }
 
@@ -47,14 +48,19 @@ void GLObject::_loadModel(const char* modelFilepath,
   printf("Texture Coords: %llu\n", attrib.texcoords.size());
 
   // Loop over shapes
-  for (size_t s = 0; s < shapes.size(); s++) {
+  for (size_t s = 0; s < shapes.size(); s++)
+  {
     // Loop over faces(polygon)
     size_t index_offset = 0;
-    for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+    for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+    {
+      std::vector<Vertex> vertices;
+
       size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
 
       // Loop over vertices in the face.
-      for (size_t v = 0; v < fv; v++) {
+      for (size_t v = 0; v < fv; v++)
+      {
         // access to vertex
         tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
 
@@ -67,25 +73,31 @@ void GLObject::_loadModel(const char* modelFilepath,
         // Check if `normal_index` is zero or positive. negative = no normal
         // data
         glm::vec3 normal;
-        if (idx.normal_index >= 0) {
+        if (idx.normal_index >= 0)
+        {
           tinyobj::real_t nx = attrib.normals[3 * size_t(idx.normal_index) + 0];
           tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
           tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
           normal = glm::vec3(nx, ny, nz);
-        } else {
+        }
+        else
+        {
           normal = glm::vec3(0);
         }
 
         // Check if `texcoord_index` is zero or positive. negative = no texcoord
         // data
         glm::vec2 uv;
-        if (idx.texcoord_index >= 0) {
+        if (idx.texcoord_index >= 0)
+        {
           tinyobj::real_t tx =
               attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
           tinyobj::real_t ty =
               attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
           uv = glm::vec2(tx, 1 - ty);
-        } else {
+        }
+        else
+        {
           uv = glm::vec2(-1);
         }
 
@@ -100,53 +112,31 @@ void GLObject::_loadModel(const char* modelFilepath,
       index_offset += fv;
 
       // per-face material
-      // shapes[s].mesh.material_ids[f];
+      int idx_material = shapes[s].mesh.material_ids[f];
+      tinyobj::material_t material_face = materials[idx_material];
+      glm::vec3 ambient(material_face.ambient[0], material_face.ambient[1], material_face.ambient[2]);
+      glm::vec3 diffuse(material_face.diffuse[0], material_face.diffuse[1], material_face.diffuse[2]);
+      glm::vec3 specular(material_face.specular[0], material_face.specular[1], material_face.specular[2]);
+      float shininess = material_face.shininess;
+      std::string textureFilepath = material_face.diffuse_texname;
+      shader_structs::Material material(ambient, diffuse, specular, shininess);
+
+      // Load texture
+      GLuint texture = Texture::load(modelFilepath + "/textures/" + textureFilepath);
+
+      // Add to the faces
+      Face current_face(vertices, texture, material);
+      current_face.bufferData();
+      faces.push_back(current_face);
     }
   }
-
-  // Load texture
-  texture = Texture::load(textureFilepath);
 }
 
-void GLObject::_bufferData() {
-  // VAO
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
+void GLObject::draw(Uniform textureSampler)
+{
 
-  // VBO
-  vbo.createVBO();
-  vbo.bindVBO();
-  vbo.addRawData(vertices.data(), vertices.size() * sizeof(Vertex));
-  vbo.uploadDataToGPU(GL_STATIC_DRAW);
-
-  // Shader input attrib
-  const GLuint VERTEX_ATTR_POSITION = 0;
-  const GLuint VERTEX_ATTR_NORMAL = 1;
-  const GLuint VERTEX_ATTR_UV = 2;
-  glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-  glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-  glEnableVertexAttribArray(VERTEX_ATTR_UV);
-  glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE,
-                        sizeof(Vertex),
-                        (const GLvoid*)offsetof(Vertex, position));
-  glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE,
-                        sizeof(Vertex),
-                        (const GLvoid*)offsetof(Vertex, normal));
-  glVertexAttribPointer(VERTEX_ATTR_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        (const GLvoid*)offsetof(Vertex, uv));
-
-  vbo.unbindVBO();
-  glBindVertexArray(0);
-}
-
-void GLObject::draw(Uniform textureSampler) {
-  // Bind our texture in Texture Unit 0
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, texture);
-  // Set our texture sampler to use Texture Unit 0
-  textureSampler = 0;
-
-  glBindVertexArray(vao);
-  glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-  glBindVertexArray(0);
+  for (Face &face : faces)
+  {
+    face.draw(textureSampler);
+  }
 }

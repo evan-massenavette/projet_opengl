@@ -3,9 +3,12 @@
 
 #include <glad/glad.h>
 
-class Texture {
- public:
-  static GLuint load(const char* filepath);
+#include <string>
+
+class Texture
+{
+public:
+  static GLuint load(std::string filepath);
 };
 
 #endif
