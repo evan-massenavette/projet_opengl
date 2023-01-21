@@ -32,7 +32,8 @@ bool Shader::loadShaderFromFile(const std::string& fileName,
   GLint compilationStatus;
   glGetShaderiv(_shaderID, GL_COMPILE_STATUS, &compilationStatus);
   if (compilationStatus == GL_FALSE) {
-    std::cerr << "Error during compilation of shader file " << fileName;
+    std::cerr << "Error during compilation of shader file '" << fileName
+              << "'\n";
 
     // Get length of the error log first
     GLint logLength;
@@ -84,7 +85,7 @@ bool Shader::getLinesFromFile(const std::string& fileName,
                               bool isReadingIncludedFile) const {
   std::ifstream file(fileName);
   if (!file.good()) {
-    std::cout << "File not found: " << fileName << "\n";
+    std::cout << "File not found: '" << fileName << "'\n";
     return false;
   }
 
