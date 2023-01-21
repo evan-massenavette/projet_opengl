@@ -46,7 +46,7 @@ glm::mat4 FlyingCamera::getViewMatrix() const {
   return glm::lookAt(_position, _viewPoint, _upVector);
 }
 
-glm::vec3 FlyingCamera::getEye() const {
+glm::vec3 FlyingCamera::getPosition() const {
   return _position;
 }
 

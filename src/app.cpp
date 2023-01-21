@@ -132,7 +132,7 @@ void App::run() {
     updateDeltaTimeAndFPS();
 
     // Show information in window title
-    updateWindowTitle(baseWindowTitle, camera.getEye());
+    updateWindowTitle(baseWindowTitle, camera.getPosition());
 
     // Render
     renderer.update(getProjectionMatrix(), camera.getViewMatrix());

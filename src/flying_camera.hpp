@@ -64,9 +64,9 @@ class FlyingCamera {
   glm::mat4 getViewMatrix() const;
 
   /**
-   * Gets the current eye position (camera's position).
+   * Gets the camera's current position.
    */
-  glm::vec3 getEye() const;
+  glm::vec3 getPosition() const;
 
   /**
    * Gets the point camera looks to.
