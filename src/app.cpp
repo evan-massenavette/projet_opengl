@@ -11,7 +11,6 @@
 #include "flying_camera.hpp"
 #include "renderer.hpp"
 #include "scene/scene.hpp"
-#include "texture.hpp"
 
 App::App() {
   // Set all keys as not pressed
