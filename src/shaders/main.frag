@@ -84,7 +84,7 @@ vec3 getPointLightColor(PointLight pointLight, Material material, vec3 normal, v
 	vec3 finalColor = (diffuseColor + specularColor) * pointLight.intensityFactor;
 
 	// Apply attenuation based on distance
-	float attenuation = 1.0 / (1.0 + lightToFragDistance * lightToFragDistance);
+	float attenuation = 1.0 / (1.0 + 0.01 * lightToFragDistance * lightToFragDistance);
 	finalColor *= attenuation;
 
 	return clamp(finalColor, 0.0, 1.0);
