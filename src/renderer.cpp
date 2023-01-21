@@ -85,7 +85,7 @@ void Renderer::_createShaderStructsUBOs() {
 
 Renderer::~Renderer() {}
 
-void Renderer::update(const glm::mat4& projection, const glm::mat4& view) {
+void Renderer::update(const glm::mat4& projectionMatrix, const Camera& camera) {
   // Clear the screen
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -94,8 +94,8 @@ void Renderer::update(const glm::mat4& projection, const glm::mat4& view) {
       ShaderProgramManager::getInstance().getShaderProgram(MAIN_PROGRAM_KEY);
 
   // Send Matrices to shader
-  mainProgram[ShaderConstants::projectionMatrix()] = projection;
-  mainProgram[ShaderConstants::viewMatrix()] = view;
+  mainProgram[ShaderConstants::projectionMatrix()] = projectionMatrix;
+  mainProgram[ShaderConstants::viewMatrix()] = camera.getViewMatrix();
 
   _sendShaderStructsToProgram();
 

@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 
 #include "buffer_objects/uniform_buffer_object.hpp"
+#include "camera.hpp"
 #include "shader_program.hpp"
 
 #include "scene/scene.hpp"
@@ -16,7 +17,7 @@ class Renderer {
  public:
   Renderer(Scene& scene);
   ~Renderer();
-  void update(const glm::mat4& projection, const glm::mat4& view);
+  void update(const glm::mat4& projectionMatrix, const Camera& camera);
 
  private:
   Scene& _scene;

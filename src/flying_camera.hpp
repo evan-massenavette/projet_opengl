@@ -5,12 +5,14 @@
 
 #include <glm/glm.hpp>
 
+#include "camera.hpp"
+
 /**
  * Implements a camera, that can fly around the world freely.
  * It cannot rotate more than 90 degrees up / down (so it's not suitable for
  * space flight simulators).
  */
-class FlyingCamera {
+class FlyingCamera : public Camera {
  public:
   FlyingCamera(const glm::vec3& position,
                const glm::vec3& viewPoint,
@@ -58,15 +60,15 @@ class FlyingCamera {
   void setWindowCenterPosition(const glm::i32vec2& windowCenterPosition);
 
   /**
-   * Gets the current view matrix calculated from position and viewpoint of
-   * camera.
+   * Gets the camera's current view matrix, calculated from position and
+   * viewpoint of camera.
    */
-  glm::mat4 getViewMatrix() const;
+  glm::mat4 getViewMatrix() const override;
 
   /**
    * Gets the camera's current position.
    */
-  glm::vec3 getPosition() const;
+  glm::vec3 getPosition() const override;
 
   /**
    * Gets the point camera looks to.
