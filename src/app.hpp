@@ -163,6 +163,16 @@ class App {
   int screenHeight_ = 0;       // Cached screen height
 
   /**
+   * Update the window title with some information
+   * @param baseTitle Start of the window title
+   * @param cameraPos Positon of the camera
+   * @param separator Separator between informations
+   */
+  void updateWindowTitle(const std::string& baseTitle,
+                         const glm::vec3& cameraPos,
+                         const std::string& separator = " | ");
+
+  /**
    * Recalculates the app's projection matrix
    */
   void recalculateProjectionMatrix();

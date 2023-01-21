@@ -1,8 +1,10 @@
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include "app.hpp"
 #include "controls.hpp"
@@ -84,10 +86,32 @@ GLFWwindow* App::getWindow() const {
   return _window;
 }
 
+void App::updateWindowTitle(const std::string& baseTitle,
+                            const glm::vec3& cameraPos,
+                            const std::string& separator) {
+  // FPS
+  const auto FPS_str = std::to_string(getFPS());
+
+  // Camera position
+  std::stringstream cameraPos_sstr;
+  cameraPos_sstr << std::fixed << std::setprecision(2)  //
+                 << "(" << cameraPos.x                  //
+                 << ", " << cameraPos.y                 //
+                 << ", " << cameraPos.z                 //
+                 << ")";
+  const auto cameraPos_str = cameraPos_sstr.str();
+
+  // Set the window's title
+  const std::string newWindowTitle = baseTitle + separator            //
+                                     + "FPS: " + FPS_str + separator  //
+                                     + "Position: " + cameraPos_str;
+  glfwSetWindowTitle(_window, newWindowTitle.c_str());
+}
+
 void App::run() {
   // Open window
-  const std::string windowTitle = "Projet OpenGL Evan & Vincent - ";
-  createWindow(windowTitle.c_str(), 3, 3, false);
+  const std::string baseWindowTitle = "Projet OpenGL Evan & Vincent";
+  createWindow(baseWindowTitle.c_str(), 3, 3, false);
 
   // Init
   setVerticalSynchronization(true);
@@ -107,10 +131,8 @@ void App::run() {
     // Delta time and FPS
     updateDeltaTimeAndFPS();
 
-    // Show FPS in window title
-    const std::string newWindowTitle =
-        windowTitle + std::to_string(getFPS()) + " FPS";
-    glfwSetWindowTitle(_window, newWindowTitle.c_str());
+    // Show information in window title
+    updateWindowTitle(baseWindowTitle, camera.getEye());
 
     // Render
     renderer.update(getProjectionMatrix(), camera.getViewMatrix());
