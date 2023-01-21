@@ -44,17 +44,11 @@ class ShaderConstants {
 
   // Color and textures
   DEFINE_SHADER_CONSTANT(color, "color");
-  DEFINE_SHADER_CONSTANT(sampler, "sampler");
+  DEFINE_SHADER_CONSTANT(textureSampler, "textureSampler");
 
   // Lighting
-  DEFINE_SHADER_CONSTANT(ambientLight, "ambientLight");
-  DEFINE_SHADER_CONSTANT(directionalLight, "directionalLight");
-  DEFINE_SHADER_CONSTANT(pointLightA, "pointLightA");
-  DEFINE_SHADER_CONSTANT(pointLightB, "pointLightB");
-  DEFINE_SHADER_CONSTANT(normalLength, "normalLength");
   DEFINE_SHADER_CONSTANT(material, "material");
-  DEFINE_SHADER_CONSTANT(eyePosition, "eyePosition");
-  DEFINE_SHADER_CONSTANT(numPointLights, "numPointLights");
+  DEFINE_SHADER_CONSTANT(cameraWorldPos, "cameraWorldPos");
 
   // Fog constants
   DEFINE_SHADER_CONSTANT(fogParams, "fogParams");
