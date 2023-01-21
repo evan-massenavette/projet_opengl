@@ -5,7 +5,6 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#include "../texture.hpp"
 #include "../vertex.hpp"
 
 #include "globject.hpp"
@@ -19,7 +18,6 @@ GLObject::~GLObject() {
   // Cleanup
   vbo.deleteVBO();
   glDeleteVertexArrays(1, &vao);
-  glDeleteTextures(1, &texture);
 }
 
 void GLObject::_loadModel(const char* modelFilepath,
@@ -84,7 +82,7 @@ void GLObject::_loadModel(const char* modelFilepath,
               attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
           tinyobj::real_t ty =
               attrib.texcoords[2 * size_t(idx.texcoord_index) + 1];
-          uv = glm::vec2(tx, 1 - ty);
+          uv = glm::vec2(tx, ty);
         } else {
           uv = glm::vec2(-1);
         }
@@ -105,7 +103,7 @@ void GLObject::_loadModel(const char* modelFilepath,
   }
 
   // Load texture
-  texture = Texture::load(textureFilepath);
+  texture.loadTexture2D(textureFilepath);
 }
 
 void GLObject::_bufferData() {
@@ -141,8 +139,8 @@ void GLObject::_bufferData() {
 
 void GLObject::draw(Uniform textureSampler) {
   // Bind our texture in Texture Unit 0
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, texture);
+  texture.bind();
+
   // Set our texture sampler to use Texture Unit 0
   textureSampler = 0;
 

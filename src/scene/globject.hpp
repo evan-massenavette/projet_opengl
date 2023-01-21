@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 
 #include "../buffer_objects/vertex_buffer_object.hpp"
+#include "../texture.hpp"
 #include "../uniform.hpp"
 
 #include "../vertex.hpp"
@@ -17,7 +18,7 @@ class GLObject {
   VertexBufferObject vbo;
   GLuint vao;
   std::vector<Vertex> vertices;
-  GLuint texture;
+  Texture texture;
   glm::mat4 modelMatrix = glm::mat4(1);
 
   // Regular constructor
