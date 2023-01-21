@@ -86,7 +86,8 @@ GLFWwindow* App::getWindow() const {
 
 void App::run() {
   // Open window
-  createWindow("Projet OpenGL Evan & Vincent", 3, 3, false);
+  const std::string windowTitle = "Projet OpenGL Evan & Vincent - ";
+  createWindow(windowTitle.c_str(), 3, 3, false);
 
   // Init
   setVerticalSynchronization(true);
@@ -103,7 +104,13 @@ void App::run() {
   Controls controls;
 
   while (glfwWindowShouldClose(_window) == 0) {
+    // Delta time and FPS
     updateDeltaTimeAndFPS();
+
+    // Show FPS in window title
+    const std::string newWindowTitle =
+        windowTitle + std::to_string(getFPS()) + " FPS";
+    glfwSetWindowTitle(_window, newWindowTitle.c_str());
 
     // Render
     renderer.update(getProjectionMatrix(), camera.getViewMatrix());
