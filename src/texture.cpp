@@ -1,47 +1,145 @@
-#include <glad/glad.h>
+#include <iostream>
+#include <mutex>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #include "texture.hpp"
 
-GLuint Texture::load(const char* filepath) {
-  printf("Loading texture: %s\n", filepath);
+Texture::~Texture() {
+  std::cout << "Deleting texture with ID " << _textureID << "\n";
+  deleteTexture();
+}
 
-  // Read image file
-  int width, height, nrChannels;
-  unsigned char* data = stbi_load(filepath, &width, &height, &nrChannels, 0);
+bool Texture::createFromData(const unsigned char* data,
+                             GLsizei width,
+                             GLsizei height,
+                             GLenum format,
+                             bool generateMipmaps) {
+  if (isLoaded()) {
+    return false;
+  }
 
-  // Create texture and bind it
-  GLuint texture;
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
+  // Update info
+  _width = width;
+  _height = height;
+  _format = format;
 
-  // Give the image to OpenGL
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+  // Create the texture
+  glGenTextures(1, &_textureID);
+  glBindTexture(GL_TEXTURE_2D, _textureID);
+  glTexImage2D(GL_TEXTURE_2D, 0, _format, _width, _height, 0, _format,
                GL_UNSIGNED_BYTE, data);
 
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
-
-  // Texture properties
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-  // Poor filtering
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-  // Nice trilinear filtering
+  // Trilinear filtering
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                   GL_LINEAR_MIPMAP_LINEAR);
-  // Generate mipmaps automatically
-  glGenerateMipmap(GL_TEXTURE_2D);
 
-  stbi_image_free(data);
-  // Return the ID of the texture we just created
-  return texture;
+  if (generateMipmaps) {
+    // Generate mipmaps automatically
+    glGenerateMipmap(GL_TEXTURE_2D);
+  }
+
+  std::cout << "Created texture with ID " << _textureID << "\n";
+
+  return true;
+}
+
+bool Texture::loadTexture2D(const std::string& filePath, bool generateMipmaps) {
+  stbi_set_flip_vertically_on_load(1);
+  int bytesPerPixel;
+  const auto imageData =
+      stbi_load(filePath.c_str(), &_width, &_height, &bytesPerPixel, 0);
+  if (imageData == nullptr) {
+    std::cout << "Failed to load image " << filePath << "!" << std::endl;
+    return false;
+  }
+
+  GLenum format = 0;
+  if (bytesPerPixel == 4) {
+    format = GL_RGBA;
+  } else if (bytesPerPixel == 3) {
+    format = GL_RGB;
+  } else if (bytesPerPixel == 1) {
+    format = GL_DEPTH_COMPONENT;
+  }
+
+  const auto result =
+      createFromData(imageData, _width, _height, format, generateMipmaps);
+  stbi_image_free(imageData);
+  _filePath = filePath;
+  return result;
+}
+
+void Texture::bind(const GLenum textureUnit) const {
+  if (!isLoadedCheck()) {
+    return;
+  }
+
+  glActiveTexture(GL_TEXTURE0 + textureUnit);
+  glBindTexture(GL_TEXTURE_2D, _textureID);
+}
+
+void Texture::deleteTexture() {
+  if (!isLoaded()) {
+    return;
+  }
+
+  glDeleteTextures(1, &_textureID);
+  _textureID = 0;
+  _width = _height = 0;
+  _format = 0;
+}
+
+GLuint Texture::getID() const {
+  return _textureID;
+}
+
+std::string Texture::getFilePath() const {
+  return _filePath;
+}
+
+int Texture::getWidth() const {
+  return _width;
+}
+
+int Texture::getHeight() const {
+  return _height;
+}
+
+bool Texture::isLoaded() const {
+  return _textureID != 0;
+}
+
+bool Texture::resize(GLsizei newWidth, GLsizei newHeight) {
+  if (!isLoadedCheck()) {
+    return false;
+  }
+
+  const auto oldFormat = _format;
+  deleteTexture();
+
+  return createFromData(nullptr, newWidth, newHeight, oldFormat, false);
+}
+
+int Texture::getNumTextureImageUnits() {
+  static std::once_flag queryOnceFlag;
+  static int maxTextureUnits;
+  std::call_once(queryOnceFlag, []() {
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+  });
+
+  return maxTextureUnits;
+}
+
+bool Texture::isLoadedCheck() const {
+  if (!isLoaded()) {
+    std::cout << "Attempting to access non loaded texture!" << std::endl;
+    return false;
+  }
+
+  return true;
 }
