@@ -9,15 +9,14 @@
 #include "renderer.hpp"
 
 Renderer::Renderer(Scene& scene) : _scene(scene) {
-  // Enable depth test
+  // Depth test (closest will be displayed)
   glEnable(GL_DEPTH_TEST);
-  // Accept fragment if it closer to the camera than the former one
   glDepthFunc(GL_LESS);
 
-  // Cull triangles which normal is not towards the camera
+  // Cull triangles that are not facing the camera
   // glEnable(GL_CULL_FACE);
 
-  // Enable anti-aliasing
+  // Anti-aliasing
   glEnable(GL_MULTISAMPLE);
 
   // Background color
