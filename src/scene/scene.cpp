@@ -15,13 +15,17 @@ void Scene::_initDefaultScene() {
                              "models/cube/textures/cube_albedo.bmp");
   objects.emplace_back(object);
 
+  // Ambient lights
+  shader_structs::AmbientLight ambientLight(glm::vec3(1, 1, 1), 0.1f);
+  ambientLights.emplace_back(ambientLight);
+
   // Directional lights
   shader_structs::DirectionalLight directionalLight1(glm::vec3(1, 1, 1),
                                                      glm::vec3(1, 0, 0), 1);
+  // directionalLights.emplace_back(directionalLight1);
 
-  shader_structs::DirectionalLight directionalLight2(glm::vec3(1, 0, 1),
-                                                     glm::vec3(0, 1, 0), 1);
-
-  directionalLights.emplace_back(directionalLight1);
-  directionalLights.emplace_back(directionalLight2);
+  // Point lights
+  shader_structs::PointLight pointLight1(glm::vec3(0, 0, 0), glm::vec3(1, 0, 0),
+                                         1);
+  pointLights.emplace_back(pointLight1);
 }
