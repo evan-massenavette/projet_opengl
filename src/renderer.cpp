@@ -93,9 +93,10 @@ void Renderer::update(const glm::mat4& projectionMatrix, const Camera& camera) {
   auto& mainProgram =
       ShaderProgramManager::getInstance().getShaderProgram(MAIN_PROGRAM_KEY);
 
-  // Send Matrices to shader
+  // Send uniforms to shader
   mainProgram[ShaderConstants::projectionMatrix()] = projectionMatrix;
   mainProgram[ShaderConstants::viewMatrix()] = camera.getViewMatrix();
+  mainProgram[ShaderConstants::cameraWorldPos()] = camera.getPosition();
 
   _sendShaderStructsToProgram();
 
@@ -115,7 +116,7 @@ void Renderer::_sendShaderStructsToProgram() {
   // Send Material
   // TODO: Have GLObjects send their own material in their draw() method
   auto material = shader_structs::Material::default();
-  material.setUniform(mainProgram, "material");
+  material.setUniform(mainProgram, ShaderConstants::material());
 
   // Variables used when sending UBOs
   GLsizeiptr offset = 0;
