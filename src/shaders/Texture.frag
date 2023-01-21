@@ -61,13 +61,15 @@ vec3 getDirectionalLightColor(DirectionalLight directionalLight, Material materi
 	return clamp(finalColor, 0.0, 1.0);
 }
 
-vec3 getPointLightColor(PointLight pointLight, Material material, vec3 normal, vec3 cameraPosition, vec3 fragPosition) {
+vec3 getPointLightColor(PointLight pointLight, Material material, vec3 normal, vec3 cameraPos, vec3 fragPos) {
 
 	// If light is off, return black
 	if(!pointLight.isOn)
 		return vec3(0);
 
+	// Vars used in rest of calculations
 	vec3 lightToFragDir = normalize(fragPos - pointLight.position);
+	float lightToFragDistance = distance(fragPos, pointLight.position);
 
 	// Diffuse lighting
 	float diffuseIntensity = clamp(dot(normal, -lightToFragDir), 0.0, 1.0);
@@ -79,7 +81,13 @@ vec3 getPointLightColor(PointLight pointLight, Material material, vec3 normal, v
 	float specularIntensity = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	vec3 specularColor = pointLight.color * specularIntensity * material.specular;
 
-	return clamp(diffuseColor + specularColor, 0.0, 1.0);
+	vec3 finalColor = (diffuseColor + specularColor) * pointLight.intensityFactor;
+
+	// Apply attenuation based on distance
+	float attenuation = 1.0 / (1.0 + lightToFragDistance * lightToFragDistance);
+	finalColor *= attenuation;
+
+	return clamp(finalColor, 0.0, 1.0);
 }
 
 // Inputs
@@ -115,11 +123,6 @@ layout(std140) uniform PointLightsBlock {
 } pointLights;
 
 void main() {
-	if(directionalLights.count == 2) {
-		fFinalColor = vec3(1, 0, 0);
-		return;
-	}
-
 	// Normal and texture color
 	vec3 normal = normalize(vFragNormal);
 	vec3 textureColor = texture(textureSampler, vFragUV).rgb;
