@@ -65,7 +65,7 @@ void GLObject::_loadModel(const char* modelFilepath,
         // Check if `normal_index` is zero or positive. negative = no normal
         // data
         glm::vec3 normal;
-        if (idx.normal_index >= 0) {
+        if (idx.normal_index >= 0 && attrib.normals.size() > 0) {
           tinyobj::real_t nx = attrib.normals[3 * size_t(idx.normal_index) + 0];
           tinyobj::real_t ny = attrib.normals[3 * size_t(idx.normal_index) + 1];
           tinyobj::real_t nz = attrib.normals[3 * size_t(idx.normal_index) + 2];
@@ -77,7 +77,7 @@ void GLObject::_loadModel(const char* modelFilepath,
         // Check if `texcoord_index` is zero or positive. negative = no texcoord
         // data
         glm::vec2 uv;
-        if (idx.texcoord_index >= 0) {
+        if (idx.texcoord_index >= 0 && attrib.texcoords.size() > 0) {
           tinyobj::real_t tx =
               attrib.texcoords[2 * size_t(idx.texcoord_index) + 0];
           tinyobj::real_t ty =
