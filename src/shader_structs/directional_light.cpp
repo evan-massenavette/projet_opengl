@@ -4,25 +4,24 @@
 
 namespace shader_structs {
 
-DirectionalLight::DirectionalLight(const glm::vec3& direction,
-                                   const glm::vec3& color,
+DirectionalLight::DirectionalLight(const glm::vec3& color,
                                    const float intensityFactor,
+                                   const glm::vec3& direction,
                                    const bool isOn)
-    : direction(glm::normalize(direction)),
-      color(color),
+    : color(color),
       intensityFactor(intensityFactor),
+      direction(glm::normalize(direction)),
       isOn(isOn) {}
 
 GLsizeiptr DirectionalLight::getDataSizeStd140() {
   // Explaination of size :
-  // - direction + dummy padding make first vec4
-  // - color + factor factor make second vec4
-  // - isOn gets rounded to a third vec4
-  return sizeof(glm::vec4) * 3;
+  // - color + intensityFactor padding make a first vec4
+  // - direction + isOn factor make a second vec4
+  return sizeof(glm::vec4) * 2;
 }
 
 void* DirectionalLight::getDataPointer() const {
-  return (void*)&direction;
+  return (void*)&color;
 }
 
 }  // namespace shader_structs

@@ -9,8 +9,8 @@ AmbientLight::AmbientLight(const glm::vec3& color,
 
 GLsizeiptr AmbientLight::getDataSizeStd140() {
   // Explaination of size :
-  // - color + factor factor make vec4
-  // - isOn gets rounded to make second vec4
+  // - color + intensityFactor make a first vec4
+  // - isOn gets rounded to a second vec4
   return sizeof(glm::vec4) * 2;
 }
 

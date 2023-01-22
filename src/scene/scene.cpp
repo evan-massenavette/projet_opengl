@@ -19,12 +19,12 @@ void Scene::_initDefaultScene() {
   ambientLights.emplace_back(ambientLight);
 
   // Directional lights
-  shader_structs::DirectionalLight directionalLight1(glm::vec3(1, 1, 1),
-                                                     glm::vec3(0, 1, 0), 1);
+  shader_structs::DirectionalLight directionalLight1(glm::vec3(0, 1, 0), 1,
+                                                     glm::vec3(-1, -1, 1));
   // directionalLights.emplace_back(directionalLight1);
 
   // Point lights
-  shader_structs::PointLight pointLight1(glm::vec3(1.5, 1.5, 1.5),
-                                         glm::vec3(1, 0, 0), 1);
+  shader_structs::PointLight pointLight1(glm::vec3(1, 0, 0), 1,
+                                         glm::vec3(5, 5, 5), 0.01);
   pointLights.emplace_back(pointLight1);
 }

@@ -11,9 +11,10 @@ namespace shader_structs {
  * Represents point light in a shader.
  */
 struct PointLight : ShaderStruct {
-  PointLight(const glm::vec3& position,
-             const glm::vec3& color,
+  PointLight(const glm::vec3& color,
              const float intensityFactor,
+             const glm::vec3& position,
+             const float attenuationFactor,
              const bool isOn = true);
 
   /**
@@ -23,11 +24,11 @@ struct PointLight : ShaderStruct {
   static GLsizeiptr getDataSizeStd140();
   void* getDataPointer() const override;
 
-  glm::vec3 position;        // Position of the point light
-  float __DUMMY_PADDING0__;  // Needed because of std140 layout padding rules
-  glm::vec3 color;           // Color of the point light
-  float intensityFactor;     // Strength of light
-  GLint isOn;                // Flag telling, if the light is on
+  glm::vec3 color;          // Color of the point light
+  float intensityFactor;    // Strength of light
+  glm::vec3 position;       // Position of the point light
+  float attenuationFactor;  // Speed of attenuation with distance
+  GLint isOn;               // Flag telling, if the light is on
 };
 
 }  // namespace shader_structs

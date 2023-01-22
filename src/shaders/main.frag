@@ -16,17 +16,18 @@ struct AmbientLight {
 
 const int MAX_DIRECTIONAL_LIGHTS = 8;
 struct DirectionalLight {
-	vec3 direction;
 	vec3 color;
 	float intensityFactor;
+	vec3 direction;
 	bool isOn;
 };
 
 const int MAX_POINT_LIGHTS = 8;
 struct PointLight {
-	vec3 position;
 	vec3 color;
 	float intensityFactor;
+	vec3 position;
+	float attenuationFactor;
 	bool isOn;
 };
 
@@ -91,7 +92,7 @@ vec3 getPointLightColor(PointLight pointLight, Material material, vec3 normal, v
 	vec3 finalColor = (diffuseColor + specularColor) * pointLight.intensityFactor;
 
 	// Apply attenuation based on distance
-	float attenuation = 1.0 / (1.0 + 0.01 * lightToFragDistance * lightToFragDistance);
+	float attenuation = 1.0 / (1.0 + pointLight.attenuationFactor * lightToFragDistance * lightToFragDistance);
 	finalColor *= attenuation;
 
 	return clamp(finalColor, 0.0, 1.0);

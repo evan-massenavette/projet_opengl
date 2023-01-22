@@ -9,9 +9,9 @@ namespace shader_structs {
  * Represents directional light in a shader.
  */
 struct DirectionalLight : ShaderStruct {
-  DirectionalLight(const glm::vec3& direction,
-                   const glm::vec3& color,
+  DirectionalLight(const glm::vec3& color,
                    const float intensityFactor,
+                   const glm::vec3& direction,
                    const bool isOn = true);
 
   /**
@@ -21,11 +21,9 @@ struct DirectionalLight : ShaderStruct {
   static GLsizeiptr getDataSizeStd140();
   void* getDataPointer() const override;
 
-  glm::vec3 direction;       // Direction of the directional light
-  float __DUMMY_PADDING0__;  // Needed because of std140 layout padding rules
-
   glm::vec3 color;        // Color of the directional light
   float intensityFactor;  // Strength of light
+  glm::vec3 direction;    // Direction of the directional light
   GLint isOn;             // Flag telling, if the light is on
 };
 
