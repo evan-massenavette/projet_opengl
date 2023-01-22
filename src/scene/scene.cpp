@@ -3,17 +3,15 @@
 
 #include "scene.hpp"
 
-Scene::Scene(const glm::vec4 &backgroundColor, const bool isDefault)
-    : backgroundColor(backgroundColor)
-{
+Scene::Scene(const glm::vec4& backgroundColor, const bool isDefault)
+    : backgroundColor(backgroundColor) {
   if (isDefault)
     _initDefaultScene();
 }
 
-void Scene::_initDefaultScene()
-{
+void Scene::_initDefaultScene() {
   // Objects
-  auto object = new GLObject("Bench_LowRes");
+  auto object = new GLObject("cube");
   objects.emplace_back(object);
 
   // Ambient lights
