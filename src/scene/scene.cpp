@@ -3,16 +3,17 @@
 
 #include "scene.hpp"
 
-Scene::Scene(const glm::vec4& backgroundColor, const bool isDefault)
-    : backgroundColor(backgroundColor) {
+Scene::Scene(const glm::vec4 &backgroundColor, const bool isDefault)
+    : backgroundColor(backgroundColor)
+{
   if (isDefault)
     _initDefaultScene();
 }
 
-void Scene::_initDefaultScene() {
+void Scene::_initDefaultScene()
+{
   // Objects
-  auto object = new GLObject("models/cube/cube.obj",
-                             "models/cube/textures/cube_albedo.bmp");
+  auto object = new GLObject("Bench_LowRes");
   objects.emplace_back(object);
 
   // Ambient lights

@@ -13,16 +13,15 @@
 
 #include "../vertex.hpp"
 
+#include "../scene/face.hpp"
+
 class GLObject {
  public:
-  VertexBufferObject vbo;
-  GLuint vao;
-  std::vector<Vertex> vertices;
-  Texture texture;
+  std::vector<std::unique_ptr<Face>> faces;
   glm::mat4 modelMatrix = glm::mat4(1);
 
   // Regular constructor
-  GLObject(const char* modelFilepath, const char* textureFilepath);
+  GLObject(const std::string& modelFilepath);
 
   // Disable copy constructors
   GLObject(const GLObject&) = delete;
@@ -32,9 +31,13 @@ class GLObject {
 
   void draw(Uniform textureSampler);
 
+  void rotate(float angle_x, float angle_y, float angle_z);
+  void translate(float distance_x, float distance_y, float distance_z);
+  void scale(float factor_x, float factor_y, float factor_z);
+  void scale(float factor);
+
  private:
-  void _loadModel(const char* modelFilepath, const char* textureFilepath);
-  void _bufferData();
+  void _loadModel(const std::string& modelFilepath);
 };
 
 #endif
