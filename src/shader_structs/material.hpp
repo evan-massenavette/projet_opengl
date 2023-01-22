@@ -17,7 +17,7 @@ struct Material : ShaderStruct {
   /**
    * Material that does no calculations (is not enabled).
    */
-  static const Material& default();
+  static const Material& defaultOne();
 
   /**
    * Sets material structure in a shader program.

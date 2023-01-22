@@ -115,7 +115,7 @@ void Renderer::_sendShaderStructsToProgram() {
 
   // Send Material
   // TODO: Have GLObjects send their own material in their draw() method
-  auto material = shader_structs::Material::default();
+  auto material = shader_structs::Material::defaultOne();
   material.setUniform(mainProgram, ShaderConstants::material());
 
   // Variables used when sending UBOs

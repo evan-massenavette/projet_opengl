@@ -11,7 +11,7 @@ Material::Material(const glm::vec3& ambient,
       specular(specular),
       shininess(shininess) {}
 
-const Material& Material::default() {
+const Material& Material::defaultOne() {
   static Material defaultMaterial(glm::vec3(1), glm::vec3(1), glm::vec3(1), 50);
   return defaultMaterial;
 }
