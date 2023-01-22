@@ -13,7 +13,7 @@ Scene::Scene(const glm::vec4 &backgroundColor, const bool isDefault)
 void Scene::_initDefaultScene()
 {
   // Objects
-  auto object = new GLObject("models/cube/cube.obj");
+  auto object = new GLObject("Bench_LowRes");
   objects.emplace_back(object);
 
   // Ambient lights

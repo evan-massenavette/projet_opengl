@@ -31,7 +31,7 @@ void GLObject::_loadModel(const std::string &modelFilepath)
   std::string err;
 
   bool ret =
-      tinyobj::LoadObj(&attrib, &shapes, &materials, &err, modelFilepath.c_str());
+      tinyobj::LoadObj(&attrib, &shapes, &materials, &err, ("models/" + modelFilepath + "/" + modelFilepath + ".obj").c_str(), ("models/" + modelFilepath + "/").c_str());
 
   if (!err.empty())
   {
@@ -122,12 +122,12 @@ void GLObject::_loadModel(const std::string &modelFilepath)
       shader_structs::Material material(ambient, diffuse, specular, shininess);
 
       // Load texture
-      GLuint texture = Texture::load(modelFilepath + "/textures/" + textureFilepath);
+      GLuint texture = Texture::load("models/" + modelFilepath + "/textures/" + textureFilepath);
 
       // Add to the faces
-      Face current_face(vertices, texture, material);
-      current_face.bufferData();
-      faces.push_back(current_face);
+      auto current_face = new Face(vertices, texture, material);
+      current_face->bufferData();
+      faces.emplace_back(current_face);
     }
   }
 }
@@ -135,8 +135,8 @@ void GLObject::_loadModel(const std::string &modelFilepath)
 void GLObject::draw(Uniform textureSampler)
 {
 
-  for (Face &face : faces)
+  for (auto &face : faces)
   {
-    face.draw(textureSampler);
+    face->draw(textureSampler);
   }
 }

@@ -17,7 +17,7 @@
 class GLObject
 {
 public:
-  std::vector<Face> faces;
+  std::vector<std::unique_ptr<Face>> faces;
   glm::mat4 modelMatrix = glm::mat4(1);
 
   // Regular constructor
