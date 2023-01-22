@@ -30,6 +30,21 @@ struct PointLight {
 	bool isOn;
 };
 
+vec3 computeDiffuseLighting(vec3 normal, vec3 lightToFragDir, vec3 lightColor, Material material) {
+	float diffuseIntensity = max(0.0, dot(normal, -lightToFragDir));
+	vec3 diffuseColor = lightColor * diffuseIntensity * material.diffuse;
+	return diffuseColor;
+}
+
+vec3 computeSpecularLighting(vec3 normal, vec3 lightToFragDir, vec3 cameraPos, vec3 fragPos, vec3 lightColor, Material material) {
+	// Specular lighting
+	vec3 viewDir = normalize(cameraPos - fragPos);
+	vec3 reflectDir = reflect(lightToFragDir, normal);
+	float specularIntensity = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	vec3 specularColor = lightColor * specularIntensity * material.specular;
+	return specularColor;
+}
+
 vec3 getAmbientLightColor(AmbientLight ambientLight, Material material) {
 	// If light is off, return black
 	if(!ambientLight.isOn)
@@ -47,14 +62,10 @@ vec3 getDirectionalLightColor(DirectionalLight directionalLight, Material materi
 		return vec3(0);
 
 	// Diffuse lighting
-	float diffuseIntensity = max(0.0, dot(normal, -directionalLight.direction));
-	vec3 diffuseColor = directionalLight.color * diffuseIntensity * material.diffuse;
+	vec3 diffuseColor = computeDiffuseLighting(normal, directionalLight.direction, directionalLight.color, material);
 
 	// Specular lighting
-	vec3 viewDir = normalize(cameraPos - fragPos);
-	vec3 reflectDir = reflect(directionalLight.direction, normal);
-	float specularIntensity = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-	vec3 specularColor = directionalLight.color * specularIntensity * material.specular;
+	vec3 specularColor = computeSpecularLighting(normal, directionalLight.direction, cameraPos, fragPos, directionalLight.color, material);
 
 	vec3 finalColor = (diffuseColor + specularColor) * directionalLight.intensityFactor;
 
@@ -72,14 +83,10 @@ vec3 getPointLightColor(PointLight pointLight, Material material, vec3 normal, v
 	float lightToFragDistance = distance(fragPos, pointLight.position);
 
 	// Diffuse lighting
-	float diffuseIntensity = clamp(dot(normal, -lightToFragDir), 0.0, 1.0);
-	vec3 diffuseColor = pointLight.color * diffuseIntensity * material.diffuse;
+	vec3 diffuseColor = computeDiffuseLighting(normal, lightToFragDir, pointLight.color, material);
 
 	// Specular lighting
-	vec3 viewDir = normalize(cameraPos - fragPos);
-	vec3 reflectDir = reflect(lightToFragDir, normal);
-	float specularIntensity = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-	vec3 specularColor = pointLight.color * specularIntensity * material.specular;
+	vec3 specularColor = computeSpecularLighting(normal, lightToFragDir, cameraPos, fragPos, pointLight.color, material);
 
 	vec3 finalColor = (diffuseColor + specularColor) * pointLight.intensityFactor;
 
