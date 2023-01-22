@@ -20,13 +20,15 @@ GLObject::~GLObject() {
 }
 
 void GLObject::_loadModel(const std::string& modelName) {
-  printf("Loading model: %s\n", modelName.c_str());
+  std::cout << "Loading model: " << modelName << "\n";
 
+  // Vars that will contain loaded model
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
   std::vector<tinyobj::material_t> materials;
   std::string err;
 
+  // Load the model
   bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err,
                               ("models/" + modelName + "/model.obj").c_str(),
                               ("models/" + modelName + "/").c_str());
@@ -36,12 +38,13 @@ void GLObject::_loadModel(const std::string& modelName) {
   }
 
   if (!ret) {
-    exit(1);
+    exit(EXIT_FAILURE);
   }
-
-  printf("Vertices: %llu\n", attrib.vertices.size());
-  printf("Normals: %llu\n", attrib.normals.size());
-  printf("Texture Coords: %llu\n", attrib.texcoords.size());
+  std::cout << "(";
+  std::cout << attrib.vertices.size() << " vertices, ";
+  std::cout << attrib.normals.size() << " normals, ";
+  std::cout << attrib.texcoords.size() << " texcoords";
+  std::cout << ")\n";
 
   // Loop over shapes
   for (size_t s = 0; s < shapes.size(); s++) {
