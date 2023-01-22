@@ -7,13 +7,11 @@
 
 #include <glm/glm.hpp>
 
-#include "../buffer_objects/vertex_buffer_object.hpp"
-#include "../texture.hpp"
-#include "../uniform.hpp"
-
-#include "../vertex.hpp"
-
-#include "../scene/face.hpp"
+#include "../gl_wrappers/texture.hpp"
+#include "../gl_wrappers/uniform.hpp"
+#include "../gl_wrappers/vertex_buffer_object.hpp"
+#include "face.hpp"
+#include "vertex.hpp"
 
 class GLObject {
  public:

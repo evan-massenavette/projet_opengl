@@ -2,8 +2,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "../utils/string_utils.hpp"
 #include "shader.hpp"
-#include "string_utils.hpp"
 
 Shader::~Shader() {
   deleteShader();

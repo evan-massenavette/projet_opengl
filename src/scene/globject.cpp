@@ -6,7 +6,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#include "../vertex.hpp"
+#include "vertex.hpp"
 
 #include "globject.hpp"
 

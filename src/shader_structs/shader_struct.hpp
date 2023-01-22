@@ -1,7 +1,7 @@
 #ifndef SHADER_STRUCT_HPP
 #define SHADER_STRUCT_HPP
 
-#include "../shader_program.hpp"
+#include "../gl_wrappers/shader_program.hpp"
 
 namespace shader_structs {
 

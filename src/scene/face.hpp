@@ -6,10 +6,10 @@
 
 #include <glad/glad.h>
 
-#include "../buffer_objects/vertex_buffer_object.hpp"
+#include "../gl_wrappers/texture.hpp"
+#include "../gl_wrappers/vertex_buffer_object.hpp"
 #include "../shader_structs/material.hpp"
-#include "../texture.hpp"
-#include "../vertex.hpp"
+#include "vertex.hpp"
 
 class Face {
  public:

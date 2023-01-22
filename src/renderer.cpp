@@ -2,9 +2,9 @@
 #include <iostream>
 
 #include "controls.hpp"
+#include "gl_wrappers/shader_manager.hpp"
+#include "gl_wrappers/shader_program_manager.hpp"
 #include "scene/scene.hpp"
-#include "shader_manager.hpp"
-#include "shader_program_manager.hpp"
 #include "shader_structs/directional_light.hpp"
 
 #include "renderer.hpp"

@@ -9,7 +9,7 @@
  * Wraps OpenGL's vertex buffer object to a convenient higher level class.
  */
 class VertexBufferObject {
-public:
+ public:
   /**
    * Creates a new VBO, with optional reserved buffer size.
    *
@@ -39,7 +39,7 @@ public:
    * @param repeat         How many times to repeat same data in the buffer
    * (default is 1)
    */
-  void addRawData(const void *ptrData, size_t dataSizeBytes, size_t repeat = 1);
+  void addRawData(const void* ptrData, size_t dataSizeBytes, size_t repeat = 1);
 
   /**
    * Adds arbitrary data to the in-memory buffer, before they get uploaded.
@@ -49,7 +49,8 @@ public:
    * @param repeat  How many times to repeat same data in the buffer (default is
    * 1)
    */
-  template <typename T> void addData(const T &ptrObj, size_t repeat = 1) {
+  template <typename T>
+  void addData(const T& ptrObj, size_t repeat = 1) {
     addRawData(&ptrObj, static_cast<size_t>(sizeof(T)), repeat);
   }
 
@@ -57,7 +58,7 @@ public:
    * Gets pointer to the raw data from in-memory buffer (only before uploading
    * them).
    */
-  void *getRawDataPointer();
+  void* getRawDataPointer();
 
   /**
    * Uploads gathered data to the GPU memory. Now the VBO is ready to be used.
@@ -75,7 +76,7 @@ public:
    *
    * @return Pointer to the mapped data, or nullptr, if something fails.
    */
-  void *mapBufferToMemory(GLenum usageHint) const;
+  void* mapBufferToMemory(GLenum usageHint) const;
 
   /**
    * Maps buffer sub-data to a memory pointer.
@@ -87,7 +88,8 @@ public:
    *
    * @return Pointer to the mapped data, or nullptr, if something fails.
    */
-  void *mapSubBufferToMemory(GLenum usageHint, size_t offset,
+  void* mapSubBufferToMemory(GLenum usageHint,
+                             size_t offset,
                              size_t length) const;
 
   /**
@@ -110,14 +112,16 @@ public:
    */
   void deleteVBO();
 
-private:
-  GLuint _bufferID = 0;   // OpenGL assigned buffer ID
-  GLenum _bufferType = 0; // Buffer type (GL_ARRAY_BUFFER, GL_ELEMENT_BUFFER...)
+ private:
+  GLuint _bufferID = 0;  // OpenGL assigned buffer ID
+  GLenum _bufferType =
+      0;  // Buffer type (GL_ARRAY_BUFFER, GL_ELEMENT_BUFFER...)
 
   std::vector<unsigned char>
-      _rawData; // In-memory raw data buffer, used to gather the data for VBO
-  size_t _bytesAdded = 0;       // Number of bytes added to the buffer so far
-  size_t _uploadedDataSize = 0; // Holds buffer data size after uploading to GPU
+      _rawData;  // In-memory raw data buffer, used to gather the data for VBO
+  size_t _bytesAdded = 0;  // Number of bytes added to the buffer so far
+  size_t _uploadedDataSize =
+      0;  // Holds buffer data size after uploading to GPU
   // (if it's not null, then data have been uploaded)
 
   /**

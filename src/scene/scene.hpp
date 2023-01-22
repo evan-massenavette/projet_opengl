@@ -10,7 +10,6 @@
 #include "../shader_structs/directional_light.hpp"
 #include "../shader_structs/material.hpp"
 #include "../shader_structs/point_light.hpp"
-
 #include "globject.hpp"
 
 class Scene {

@@ -7,9 +7,9 @@
 
 #include <glm/glm.hpp>
 
-#include "buffer_objects/uniform_buffer_object.hpp"
-#include "camera.hpp"
-#include "shader_program.hpp"
+#include "camera/camera.hpp"
+#include "gl_wrappers/shader_program.hpp"
+#include "gl_wrappers/uniform_buffer_object.hpp"
 
 #include "scene/scene.hpp"
 

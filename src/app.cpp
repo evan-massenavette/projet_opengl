@@ -7,8 +7,8 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "app.hpp"
+#include "camera/flying_camera.hpp"
 #include "controls.hpp"
-#include "flying_camera.hpp"
 #include "renderer.hpp"
 #include "scene/scene.hpp"
 
