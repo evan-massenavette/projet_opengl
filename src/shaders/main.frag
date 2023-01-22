@@ -91,13 +91,13 @@ vec3 getPointLightColor(PointLight pointLight, Material material, vec3 normal, v
 }
 
 // Inputs
-in vec3 vFragNormal;
-in vec2 vFragUV;
-in vec3 vFragWorldPos;
-in vec3 vFragCameraSpacePos;
+in vec3 gNormal;
+in vec2 gUV;
+in vec3 gWorldPos;
+in vec3 gCameraSpacePos;
 
 // Outputs
-out vec3 fFinalColor;
+out vec3 fColor;
 
 // Texturing uniforms
 uniform sampler2D textureSampler;
@@ -124,26 +124,26 @@ layout(std140) uniform PointLightsBlock {
 
 void main() {
 	// Normal and texture color
-	vec3 normal = normalize(vFragNormal);
-	vec3 textureColor = texture(textureSampler, vFragUV).rgb;
+	vec3 normal = normalize(gNormal);
+	vec3 textureColor = texture(textureSampler, gUV).rgb;
 
 	// Ambient lights
 	for(int i = 0; i < ambientLights.count; i++) {
 		AmbientLight ambientLight = ambientLights.data[i];
-		fFinalColor += getAmbientLightColor(ambientLight, material);
+		fColor += getAmbientLightColor(ambientLight, material);
 	}
 
 	// Directional lights
 	for(int i = 0; i < directionalLights.count; i++) {
 		DirectionalLight directionalLight = directionalLights.data[i];
-		fFinalColor += getDirectionalLightColor(directionalLight, material, normal, cameraWorldPos, vFragWorldPos);
+		fColor += getDirectionalLightColor(directionalLight, material, normal, cameraWorldPos, gWorldPos);
 	}
 
 	// Point lights
 	for(int i = 0; i < pointLights.count; i++) {
 		PointLight pointLight = pointLights.data[i];
-		fFinalColor += getPointLightColor(pointLight, material, normal, cameraWorldPos, vFragWorldPos);
+		fColor += getPointLightColor(pointLight, material, normal, cameraWorldPos, gWorldPos);
 	}
 
-	fFinalColor *= textureColor;
+	fColor *= textureColor;
 }

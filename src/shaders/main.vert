@@ -1,15 +1,15 @@
 #version 330 core
 
 // Inputs
-layout(location = 0) in vec3 aVertexPos;
-layout(location = 1) in vec3 aVertexNormal;
-layout(location = 2) in vec2 aVertexUV;
+layout(location = 0) in vec3 aModelPos;
+layout(location = 1) in vec3 aNormal;
+layout(location = 2) in vec2 aUV;
 
 // Outputs
-out vec3 vFragNormal;
-out vec2 vFragUV;
-out vec3 vFragWorldPos;
-out vec3 vFragCameraSpacePos;
+out vec3 vNormal;
+out vec2 vUV;
+out vec3 vWorldPos;
+out vec3 vCameraSpacePos;
 
 // Matrices uniforms
 uniform struct {
@@ -25,11 +25,11 @@ void main() {
 	mat4 mvpMatrix = matrices.projection * mvMatrix;
 
 	// Clip space position
-	gl_Position = mvpMatrix * vec4(aVertexPos, 1.0);
+	gl_Position = mvpMatrix * vec4(aModelPos, 1.0);
 
 	// Output all out variables
-	vFragNormal = matrices.normal * aVertexNormal;
-	vFragUV = aVertexUV;
-	vFragWorldPos = (matrices.model * vec4(aVertexPos, 1.0)).xyz;
-	vFragCameraSpacePos = (mvMatrix * vec4(aVertexPos, 1.0)).xyz;
+	vNormal = matrices.normal * aNormal;
+	vUV = aUV;
+	vWorldPos = (matrices.model * vec4(aModelPos, 1.0)).xyz;
+	vCameraSpacePos = (mvMatrix * vec4(aModelPos, 1.0)).xyz;
 }

@@ -40,12 +40,15 @@ void Renderer::_loadShaderProgram() {
   ShaderManager& shaderManager = ShaderManager::getInstance();
   shaderManager.loadVertexShader(MAIN_PROGRAM_KEY, "shaders/main.vert");
   shaderManager.loadFragmentShader(MAIN_PROGRAM_KEY, "shaders/main.frag");
+  shaderManager.loadGeometryShader(MAIN_PROGRAM_KEY, "shaders/main.geom");
 
   // Add loaded shaders to the program
   mainProgram.addShaderToProgram(
       shaderManager.getVertexShader(MAIN_PROGRAM_KEY));
   mainProgram.addShaderToProgram(
       shaderManager.getFragmentShader(MAIN_PROGRAM_KEY));
+  mainProgram.addShaderToProgram(
+      shaderManager.getGeometryShader(MAIN_PROGRAM_KEY));
 
   // Link program and use it
   mainProgram.linkProgram();
