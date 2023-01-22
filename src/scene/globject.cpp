@@ -27,10 +27,9 @@ void GLObject::_loadModel(const std::string& modelName) {
   std::vector<tinyobj::material_t> materials;
   std::string err;
 
-  bool ret = tinyobj::LoadObj(
-      &attrib, &shapes, &materials, &err,
-      ("models/" + modelName + "/" + modelName + ".obj").c_str(),
-      ("models/" + modelName + "/").c_str());
+  bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err,
+                              ("models/" + modelName + "/model.obj").c_str(),
+                              ("models/" + modelName + "/").c_str());
 
   if (!err.empty()) {
     std::cerr << err << std::endl;
