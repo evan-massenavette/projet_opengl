@@ -17,6 +17,7 @@
 
 class GLObject {
  public:
+  std::vector<std::shared_ptr<Texture>> textures;
   std::vector<std::unique_ptr<Face>> faces;
   glm::mat4 modelMatrix = glm::mat4(1);
 

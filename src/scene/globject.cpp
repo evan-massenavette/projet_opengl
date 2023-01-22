@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -9,8 +10,8 @@
 
 #include "globject.hpp"
 
-GLObject::GLObject(const std::string& modelFilepath) {
-  _loadModel(modelFilepath);
+GLObject::GLObject(const std::string& modelName) {
+  _loadModel(modelName);
 }
 
 GLObject::~GLObject() {
@@ -18,8 +19,8 @@ GLObject::~GLObject() {
   faces.clear();
 }
 
-void GLObject::_loadModel(const std::string& modelFilepath) {
-  printf("Loading model: %s\n", modelFilepath.c_str());
+void GLObject::_loadModel(const std::string& modelName) {
+  printf("Loading model: %s\n", modelName.c_str());
 
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
@@ -28,8 +29,8 @@ void GLObject::_loadModel(const std::string& modelFilepath) {
 
   bool ret = tinyobj::LoadObj(
       &attrib, &shapes, &materials, &err,
-      ("models/" + modelFilepath + "/" + modelFilepath + ".obj").c_str(),
-      ("models/" + modelFilepath + "/").c_str());
+      ("models/" + modelName + "/" + modelName + ".obj").c_str(),
+      ("models/" + modelName + "/").c_str());
 
   if (!err.empty()) {
     std::cerr << err << std::endl;
@@ -108,12 +109,14 @@ void GLObject::_loadModel(const std::string& modelFilepath) {
       glm::vec3 specular(material_face.specular[0], material_face.specular[1],
                          material_face.specular[2]);
       float shininess = material_face.shininess;
-      std::string textureFilepath = material_face.diffuse_texname;
+      std::string textureFilename = material_face.diffuse_texname;
       shader_structs::Material material(ambient, diffuse, specular, shininess);
 
       // Load texture
-      GLuint texture = Texture::load("models/" + modelFilepath + "/textures/" +
-                                     textureFilepath);
+      auto texture = std::make_shared<Texture>();
+      texture->loadTexture2D("models/" + modelName + "/textures/" +
+                             textureFilename);
+      this->textures.emplace_back(texture);
 
       // Add to the faces
       auto current_face = new Face(vertices, texture, material);
