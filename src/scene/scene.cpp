@@ -24,7 +24,7 @@ void Scene::_initDefaultScene() {
   // directionalLights.emplace_back(directionalLight1);
 
   // Point lights
-  shader_structs::PointLight pointLight1(glm::vec3(1, 0, 0), 1,
-                                         glm::vec3(5, 5, 5), 0.01);
+  shader_structs::PointLight pointLight1(glm::vec3(1, 1, 1), 1,
+                                         glm::vec3(5, 5, 5), 1e-4);
   pointLights.emplace_back(pointLight1);
 }
