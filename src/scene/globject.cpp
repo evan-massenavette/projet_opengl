@@ -160,10 +160,6 @@ void GLObject::_bufferData() {
   }
 }
 
-void GLObject::setScale(const float factor) {
-  _scale = glm::vec3(factor);
-}
-
 void GLObject::setScale(const glm::vec3& factors) {
   _scale = factors;
 }

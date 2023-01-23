@@ -59,12 +59,6 @@ class GLObject {
 
   /**
    * Set the object's scale (in model coordinates)
-   * @param factor The scale factor (for all axes) to set for the object
-   */
-  void setScale(const float factor);
-
-  /**
-   * Set the object's scale (in model coordinates)
    * @param factors The x,y,z scale factors to set for the object
    */
   void setScale(const glm::vec3& factors);
