@@ -46,10 +46,9 @@ void SceneObjectMaterial::draw() {
   material.setUniform(mainProgram, ShaderConstants::material());
 
   if (texture != nullptr) {
-    // Bind our texture in Texture Unit 0
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture->getID());
-    // Set our texture sampler to use Texture Unit 0
+    // Bind our texture
+    texture->bind();
+    // Set our albedo sampler to use Texture Unit 0
     mainProgram[ShaderConstants::albedoSampler()] = 0;
   }
 
