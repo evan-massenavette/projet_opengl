@@ -122,7 +122,14 @@ private:
   bool _isLinked = false; // Flag telling whether shader program has been linked
                           // successfully
   std::map<std::string, Uniform>
-      _uniforms; // Cache of uniform locations (reduces OpenGL calls)
+};
+
+/**
+ * Storage for the keys of commonly used shader programs
+ */
+class ShaderProgramKeys {
+ public:
+  DEFINE_SHADER_CONSTANT(main, "main");
 };
 
 #endif

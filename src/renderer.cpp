@@ -34,21 +34,25 @@ Renderer::Renderer(Scene& scene) : _scene(scene) {
 void Renderer::_loadShaderProgram() {
   // Create shader program
   auto& programManager = ShaderProgramManager::getInstance();
-  auto& mainProgram = programManager.createShaderProgram(MAIN_PROGRAM_KEY);
+  auto& mainProgram =
+      programManager.createShaderProgram(ShaderProgramKeys::main());
 
   // Load shaders
   ShaderManager& shaderManager = ShaderManager::getInstance();
-  shaderManager.loadVertexShader(MAIN_PROGRAM_KEY, "shaders/main.vert");
-  shaderManager.loadFragmentShader(MAIN_PROGRAM_KEY, "shaders/main.frag");
-  shaderManager.loadGeometryShader(MAIN_PROGRAM_KEY, "shaders/main.geom");
+  shaderManager.loadVertexShader(ShaderProgramKeys::main(),
+                                 "shaders/main.vert");
+  shaderManager.loadFragmentShader(ShaderProgramKeys::main(),
+                                   "shaders/main.frag");
+  shaderManager.loadGeometryShader(ShaderProgramKeys::main(),
+                                   "shaders/main.geom");
 
   // Add loaded shaders to the program
   mainProgram.addShaderToProgram(
-      shaderManager.getVertexShader(MAIN_PROGRAM_KEY));
+      shaderManager.getVertexShader(ShaderProgramKeys::main()));
   mainProgram.addShaderToProgram(
-      shaderManager.getFragmentShader(MAIN_PROGRAM_KEY));
+      shaderManager.getFragmentShader(ShaderProgramKeys::main()));
   mainProgram.addShaderToProgram(
-      shaderManager.getGeometryShader(MAIN_PROGRAM_KEY));
+      shaderManager.getGeometryShader(ShaderProgramKeys::main()));
 
   // Link program and use it
   mainProgram.linkProgram();
@@ -56,8 +60,8 @@ void Renderer::_loadShaderProgram() {
 }
 
 void Renderer::_createShaderStructsUBOs() {
-  auto& mainProgram =
-      ShaderProgramManager::getInstance().getShaderProgram(MAIN_PROGRAM_KEY);
+  auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
+      ShaderProgramKeys::main());
 
   // Ambient lights UBO
   _uboAmbientLights.createUBO(
@@ -93,8 +97,8 @@ void Renderer::update(const glm::mat4& projectionMatrix, const Camera& camera) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Get shader program
-  auto& mainProgram =
-      ShaderProgramManager::getInstance().getShaderProgram(MAIN_PROGRAM_KEY);
+  auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
+      ShaderProgramKeys::main());
 
   // Send uniforms to shader
   mainProgram[ShaderConstants::projectionMatrix()] = projectionMatrix;
@@ -113,8 +117,8 @@ void Renderer::update(const glm::mat4& projectionMatrix, const Camera& camera) {
 }
 
 void Renderer::_sendShaderStructsToProgram() {
-  auto& mainProgram =
-      ShaderProgramManager::getInstance().getShaderProgram(MAIN_PROGRAM_KEY);
+  auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
+      ShaderProgramKeys::main());
 
   // Send Material
   // TODO: Have GLObjects send their own material in their draw() method
