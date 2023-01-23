@@ -6,6 +6,8 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
+#include <glm/ext/matrix_transform.hpp>
+
 #include "vertex.hpp"
 
 #include "globject.hpp"
@@ -17,7 +19,7 @@ GLObject::GLObject(const std::string& modelName) {
 
 GLObject::~GLObject() {
   // Cleanup
-  objectMaterials.clear();
+  _objectMaterials.clear();
 }
 
 void GLObject::_loadModel(const std::string& modelName) {
@@ -71,7 +73,7 @@ void GLObject::_loadModel(const std::string& modelName) {
     } else {
       objectMaterial->texture = nullptr;
     }
-    objectMaterials.emplace_back(objectMaterial);
+    _objectMaterials.emplace_back(objectMaterial);
   }
 
   // Loop over shapes
@@ -126,21 +128,63 @@ void GLObject::_loadModel(const std::string& modelName) {
         // tinyobj::real_t blue  = attrib.colors[3*size_t(idx.vertex_index)+2];
 
         Vertex vertex(position, normal, uv);
-        objectMaterials[idx_material]->vertices.push_back(vertex);
+        _objectMaterials[idx_material]->vertices.push_back(vertex);
       }
       index_offset += fv;
     }
   }
 }
 
-void GLObject::draw(Uniform textureSampler) {
-  for (auto& objectMaterial : objectMaterials) {
-    objectMaterial->draw(textureSampler);
+void GLObject::draw(Uniform albedoSampler) {
+  for (auto& objectMaterial : _objectMaterials) {
+    objectMaterial->draw(albedoSampler);
   }
 }
 
 void GLObject::_bufferData() {
-  for (auto& objectMaterial : objectMaterials) {
+  for (auto& objectMaterial : _objectMaterials) {
     objectMaterial->bufferData();
   }
+}
+
+void GLObject::setScale(const float factor) {
+  _scale = glm::vec3(factor);
+}
+
+void GLObject::setScale(const glm::vec3& factors) {
+  _scale = factors;
+}
+
+void GLObject::rotate(const glm::vec3& angles) {
+  _rotation += angles;
+}
+void GLObject::setRotation(const glm::vec3& angles) {
+  _rotation = angles;
+}
+void GLObject::translate(const glm::vec3& distances) {
+  _position += distances;
+}
+void GLObject::setPosition(const glm::vec3& distances) {
+  _position = distances;
+}
+
+glm::mat4 GLObject::_getModelMatrix() {
+  // Base model matrix = Identity Matrix
+  glm::mat4 baseModelMatrix(1);
+
+  // Scale
+  auto scaled = glm::scale(baseModelMatrix, _scale);
+
+  // Rotate
+  glm::vec3 x_axis(1, 0, 0);
+  glm::vec3 y_axis(0, 1, 0);
+  glm::vec3 z_axis(0, 0, 1);
+  auto rotated_x = glm::rotate(scaled, _rotation.x, x_axis);
+  auto rotated_xy = glm::rotate(rotated_x, _rotation.y, y_axis);
+  auto rotated_xyz = glm::rotate(rotated_xy, _rotation.z, z_axis);
+
+  // Translate
+  auto translated = glm::translate(rotated_xyz, _position);
+
+  return translated;
 }
