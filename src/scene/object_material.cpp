@@ -1,0 +1,62 @@
+#include "object_material.hpp"
+#include "../gl_wrappers/shader_program_manager.hpp"
+
+ObjectMaterial::ObjectMaterial(shader_structs::Material material)
+    : material{material} {}
+
+ObjectMaterial::~ObjectMaterial()
+{
+  vbo.deleteVBO();
+  glDeleteVertexArrays(1, &vao);
+}
+
+void ObjectMaterial::bufferData()
+{
+  // VAO
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+
+  // VBO
+  vbo.createVBO();
+  vbo.bindVBO();
+  vbo.addRawData(vertices.data(), vertices.size() * sizeof(Vertex));
+  vbo.uploadDataToGPU(GL_STATIC_DRAW);
+
+  // Shader input attrib
+  const GLuint VERTEX_ATTR_POSITION = 0;
+  const GLuint VERTEX_ATTR_NORMAL = 1;
+  const GLuint VERTEX_ATTR_UV = 2;
+  glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
+  glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
+  glEnableVertexAttribArray(VERTEX_ATTR_UV);
+  glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE,
+                        sizeof(Vertex),
+                        (const GLvoid *)offsetof(Vertex, position));
+  glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE,
+                        sizeof(Vertex),
+                        (const GLvoid *)offsetof(Vertex, normal));
+  glVertexAttribPointer(VERTEX_ATTR_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        (const GLvoid *)offsetof(Vertex, uv));
+
+  vbo.unbindVBO();
+  glBindVertexArray(0);
+}
+void ObjectMaterial::draw(Uniform textureSampler)
+{
+  // Send Material to shader
+  auto &mainProgram = ShaderProgramManager::getInstance().getShaderProgram("main");
+  material.setUniform(mainProgram, ShaderConstants::material());
+
+  if (texture != nullptr)
+  {
+    // Bind our texture in Texture Unit 0
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture->getID());
+    // Set our texture sampler to use Texture Unit 0
+    textureSampler = 0;
+  }
+
+  glBindVertexArray(vao);
+  glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+  glBindVertexArray(0);
+}

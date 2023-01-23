@@ -12,11 +12,12 @@
 
 GLObject::GLObject(const std::string& modelName) {
   _loadModel(modelName);
+  _bufferData();
 }
 
 GLObject::~GLObject() {
   // Cleanup
-  faces.clear();
+  objectMaterials.clear();
 }
 
 void GLObject::_loadModel(const std::string& modelName) {
@@ -46,12 +47,40 @@ void GLObject::_loadModel(const std::string& modelName) {
   std::cout << attrib.texcoords.size() << " texcoords";
   std::cout << ")\n";
 
+  // Load object materials
+  for (tinyobj::material_t& material : materials) {
+    // Load material elements
+    glm::vec3 ambient(material.ambient[0], material.ambient[1],
+                      material.ambient[2]);
+    glm::vec3 diffuse(material.diffuse[0], material.diffuse[1],
+                      material.diffuse[2]);
+    glm::vec3 specular(material.specular[0], material.specular[1],
+                       material.specular[2]);
+    float shininess = material.shininess;
+    shader_structs::Material modelMaterial(ambient, diffuse, specular,
+                                           shininess);
+    auto objectMaterial = new ObjectMaterial(modelMaterial);
+
+    // Load texture
+    std::string textureFilename = material.diffuse_texname;
+    if (textureFilename != "") {
+      auto texture = std::make_shared<Texture>();
+      texture->loadTexture2D("models/" + modelName + "/textures/" +
+                             textureFilename);
+      objectMaterial->texture = texture;
+    } else {
+      objectMaterial->texture = nullptr;
+    }
+    objectMaterials.emplace_back(objectMaterial);
+  }
+
   // Loop over shapes
   for (size_t s = 0; s < shapes.size(); s++) {
     // Loop over faces(polygon)
     size_t index_offset = 0;
     for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
-      std::vector<Vertex> vertices;
+      // per-face material
+      int idx_material = shapes[s].mesh.material_ids[f];
 
       size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
 
@@ -97,39 +126,21 @@ void GLObject::_loadModel(const std::string& modelName) {
         // tinyobj::real_t blue  = attrib.colors[3*size_t(idx.vertex_index)+2];
 
         Vertex vertex(position, normal, uv);
-        vertices.push_back(vertex);
+        objectMaterials[idx_material]->vertices.push_back(vertex);
       }
       index_offset += fv;
-
-      // per-face material
-      int idx_material = shapes[s].mesh.material_ids[f];
-      tinyobj::material_t material_face = materials[idx_material];
-      glm::vec3 ambient(material_face.ambient[0], material_face.ambient[1],
-                        material_face.ambient[2]);
-      glm::vec3 diffuse(material_face.diffuse[0], material_face.diffuse[1],
-                        material_face.diffuse[2]);
-      glm::vec3 specular(material_face.specular[0], material_face.specular[1],
-                         material_face.specular[2]);
-      float shininess = material_face.shininess;
-      std::string textureFilename = material_face.diffuse_texname;
-      shader_structs::Material material(ambient, diffuse, specular, shininess);
-
-      // Load texture
-      auto texture = std::make_shared<Texture>();
-      texture->loadTexture2D("models/" + modelName + "/textures/" +
-                             textureFilename);
-      this->textures.emplace_back(texture);
-
-      // Add to the faces
-      auto current_face = new Face(vertices, texture, material);
-      current_face->bufferData();
-      faces.emplace_back(current_face);
     }
   }
 }
 
 void GLObject::draw(Uniform textureSampler) {
-  for (auto& face : faces) {
-    face->draw(textureSampler);
+  for (auto& objectMaterial : objectMaterials) {
+    objectMaterial->draw(textureSampler);
+  }
+}
+
+void GLObject::_bufferData() {
+  for (auto& objectMaterial : objectMaterials) {
+    objectMaterial->bufferData();
   }
 }
