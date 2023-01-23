@@ -12,11 +12,10 @@
 #include "uniform.hpp"
 
 /**
- * Wraps OpenGL shader program creation and linking into a very convenient
- * class.
+ * Wraps OpenGL shader program (creation, adding shaders, linking)
  */
 class ShaderProgram {
-public:
+ public:
   ~ShaderProgram();
 
   /**
@@ -25,28 +24,26 @@ public:
   void createProgram();
 
   /**
-   * Adds a shader to shader program. Shader must be properly loaded and
-   * compiled.
-   *
+   * Adds a shader to shader program.
+   * The given shader must already be loaded and compiled.
    * @return True, if the shader has been added or false otherwise.
    */
-  bool addShaderToProgram(const Shader &shader) const;
+  bool addShaderToProgram(const Shader& shader) const;
 
   /**
-   * Links the program. If the function succeeds, shader program is ready to
-   * use.
-   *
-   * @return True, if the shader has been linked or false otherwise.
+   * Links the program.
+   * If the function succeeds, shader program is ready to use.
+   * @return True if the shader has been linked, or false otherwise.
    */
   bool linkProgram();
 
   /**
-   * Uses this shader program (makes current).
+   * Uses this shader program.
    */
   void useProgram() const;
 
   /**
-   * Deletes this shader program from OpenGL.
+   * Deletes this shader program.
    */
   void deleteProgram();
 
@@ -56,47 +53,37 @@ public:
   GLuint getShaderProgramID() const;
 
   /**
-   * Gets uniform variable by name. If it's first time, it creates a new one,
-   * otherwise it's retrieved from cache.
-   *
-   * @param varName  uniform variable name
-   *
-   * @return Uniform variable, even if it does not exist (it will be invalid).
+   * Gets the uniform variable of the name.
+   * Creates a new one on first access, otherwise it's retrieved from cache.
+   * @param varName Name of the uniform variable
+   * @return Uniform variable (even if it does not exist: it will be invalid)
    */
-  Uniform &operator[](const std::string &varName);
+  Uniform& operator[](const std::string& varName);
 
   /**
-   * Sets model and normal matrix at once. Setting the two together is pretty
-   * common, that's why this convenience function exists.
-   *
-   * @param modelMatrix  Model matrix to be set, normal matrix is calculated out
-   * of it
+   * Sets the model and normal matrix at once.
+   * @param modelMatrix  Model matrix to be set, used to calculate the normal
+   * matrix
    */
-  void setModelAndNormalMatrix(const glm::mat4 &modelMatrix);
+  void setModelAndNormalMatrix(const glm::mat4& modelMatrix);
 
   /**
    * Gets index of given uniform block in this shader program.
-   *
-   * @param uniformBlockName  uniform block name
-   *
-   * @return Index of uniform block or GL_INVALID_INDEX if such block doesn't
-   * exist / some other error occurs.
-   *
-   * @see
-   * https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetUniformBlockIndex.xhtml
+   * @param uniformBlockName Name of the uniform block
+   * @return Index of uniform block or GL_INVALID_INDEX if such a block doesn't
+   * exist or if some other error occurs
    */
-  GLuint getUniformBlockIndex(const std::string &uniformBlockName) const;
+  GLuint getUniformBlockIndex(const std::string& uniformBlockName) const;
 
   /**
-   * Binds uniform block of this program to a uniform binding point.
-   *
-   * @param uniformBlockName  uniform block name
-   * @param bindingPoint      uniform binding point to bind the uniform block to
+   * Binds the uniform block of this program to a uniform binding point.
+   * @param uniformBlockName  Name of the uniform block
+   * @param bindingPoint      Uniform binding point to bind the uniform block to
    *
    * @see
    * https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glUniformBlockBinding.xhtml
    */
-  void bindUniformBlockToBindingPoint(const std::string &uniformBlockName,
+  void bindUniformBlockToBindingPoint(const std::string& uniformBlockName,
                                       GLuint bindingPoint) const;
 
   /**
@@ -105,23 +92,20 @@ public:
    * variables shared between shader stages, but this name is deprecated for
    * quite some time. But for legacy reasons, OpenGL function names still use
    * the term varying.
-   *
-   * @param recordedVariablesNames  names of the output variables to be recorded
-   * @param bufferMode              buffer mode to be used (usually
+   * @param recordedVariablesNames  Names of the output variables to be recorded
+   * @param bufferMode              Buffer mode to use (usually
    * GL_INTERLEAVED_ATTRIBS)
-   *
-   * @see
-   * https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glTransformFeedbackVaryings.xhtml
    */
   void setTransformFeedbackRecordedVariables(
-      const std::vector<std::string> &recordedVariablesNames,
+      const std::vector<std::string>& recordedVariablesNames,
       GLenum bufferMode = GL_INTERLEAVED_ATTRIBS) const;
 
-private:
-  GLuint shaderProgramID_ = 0; // OpenGL-assigned shader program ID
-  bool _isLinked = false; // Flag telling whether shader program has been linked
-                          // successfully
+ private:
+  GLuint _shaderProgramID = 0;  // OpenGL-assigned shader program ID
+  bool _isLinked = false;       // Flag telling whether shader program has been
+                                // successfully linked
   std::map<std::string, Uniform>
+      _uniforms;  // Cache of uniform locations (to reduces OpenGL calls)
 };
 
 /**

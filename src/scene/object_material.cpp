@@ -4,14 +4,12 @@
 ObjectMaterial::ObjectMaterial(shader_structs::Material material)
     : material{material} {}
 
-ObjectMaterial::~ObjectMaterial()
-{
+ObjectMaterial::~ObjectMaterial() {
   vbo.deleteVBO();
   glDeleteVertexArrays(1, &vao);
 }
 
-void ObjectMaterial::bufferData()
-{
+void ObjectMaterial::bufferData() {
   // VAO
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
@@ -31,24 +29,23 @@ void ObjectMaterial::bufferData()
   glEnableVertexAttribArray(VERTEX_ATTR_UV);
   glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE,
                         sizeof(Vertex),
-                        (const GLvoid *)offsetof(Vertex, position));
+                        (const GLvoid*)offsetof(Vertex, position));
   glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE,
                         sizeof(Vertex),
-                        (const GLvoid *)offsetof(Vertex, normal));
+                        (const GLvoid*)offsetof(Vertex, normal));
   glVertexAttribPointer(VERTEX_ATTR_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        (const GLvoid *)offsetof(Vertex, uv));
+                        (const GLvoid*)offsetof(Vertex, uv));
 
   vbo.unbindVBO();
   glBindVertexArray(0);
 }
-void ObjectMaterial::draw(Uniform textureSampler)
-{
+void ObjectMaterial::draw(Uniform textureSampler) {
   // Send Material to shader
-  auto &mainProgram = ShaderProgramManager::getInstance().getShaderProgram("main");
+  auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
+      ShaderProgramKeys::main());
   material.setUniform(mainProgram, ShaderConstants::material());
 
-  if (texture != nullptr)
-  {
+  if (texture != nullptr) {
     // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture->getID());
