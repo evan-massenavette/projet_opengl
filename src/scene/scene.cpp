@@ -11,7 +11,7 @@ Scene::Scene(const glm::vec4& backgroundColor, const bool isDefault)
 
 void Scene::_initDefaultScene() {
   // Objects
-  auto object = new GLObject("room");
+  auto object = new SceneObject("room");
   objects.emplace_back(object);
 
   // Ambient lights

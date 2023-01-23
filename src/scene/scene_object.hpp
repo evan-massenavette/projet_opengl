@@ -1,5 +1,5 @@
-#ifndef GLOBJECT_HPP
-#define GLOBJECT_HPP
+#ifndef SCENE_OBJECT_HPP
+#define SCENE_OBJECT_HPP
 
 #include <vector>
 
@@ -9,37 +9,37 @@
 
 #include "../gl_wrappers/texture.hpp"
 #include "../gl_wrappers/vertex_buffer_object.hpp"
-#include "object_material.hpp"
+#include "scene_object_material.hpp"
 #include "vertex.hpp"
 
 /**
  * Class representing an object in a scene.
  */
-class GLObject {
+class SceneObject {
  public:
   /**
-   * Construct a new GLObject.
+   * Construct a new SceneObject.
    * @param modelName Name of the model to load
    */
-  GLObject(const std::string& modelName,
-           const glm::vec3& position = glm::vec3(0),
-           const glm::vec3& rotation = glm::vec3(0),
-           const glm::vec3& scale = glm::vec3(1));
+  SceneObject(const std::string& modelName,
+              const glm::vec3& position = glm::vec3(0),
+              const glm::vec3& rotation = glm::vec3(0),
+              const glm::vec3& scale = glm::vec3(1));
 
   /**
    * Disabled copy constructor.
    */
-  GLObject(const GLObject&) = delete;
+  SceneObject(const SceneObject&) = delete;
 
   /**
    * Disabled copy assignment operator.
    */
-  GLObject& operator=(const GLObject&) = delete;
+  SceneObject& operator=(const SceneObject&) = delete;
 
   /**
-   * Destroy the GLObject
+   * Destroy the SceneObject
    */
-  ~GLObject();
+  ~SceneObject();
 
   /**
    * Draw the object.
@@ -88,7 +88,7 @@ class GLObject {
   void setPosition(const glm::vec3& distances);
 
  private:
-  std::vector<std::unique_ptr<ObjectMaterial>> _objectMaterials;
+  std::vector<std::unique_ptr<SceneObjectMaterial>> _objectMaterials;
 
   glm::vec3 _position;
   glm::vec3 _rotation;

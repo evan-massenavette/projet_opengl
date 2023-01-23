@@ -12,23 +12,23 @@
 
 #include "vertex.hpp"
 
-#include "globject.hpp"
+#include "scene_object.hpp"
 
-GLObject::GLObject(const std::string& modelName,
-                   const glm::vec3& position,
-                   const glm::vec3& rotation,
-                   const glm::vec3& scale)
+SceneObject::SceneObject(const std::string& modelName,
+                         const glm::vec3& position,
+                         const glm::vec3& rotation,
+                         const glm::vec3& scale)
     : _position(position), _rotation(rotation), _scale(scale) {
   _loadModel(modelName);
   _bufferData();
 }
 
-GLObject::~GLObject() {
+SceneObject::~SceneObject() {
   // Cleanup
   _objectMaterials.clear();
 }
 
-void GLObject::_loadModel(const std::string& modelName) {
+void SceneObject::_loadModel(const std::string& modelName) {
   std::cout << "Loading model: " << modelName << "\n";
 
   // Vars that will contain loaded model
@@ -67,7 +67,7 @@ void GLObject::_loadModel(const std::string& modelName) {
     float shininess = material.shininess;
     shader_structs::Material modelMaterial(ambient, diffuse, specular,
                                            shininess);
-    auto objectMaterial = new ObjectMaterial(modelMaterial);
+    auto objectMaterial = new SceneObjectMaterial(modelMaterial);
 
     // Load texture
     std::string textureFilename = material.diffuse_texname;
@@ -141,7 +141,7 @@ void GLObject::_loadModel(const std::string& modelName) {
   }
 }
 
-void GLObject::draw() {
+void SceneObject::draw() {
   auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
       ShaderProgramKeys::main());
 
@@ -154,30 +154,30 @@ void GLObject::draw() {
   }
 }
 
-void GLObject::_bufferData() {
+void SceneObject::_bufferData() {
   for (auto& objectMaterial : _objectMaterials) {
     objectMaterial->bufferData();
   }
 }
 
-void GLObject::setScale(const glm::vec3& factors) {
+void SceneObject::setScale(const glm::vec3& factors) {
   _scale = factors;
 }
 
-void GLObject::rotate(const glm::vec3& angles) {
+void SceneObject::rotate(const glm::vec3& angles) {
   _rotation += angles;
 }
-void GLObject::setRotation(const glm::vec3& angles) {
+void SceneObject::setRotation(const glm::vec3& angles) {
   _rotation = angles;
 }
-void GLObject::translate(const glm::vec3& distances) {
+void SceneObject::translate(const glm::vec3& distances) {
   _position += distances;
 }
-void GLObject::setPosition(const glm::vec3& distances) {
+void SceneObject::setPosition(const glm::vec3& distances) {
   _position = distances;
 }
 
-glm::mat4 GLObject::_getModelMatrix() {
+glm::mat4 SceneObject::_getModelMatrix() {
   // Base model matrix = Identity Matrix
   glm::mat4 baseModelMatrix(1);
 

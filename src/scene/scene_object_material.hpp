@@ -1,5 +1,5 @@
-#ifndef OBJECT_MATERIAL_HPP
-#define OBJECT_MATERIAL
+#ifndef SCENE_OBJECT_MATERIAL_HPP
+#define SCENE_OBJECT_MATERIAL_HPP
 
 #include <memory>
 #include <vector>
@@ -11,7 +11,7 @@
 #include "../shader_structs/material.hpp"
 #include "vertex.hpp"
 
-class ObjectMaterial {
+class SceneObjectMaterial {
  public:
   VertexBufferObject vbo;
   GLuint vao;
@@ -19,12 +19,12 @@ class ObjectMaterial {
   std::shared_ptr<Texture> texture;
   shader_structs::Material material;
 
-  ObjectMaterial(shader_structs::Material material);
-  ~ObjectMaterial();
+  SceneObjectMaterial(shader_structs::Material material);
+  ~SceneObjectMaterial();
 
   // Disable copy constructor
-  ObjectMaterial(const ObjectMaterial&) = delete;
-  ObjectMaterial& operator=(const ObjectMaterial&) = delete;
+  SceneObjectMaterial(const SceneObjectMaterial&) = delete;
+  SceneObjectMaterial& operator=(const SceneObjectMaterial&) = delete;
 
   void bufferData();
   void draw();

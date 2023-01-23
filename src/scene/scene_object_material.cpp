@@ -1,15 +1,15 @@
-#include "object_material.hpp"
+#include "scene_object_material.hpp"
 #include "../gl_wrappers/shader_program_manager.hpp"
 
-ObjectMaterial::ObjectMaterial(shader_structs::Material material)
+SceneObjectMaterial::SceneObjectMaterial(shader_structs::Material material)
     : material{material} {}
 
-ObjectMaterial::~ObjectMaterial() {
+SceneObjectMaterial::~SceneObjectMaterial() {
   vbo.deleteVBO();
   glDeleteVertexArrays(1, &vao);
 }
 
-void ObjectMaterial::bufferData() {
+void SceneObjectMaterial::bufferData() {
   // VAO
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
@@ -39,7 +39,7 @@ void ObjectMaterial::bufferData() {
   vbo.unbindVBO();
   glBindVertexArray(0);
 }
-void ObjectMaterial::draw() {
+void SceneObjectMaterial::draw() {
   // Send Material to shader
   auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
       ShaderProgramKeys::main());

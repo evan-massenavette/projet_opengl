@@ -10,14 +10,14 @@
 #include "../shader_structs/directional_light.hpp"
 #include "../shader_structs/material.hpp"
 #include "../shader_structs/point_light.hpp"
-#include "globject.hpp"
+#include "scene_object.hpp"
 
 class Scene {
  public:
   glm::vec4 backgroundColor;
 
   // Objects
-  std::vector<std::unique_ptr<GLObject>> objects;
+  std::vector<std::unique_ptr<SceneObject>> objects;
 
   // Ambient lights
   static const size_t MAX_AMBIENT_LIGHTS = 8;  // Same as in shaders
