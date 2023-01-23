@@ -58,10 +58,16 @@ void GLObject::_loadModel(const std::string &modelName)
 
     // Load texture
     std::string textureFilename = material.diffuse_texname;
-    auto texture = std::make_shared<Texture>();
-    texture->loadTexture2D("models/" + modelName + "/textures/" + textureFilename);
-    objectMaterial->texture = texture;
-
+    if (textureFilename != "")
+    {
+      auto texture = std::make_shared<Texture>();
+      texture->loadTexture2D("models/" + modelName + "/textures/" + textureFilename);
+      objectMaterial->texture = texture;
+    }
+    else
+    {
+      objectMaterial->texture = nullptr;
+    }
     objectMaterials.emplace_back(objectMaterial);
   }
 

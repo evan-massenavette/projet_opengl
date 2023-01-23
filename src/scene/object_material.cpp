@@ -42,11 +42,14 @@ void ObjectMaterial::bufferData()
 }
 void ObjectMaterial::draw(Uniform textureSampler)
 {
-  // Bind our texture in Texture Unit 0
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, texture->getID());
-  // Set our texture sampler to use Texture Unit 0
-  textureSampler = 0;
+  if (texture != nullptr)
+  {
+    // Bind our texture in Texture Unit 0
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture->getID());
+    // Set our texture sampler to use Texture Unit 0
+    textureSampler = 0;
+  }
 
   glBindVertexArray(vao);
   glDrawArrays(GL_TRIANGLES, 0, vertices.size());
