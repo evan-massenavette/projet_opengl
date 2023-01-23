@@ -9,8 +9,7 @@
 
 #include "renderer.hpp"
 
-Renderer::Renderer(Scene &scene) : _scene(scene)
-{
+Renderer::Renderer(Scene& scene) : _scene(scene) {
   // Depth test (closest will be displayed)
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -32,14 +31,13 @@ Renderer::Renderer(Scene &scene) : _scene(scene)
   _createShaderStructsUBOs();
 }
 
-void Renderer::_loadShaderProgram()
-{
+void Renderer::_loadShaderProgram() {
   // Create shader program
-  auto &programManager = ShaderProgramManager::getInstance();
-  auto &mainProgram = programManager.createShaderProgram(MAIN_PROGRAM_KEY);
+  auto& programManager = ShaderProgramManager::getInstance();
+  auto& mainProgram = programManager.createShaderProgram(MAIN_PROGRAM_KEY);
 
   // Load shaders
-  ShaderManager &shaderManager = ShaderManager::getInstance();
+  ShaderManager& shaderManager = ShaderManager::getInstance();
   shaderManager.loadVertexShader(MAIN_PROGRAM_KEY, "shaders/main.vert");
   shaderManager.loadFragmentShader(MAIN_PROGRAM_KEY, "shaders/main.frag");
   shaderManager.loadGeometryShader(MAIN_PROGRAM_KEY, "shaders/main.geom");
@@ -57,9 +55,8 @@ void Renderer::_loadShaderProgram()
   mainProgram.useProgram();
 }
 
-void Renderer::_createShaderStructsUBOs()
-{
-  auto &mainProgram =
+void Renderer::_createShaderStructsUBOs() {
+  auto& mainProgram =
       ShaderProgramManager::getInstance().getShaderProgram(MAIN_PROGRAM_KEY);
 
   // Ambient lights UBO
@@ -91,13 +88,12 @@ void Renderer::_createShaderStructsUBOs()
 
 Renderer::~Renderer() {}
 
-void Renderer::update(const glm::mat4 &projectionMatrix, const Camera &camera)
-{
+void Renderer::update(const glm::mat4& projectionMatrix, const Camera& camera) {
   // Clear the screen
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Get shader program
-  auto &mainProgram =
+  auto& mainProgram =
       ShaderProgramManager::getInstance().getShaderProgram(MAIN_PROGRAM_KEY);
 
   // Send uniforms to shader
@@ -107,19 +103,17 @@ void Renderer::update(const glm::mat4 &projectionMatrix, const Camera &camera)
 
   _sendShaderStructsToProgram();
 
-  for (auto &object : _scene.objects)
-  {
+  for (auto& object : _scene.objects) {
     // Send the model and normal matrices
-    mainProgram.setModelAndNormalMatrix(object->modelMatrix);
+    mainProgram.setModelAndNormalMatrix(object->_modelMatrix);
 
     // Draw the object
     object->draw(mainProgram["textureSampler"]);
   }
 }
 
-void Renderer::_sendShaderStructsToProgram()
-{
-  auto &mainProgram =
+void Renderer::_sendShaderStructsToProgram() {
+  auto& mainProgram =
       ShaderProgramManager::getInstance().getShaderProgram(MAIN_PROGRAM_KEY);
 
   // Send Material
@@ -140,8 +134,7 @@ void Renderer::_sendShaderStructsToProgram()
   offset += sizeof(glm::vec4);
   // Send data
   size = shader_structs::AmbientLight::getDataSizeStd140();
-  for (const auto &light : _scene.ambientLights)
-  {
+  for (const auto& light : _scene.ambientLights) {
     _uboAmbientLights.setBufferData(offset, light.getDataPointer(), size);
     offset += size;
   }
@@ -157,8 +150,7 @@ void Renderer::_sendShaderStructsToProgram()
   offset += sizeof(glm::vec4);
   // Send data
   size = shader_structs::DirectionalLight::getDataSizeStd140();
-  for (const auto &light : _scene.directionalLights)
-  {
+  for (const auto& light : _scene.directionalLights) {
     _uboDirectionalLights.setBufferData(offset, light.getDataPointer(), size);
     offset += size;
   }
@@ -173,8 +165,7 @@ void Renderer::_sendShaderStructsToProgram()
   offset += sizeof(glm::vec4);
   // Send data
   size = shader_structs::PointLight::getDataSizeStd140();
-  for (const auto &light : _scene.pointLights)
-  {
+  for (const auto& light : _scene.pointLights) {
     _uboPointLights.setBufferData(offset, light.getDataPointer(), size);
     offset += size;
   }
