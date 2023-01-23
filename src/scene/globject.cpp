@@ -14,7 +14,11 @@
 
 #include "globject.hpp"
 
-GLObject::GLObject(const std::string& modelName) {
+GLObject::GLObject(const std::string& modelName,
+                   const glm::vec3& position,
+                   const glm::vec3& rotation,
+                   const glm::vec3& scale)
+    : _position(position), _rotation(rotation), _scale(scale) {
   _loadModel(modelName);
   _bufferData();
 }

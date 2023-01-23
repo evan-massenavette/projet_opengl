@@ -21,7 +21,10 @@ class GLObject {
    * Construct a new GLObject.
    * @param modelName Name of the model to load
    */
-  GLObject(const std::string& modelName);
+  GLObject(const std::string& modelName,
+           const glm::vec3& position = glm::vec3(0),
+           const glm::vec3& rotation = glm::vec3(0),
+           const glm::vec3& scale = glm::vec3(1));
 
   /**
    * Disabled copy constructor.
