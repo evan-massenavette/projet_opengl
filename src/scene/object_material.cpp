@@ -1,16 +1,16 @@
-#include "face.hpp"
+#include "object_material.hpp"
 
-Face::Face(std::vector<Vertex> vertices,
-           std::shared_ptr<Texture> texture,
-           shader_structs::Material material)
-    : vertices{vertices}, texture{texture}, material{material} {}
+ObjectMaterial::ObjectMaterial(shader_structs::Material material)
+    : material{material} {}
 
-Face::~Face() {
+ObjectMaterial::~ObjectMaterial()
+{
   vbo.deleteVBO();
   glDeleteVertexArrays(1, &vao);
 }
 
-void Face::bufferData() {
+void ObjectMaterial::bufferData()
+{
   // VAO
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
@@ -30,17 +30,18 @@ void Face::bufferData() {
   glEnableVertexAttribArray(VERTEX_ATTR_UV);
   glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE,
                         sizeof(Vertex),
-                        (const GLvoid*)offsetof(Vertex, position));
+                        (const GLvoid *)offsetof(Vertex, position));
   glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE,
                         sizeof(Vertex),
-                        (const GLvoid*)offsetof(Vertex, normal));
+                        (const GLvoid *)offsetof(Vertex, normal));
   glVertexAttribPointer(VERTEX_ATTR_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        (const GLvoid*)offsetof(Vertex, uv));
+                        (const GLvoid *)offsetof(Vertex, uv));
 
   vbo.unbindVBO();
   glBindVertexArray(0);
 }
-void Face::draw(Uniform textureSampler) {
+void ObjectMaterial::draw(Uniform textureSampler)
+{
   // Bind our texture in Texture Unit 0
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture->getID());
