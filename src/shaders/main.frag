@@ -108,7 +108,7 @@ in vec3 gCameraSpacePos;
 out vec3 fColor;
 
 // Texturing uniforms
-uniform sampler2D textureSampler;
+uniform sampler2D albedoSampler;
 
 // Other uniforms
 uniform vec3 cameraWorldPos;
@@ -133,7 +133,7 @@ layout(std140) uniform PointLightsBlock {
 void main() {
 	// Normal and texture color
 	vec3 normal = normalize(gNormal);
-	vec3 textureColor = texture(textureSampler, gUV).rgb;
+	vec3 albedoColor = texture(albedoSampler, gUV).rgb;
 
 	// Ambient lights
 	for(int i = 0; i < ambientLights.count; i++) {
@@ -153,5 +153,5 @@ void main() {
 		fColor += getPointLightColor(pointLight, material, normal, cameraWorldPos, gWorldPos);
 	}
 
-	fColor *= textureColor;
+	fColor *= albedoColor;
 }

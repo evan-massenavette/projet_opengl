@@ -11,23 +11,22 @@
 #include "../shader_structs/material.hpp"
 #include "vertex.hpp"
 
-class ObjectMaterial
-{
-public:
-     VertexBufferObject vbo;
-     GLuint vao;
-     std::vector<Vertex> vertices;
-     std::shared_ptr<Texture> texture;
-     shader_structs::Material material;
+class ObjectMaterial {
+ public:
+  VertexBufferObject vbo;
+  GLuint vao;
+  std::vector<Vertex> vertices;
+  std::shared_ptr<Texture> texture;
+  shader_structs::Material material;
 
-     ObjectMaterial(shader_structs::Material material);
-     ~ObjectMaterial();
+  ObjectMaterial(shader_structs::Material material);
+  ~ObjectMaterial();
 
-     // Disable copy constructor
-     ObjectMaterial(const ObjectMaterial &) = delete;
-     ObjectMaterial &operator=(const ObjectMaterial &) = delete;
+  // Disable copy constructor
+  ObjectMaterial(const ObjectMaterial&) = delete;
+  ObjectMaterial& operator=(const ObjectMaterial&) = delete;
 
-     void bufferData();
-     void draw(Uniform textureSampler);
+  void bufferData();
+  void draw();
 };
 #endif

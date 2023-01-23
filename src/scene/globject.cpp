@@ -8,6 +8,8 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
+#include "../gl_wrappers/shader_program_manager.hpp"
+
 #include "vertex.hpp"
 
 #include "globject.hpp"
@@ -135,9 +137,16 @@ void GLObject::_loadModel(const std::string& modelName) {
   }
 }
 
-void GLObject::draw(Uniform albedoSampler) {
+void GLObject::draw() {
+  auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
+      ShaderProgramKeys::main());
+
+  // Set the model and normal matrix for this object
+  mainProgram.setModelAndNormalMatrix(_getModelMatrix());
+
+  // Draw all materials
   for (auto& objectMaterial : _objectMaterials) {
-    objectMaterial->draw(albedoSampler);
+    objectMaterial->draw();
   }
 }
 

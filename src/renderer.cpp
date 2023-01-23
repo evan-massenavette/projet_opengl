@@ -107,12 +107,9 @@ void Renderer::update(const glm::mat4& projectionMatrix, const Camera& camera) {
 
   _sendShaderStructsToProgram();
 
+  // Draw all objects in the scene
   for (auto& object : _scene.objects) {
-    // Send the model and normal matrices
-    mainProgram.setModelAndNormalMatrix(object->_modelMatrix);
-
-    // Draw the object
-    object->draw(mainProgram["textureSampler"]);
+    object->draw();
   }
 }
 

@@ -26,7 +26,7 @@ class ShaderConstants {
 
   // Color and textures
   DEFINE_SHADER_CONSTANT(color, "color");
-  DEFINE_SHADER_CONSTANT(textureSampler, "textureSampler");
+  DEFINE_SHADER_CONSTANT(albedoSampler, "albedoSampler");
 
   // Lighting
   DEFINE_SHADER_CONSTANT(material, "material");

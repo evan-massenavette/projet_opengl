@@ -8,7 +8,6 @@
 #include <glm/glm.hpp>
 
 #include "../gl_wrappers/texture.hpp"
-#include "../gl_wrappers/uniform.hpp"
 #include "../gl_wrappers/vertex_buffer_object.hpp"
 #include "object_material.hpp"
 #include "vertex.hpp"
@@ -41,9 +40,8 @@ class GLObject {
 
   /**
    * Draw the object.
-   * @param albedoSampler The sampler to use for the albedo texture
    */
-  void draw(Uniform albedoSampler);
+  void draw();
 
   /**
    * Load the given model

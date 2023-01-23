@@ -39,7 +39,7 @@ void ObjectMaterial::bufferData() {
   vbo.unbindVBO();
   glBindVertexArray(0);
 }
-void ObjectMaterial::draw(Uniform textureSampler) {
+void ObjectMaterial::draw() {
   // Send Material to shader
   auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
       ShaderProgramKeys::main());
@@ -50,10 +50,10 @@ void ObjectMaterial::draw(Uniform textureSampler) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture->getID());
     // Set our texture sampler to use Texture Unit 0
-    textureSampler = 0;
+    mainProgram[ShaderConstants::albedoSampler()] = 0;
   }
 
   glBindVertexArray(vao);
-  glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+  glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertices.size());
   glBindVertexArray(0);
 }
