@@ -1,4 +1,5 @@
 #include "object_material.hpp"
+#include "../gl_wrappers/shader_program_manager.hpp"
 
 ObjectMaterial::ObjectMaterial(shader_structs::Material material)
     : material{material} {}
@@ -42,6 +43,10 @@ void ObjectMaterial::bufferData()
 }
 void ObjectMaterial::draw(Uniform textureSampler)
 {
+  // Send Material to shader
+  auto &mainProgram = ShaderProgramManager::getInstance().getShaderProgram("main");
+  material.setUniform(mainProgram, ShaderConstants::material());
+
   if (texture != nullptr)
   {
     // Bind our texture in Texture Unit 0
