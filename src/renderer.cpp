@@ -1,6 +1,8 @@
 #include <cstdint>
 #include <iostream>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "controls.hpp"
 #include "gl_wrappers/shader_manager.hpp"
 #include "gl_wrappers/shader_program_manager.hpp"
@@ -26,17 +28,20 @@ Renderer::Renderer(const App& app, const Scene& scene, const Camera& camera)
                _scene.backgroundColor.b, _scene.backgroundColor.a);
 
   // Load shaders
-  _loadShaderProgram();
+  _loadMainShaderProgram();
+  _loadShadowsShaderProgram();
 
   // Create UBOs for shaders structs
   _createShaderStructsUBOs();
+
+  // Create shadows framebuffers
+  _createShadowsFramebuffers();
 }
 
-void Renderer::_loadShaderProgram() {
+void Renderer::_loadMainShaderProgram() {
   // Create shader program
-  auto& programManager = ShaderProgramManager::getInstance();
-  auto& mainProgram =
-      programManager.createShaderProgram(ShaderProgramKeys::main());
+  auto& mainProgram = ShaderProgramManager::getInstance().createShaderProgram(
+      ShaderProgramKeys::main());
 
   // Load shaders
   ShaderManager& shaderManager = ShaderManager::getInstance();
@@ -57,7 +62,29 @@ void Renderer::_loadShaderProgram() {
 
   // Link program and use it
   mainProgram.linkProgram();
-  mainProgram.useProgram();
+}
+
+void Renderer::_loadShadowsShaderProgram() {
+  // Create shader program
+  auto& shadowsProgram =
+      ShaderProgramManager::getInstance().createShaderProgram(
+          ShaderProgramKeys::shadows());
+
+  // Load shaders
+  ShaderManager& shaderManager = ShaderManager::getInstance();
+  shaderManager.loadVertexShader(ShaderProgramKeys::shadows(),
+                                 "shaders/shadows.vert");
+  shaderManager.loadFragmentShader(ShaderProgramKeys::shadows(),
+                                   "shaders/shadows.frag");
+
+  // Add loaded shaders to the program
+  shadowsProgram.addShaderToProgram(
+      shaderManager.getVertexShader(ShaderProgramKeys::shadows()));
+  shadowsProgram.addShaderToProgram(
+      shaderManager.getFragmentShader(ShaderProgramKeys::shadows()));
+
+  // Link program and use it
+  shadowsProgram.linkProgram();
 }
 
 void Renderer::_createShaderStructsUBOs() {
@@ -91,6 +118,17 @@ void Renderer::_createShaderStructsUBOs() {
       "PointLightsBlock", UniformBlockBindingPoints::POINT_LIGHTS);
 }
 
+void Renderer::_createShadowsFramebuffers() {
+  // Point Lights
+  for (const auto& light : _scene.pointLights) {
+    FrameBuffer::Builder fbBuilder;
+    auto shadowMapFBO = fbBuilder.createAndBind(_shadowMapSize, _shadowMapSize)
+                            .withDepthAttachment(GL_DEPTH_COMPONENT)
+                            .finishAndGetUnique();
+
+    _fbosPointLights.emplace_back(std::move(shadowMapFBO));
+  }
+}
 
 void Renderer::_drawScene(RenderPass pass) {
   for (const auto& object : _scene.objects) {
@@ -99,17 +137,64 @@ void Renderer::_drawScene(RenderPass pass) {
 }
 
 void Renderer::update() {
+  // Shadows pass
+
+  // Get shader program
+  auto& shadowsProgram = ShaderProgramManager::getInstance().getShaderProgram(
+      ShaderProgramKeys::shadows());
+  shadowsProgram.useProgram();
+
+  // Set OpenGL viewport to shadowmap size
+  glViewport(0, 0, _shadowMapSize, _shadowMapSize);
+
+  // Point lights shadows
+  for (const auto& light : _scene.pointLights) {
+    // Calculate projection matrix
+    float vFov = 90.0f;
+    float aspectRatio = 1;
+    float zNear = 0.1f;
+    float zFar = 1500.0f;
+    auto projectionMatrix =
+        glm::perspective(glm::radians(vFov), aspectRatio, zNear, zFar);
+
+    // Calculate view matrix
+    glm::vec3 lookingTowards(0);
+    glm::vec3 upVector(1, 1, 0);
+    auto viewMatrix = glm::lookAt(light.position, lookingTowards, upVector);
+
+    // Send uniforms to shader
+    shadowsProgram[ShaderConstants::projectionMatrix()] = projectionMatrix;
+    shadowsProgram[ShaderConstants::viewMatrix()] = viewMatrix;
+
+    // Clear depth buffer
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    _drawScene(RenderPass::Shadows);
+  }
+
+  // Main pass
 
   // Get shader program
   auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
       ShaderProgramKeys::main());
+  mainProgram.useProgram();
 
   // Send uniforms to shader
-  mainProgram[ShaderConstants::projectionMatrix()] = projectionMatrix;
-  mainProgram[ShaderConstants::viewMatrix()] = camera.getViewMatrix();
-  mainProgram[ShaderConstants::cameraWorldPos()] = camera.getPosition();
+  mainProgram[ShaderConstants::projectionMatrix()] = _app.getProjectionMatrix();
+  mainProgram[ShaderConstants::viewMatrix()] = _camera.getViewMatrix();
+  mainProgram[ShaderConstants::cameraWorldPos()] = _camera.getPosition();
 
+  // Send structs to shaders
   _sendShaderStructsToProgram();
+
+  // Bind default frame buffer for main pass
+  FrameBuffer::Default::bindAsBothReadAndDraw();
+
+  // Set OpenGL's viewport size to app's window size
+  FrameBuffer::Default::setFullViewport(_app);
+
+  // Clear the screen
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Draw all objects in the scene
   _drawScene(RenderPass::Main);
@@ -118,11 +203,6 @@ void Renderer::update() {
 void Renderer::_sendShaderStructsToProgram() {
   auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
       ShaderProgramKeys::main());
-
-  // Send Material
-  // TODO: Have GLObjects send their own material in their draw() method
-  // auto material = shader_structs::Material::defaultOne();
-  // material.setUniform(mainProgram, ShaderConstants::material());
 
   // Variables used when sending UBOs
   GLsizeiptr offset = 0;
