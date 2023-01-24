@@ -18,14 +18,11 @@ class App {
 
   /**
    * Creates a window with OpenGL context with given title and context version.
-   *
-   *  @param windowTitle     Title of the created window
-   *  @param majorVersion    OpenGL context major version
-   *  @param minorVersion    OpenGL context minor version
-   *  @param showFullscreen  Tells, whether the window should be shown in
-   * fullscreen
-   *
-   *  @return True if window has been created successfully or false otherwise.
+   *  @param windowTitle Title window to create
+   *  @param majorVersion OpenGL context major version
+   *  @param minorVersion OpenGL context minor version
+   *  @param showFullscreen Whether the window should be shown in fullscreen
+   *  @return True if window has been created successfully, false otherwise
    */
   bool createWindow(const std::string& windowTitle,
                     int majorVersion,
@@ -35,44 +32,36 @@ class App {
   void destroyWindow();
 
   /**
-   * Creates a window with OpenGL context with given title and context version.
-   *
-   * @param windowTitle  Title of a created window
-   *
+   * Gets the pointer to the app's window.
    * @return Pointer to GLFW window or nullptr, if the window does not exist
    * yet.
    */
   GLFWwindow* getWindow() const;
 
   /**
-   * Runs the whole application. Contains the main application loop.
+   * Runs the whole application (main loop).
    */
   void run();
 
   /**
-   * Checks, if specified key is currently pressed.
-   *
-   * @param keyCode  GLFW code of the key to check
-   *
-   * @return True if key is pressed or false otherwise.
+   * Checks if the specified key is currently pressed.
+   * @param keyCode GLFW code of the key to check
+   * @return True if key is pressed, false otherwise
    */
   bool keyPressed(int keyCode) const;
 
   /**
-   * Checks, if specified key was pressed. This function won't return true
-   * again, unless the key has been released and pressed again.
-   *
-   * @param keyCode  GLFW code of the key to check
-   *
-   * @return True, if key was pressed once, or false otherwise.
+   * Checks if the specified key was pressed. This function won't return true
+   * again unless the key has been released and pressed again.
+   * @param keyCode GLFW code of the key to check
+   * @return True if key was pressed once, false otherwise
    */
   bool keyPressedOnce(int keyCode);
 
   /**
-   * Closes application window and releases all resources. Also sets the error
-   * flag, if error has occured.
-   *
-   * @param errorHasOccured  Should be true, if an error has occured (default is
+   * Tell the app to closes its window and releases all resources.
+   * Also sets the error flag if an error has occured.
+   * @param errorHasOccured Should be true, if an error has occured (default is
    * false).
    */
   void closeWindow(bool errorHasOccured = false);
@@ -88,59 +77,54 @@ class App {
   glm::mat4 getProjectionMatrix() const;
 
   /**
-   * Gets adjusted float value, that takes frames per second into account.
-   *
-   * @param value  Float value to be adjusted
-   *
-   * @return "Speed Optimized Floating Point Value (sof)".
+   * Gets the adjusted float value, that takes frames per second into account.
+   * @param value Float value to be adjusted
+   * @return The Speed Adjusted Float (saf)".
    */
-  float sof(float value) const;
+  float saf(float value) const;
 
   /**
-   * Gets time delta - time passed since the last frame in seconds.
+   * Gets time delta (time passed since the last frame, in seconds).
    */
   double getTimeDelta() const;
 
   /**
-   * Gets current Frames Per Second (FPS).
+   * Gets current FPS (Frames Per Second).
    */
   int getFPS() const;
 
   /**
    * Turns vertical synchronization on or off.
+   * @param enable True if you want to enable VSync, false otherwise
+   */
+  void setVerticalSync(bool enable);
+
+  /**
+   * Checks if vertical synchronization is on or off.
    *
-   * @param enable  True if you want to enable vertical synchronization or false
-   * otherwise
+   * @return True if VSync is enabled, false otherwise
    */
-  void setVerticalSynchronization(bool enable);
+  bool isVerticalSyncEnabled() const;
 
   /**
-   * Checks, if vertical synchronization is on or off.
-   *
-   * @return True, if vertical synchronization is enabled, or false otherwise.
+   * Gets the window's current  width (in pixels).
    */
-  bool isVerticalSynchronizationEnabled() const;
+  int getWindowWidth() const;
 
   /**
-   * Gets current screen width in pixels.
+   * Gets the window's current height (in pixels).
    */
-  int getScreenWidth() const;
+  int getWindowHeight() const;
 
   /**
-   * Gets current screen height in pixels.
-   */
-  int getScreenHeight() const;
-
-  /**
-   * Gets cursor position in OpenGL coordinates.
+   * Gets the cursor's current position.
    */
   glm::ivec2 getCursorPosition() const;
 
  private:
   GLFWwindow* _window = nullptr;  // Pointer to GLFWwindow, nullptr by default
-  bool _keyWasPressed[512];  // Array of bools, used by keyPressedOnce function
-  bool hasErrorOccurred_ =
-      false;  // Error flag, indicates, if any kind of error has occured
+  bool _keyWasPressed[512];  // Array of bools (used by keyPressedOnce function)
+  bool _hasErrorOccurred = false;  // Error flag
 
   glm::mat4 _projectionMatrix;  // Precalculated projection matrix, when size
                                 // changes, it's recalculated
@@ -150,59 +134,53 @@ class App {
   double _timeDelta = 0.0;  // Time delta between last frame and current frame
   int _FPS = 0;             // Current FPS
   int _nextFPS = 0;  // Next FPS, that is being counted and will update the _FPS
-  bool _isVerticalSynchronizationEnabled =
-      false;  // Stores information, if vertical synchronization is enabled
 
-  bool _hasMouseBeenScrolled = false;
-  double _scrollOffsetX = 0.0;
-  double _scrollOffsetY = 0.0;
+  bool _isVerticalSyncEnabled = false;  // Stores whether VSync is enabled
 
-  int minScreenWidth_ = 800;   // Minimum screen width
-  int minScreenHeight_ = 600;  // Minimum screen height
-  int screenWidth_ = 0;        // Cached screen width
-  int screenHeight_ = 0;       // Cached screen height
+  int _minWindowWidth = 800;   // Minimum window width
+  int _minWindowHeight = 600;  // Minimum window height
+  int _windowWidth = 0;        // Cached window width
+  int _windowHeight = 0;       // Cached window height
 
   /**
-   * Update the window title with some information
+   * Update the window title with new information
    * @param baseTitle Start of the window title
    * @param cameraPos Positon of the camera
    * @param separator Separator between informations
    */
-  void updateWindowTitle(const std::string& baseTitle,
-                         const glm::vec3& cameraPos,
-                         const std::string& separator = " | ");
+  void _updateWindowTitle(const std::string& baseTitle,
+                          const glm::vec3& cameraPos,
+                          const std::string& separator = " | ");
 
   /**
    * Recalculates the app's projection matrix
    */
-  void recalculateProjectionMatrix();
+  void _recalculateProjectionMatrix();
 
   /**
    * Updates frame times and FPS counters.
    */
-  void updateDeltaTimeAndFPS();
+  void _updateDeltaTimeAndFPS();
 
   /**
    * Gets called when window size is changed. Does some internal stuff
    * (like recalculating matrices, setting viewport) and calls user's handler as
    * well.
    */
-  void onWindowSizeChangedInternal(int width, int height);
+  void _onWindowResizeInternal(int width, int height);
 
   /**
    * Get the pointer to the app associated with a GLFW window
    * @param window Pointer to the GLFW Window
    * @return Pointer to the App associated with the window
    */
-  static App* getAppPtrFromWindow(GLFWwindow* window);
+  static App* _getAppPtrFromWindow(GLFWwindow* window);
 
   /**
    * Static method that is set as callback to GLFW framework about window size
    * changed.
    */
-  static void onWindowSizeChangedStatic(GLFWwindow* window,
-                                        int width,
-                                        int height);
+  static void _onWindowResizeStatic(GLFWwindow* window, int width, int height);
 };
 
 #endif

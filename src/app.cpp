@@ -39,8 +39,8 @@ bool App::createWindow(const std::string& windowTitle,
 
   // Default window size is half of screen's resolution
   // (but no smaller than minimum size)
-  int defaultWidth = std::max(minScreenWidth_, videoMode->width / 2);
-  int defaultHeight = std::max(minScreenHeight_, videoMode->height / 2);
+  int defaultWidth = std::max(_minWindowWidth, videoMode->width / 2);
+  int defaultHeight = std::max(_minWindowHeight, videoMode->height / 2);
 
   // Create the window
   _window =
@@ -53,14 +53,14 @@ bool App::createWindow(const std::string& windowTitle,
   glfwMakeContextCurrent(_window);
 
   // Set the minimum window size
-  glfwSetWindowSizeLimits(_window, minScreenWidth_, minScreenHeight_,
+  glfwSetWindowSizeLimits(_window, _minWindowWidth, _minWindowHeight,
                           GLFW_DONT_CARE, GLFW_DONT_CARE);
 
   // Set app pointer associated with this window
   glfwSetWindowUserPointer(_window, this);
 
   // Set window's static callbacks
-  glfwSetWindowSizeCallback(_window, onWindowSizeChangedStatic);
+  glfwSetWindowSizeCallback(_window, _onWindowResizeStatic);
 
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(_window, GLFW_STICKY_KEYS, GL_TRUE);
@@ -85,9 +85,9 @@ GLFWwindow* App::getWindow() const {
   return _window;
 }
 
-void App::updateWindowTitle(const std::string& baseTitle,
-                            const glm::vec3& cameraPos,
-                            const std::string& separator) {
+void App::_updateWindowTitle(const std::string& baseTitle,
+                             const glm::vec3& cameraPos,
+                             const std::string& separator) {
   // FPS
   const auto FPS_str = std::to_string(getFPS());
 
@@ -113,8 +113,8 @@ void App::run() {
   createWindow(baseWindowTitle.c_str(), 3, 3, false);
 
   // Init
-  setVerticalSynchronization(true);
-  recalculateProjectionMatrix();
+  setVerticalSync(true);
+  _recalculateProjectionMatrix();
 
   // Update time at the beginning, so that calculations are correct
   _lastFrameTime = _lastFrameTimeFPS = glfwGetTime();
@@ -128,10 +128,10 @@ void App::run() {
 
   while (glfwWindowShouldClose(_window) == 0) {
     // Delta time and FPS
-    updateDeltaTimeAndFPS();
+    _updateDeltaTimeAndFPS();
 
     // Show information in window title
-    updateWindowTitle(baseWindowTitle, camera.getPosition());
+    _updateWindowTitle(baseWindowTitle, camera.getPosition());
 
     // Render
     renderer.update(getProjectionMatrix(), camera);
@@ -155,7 +155,7 @@ void App::run() {
     auto setCursorPosFunc = [this](const glm::i32vec2& pos) {
       glfwSetCursorPos(this->_window, pos.x, pos.y);
     };
-    auto speedCorrectionFunc = [this](float f) { return this->sof(f); };
+    auto speedCorrectionFunc = [this](float f) { return this->saf(f); };
     camera.update(keyInputFunc, getCursorPosFunc, setCursorPosFunc,
                   speedCorrectionFunc);
 
@@ -186,18 +186,18 @@ bool App::keyPressedOnce(int keyCode) {
 
 void App::closeWindow(bool hasErrorOccurred) {
   glfwSetWindowShouldClose(_window, true);
-  hasErrorOccurred_ = hasErrorOccurred;
+  _hasErrorOccurred = hasErrorOccurred;
 }
 
 bool App::hasErrorOccurred() const {
-  return hasErrorOccurred_;
+  return _hasErrorOccurred;
 }
 
 glm::mat4 App::getProjectionMatrix() const {
   return _projectionMatrix;
 }
 
-float App::sof(float value) const {
+float App::saf(float value) const {
   return value * static_cast<float>(_timeDelta);
 }
 
@@ -209,31 +209,31 @@ int App::getFPS() const {
   return _FPS;
 }
 
-void App::setVerticalSynchronization(bool enable) {
+void App::setVerticalSync(bool enable) {
   glfwSwapInterval(enable ? 1 : 0);
-  _isVerticalSynchronizationEnabled = enable;
+  _isVerticalSyncEnabled = enable;
 }
 
-bool App::isVerticalSynchronizationEnabled() const {
-  return _isVerticalSynchronizationEnabled;
+bool App::isVerticalSyncEnabled() const {
+  return _isVerticalSyncEnabled;
 }
 
-int App::getScreenWidth() const {
-  return screenWidth_;
+int App::getWindowWidth() const {
+  return _windowWidth;
 }
 
-int App::getScreenHeight() const {
-  return screenHeight_;
+int App::getWindowHeight() const {
+  return _windowHeight;
 }
 
 glm::ivec2 App::getCursorPosition() const {
   double posX, posY;
   glfwGetCursorPos(_window, &posX, &posY);
   return glm::ivec2(static_cast<int>(posX),
-                    screenHeight_ - static_cast<int>(posY));
+                    _windowHeight - static_cast<int>(posY));
 }
 
-void App::recalculateProjectionMatrix() {
+void App::_recalculateProjectionMatrix() {
   // App width, height and aspect ratio
   int width, height;
   glfwGetWindowSize(_window, &width, &height);
@@ -249,7 +249,7 @@ void App::recalculateProjectionMatrix() {
       glm::perspective(glm::radians(vFov), aspectRatio, zNear, zFar);
 }
 
-void App::updateDeltaTimeAndFPS() {
+void App::_updateDeltaTimeAndFPS() {
   const auto currentTime = glfwGetTime();
   _timeDelta = currentTime - _lastFrameTime;
   _lastFrameTime = currentTime;
@@ -262,19 +262,21 @@ void App::updateDeltaTimeAndFPS() {
   }
 }
 
-void App::onWindowSizeChangedInternal(int width, int height) {
-  recalculateProjectionMatrix();
+void App::_onWindowResizeInternal(int width, int height) {
+  _recalculateProjectionMatrix();
   glViewport(0, 0, width, height);
-  screenWidth_ = width;
-  screenHeight_ = height;
+  _windowWidth = width;
+  _windowHeight = height;
 }
 
-App* App::getAppPtrFromWindow(GLFWwindow* window) {
+App* App::_getAppPtrFromWindow(GLFWwindow* window) {
   auto app = reinterpret_cast<App*>(glfwGetWindowUserPointer(window));
   return app;
 }
 
-void App::onWindowSizeChangedStatic(GLFWwindow* window, int width, int height) {
-  auto app = getAppPtrFromWindow(window);
-  app->onWindowSizeChangedInternal(width, height);
+void App::_onWindowResizeStatic(GLFWwindow* window,
+                                     int width,
+                                     int height) {
+  auto app = _getAppPtrFromWindow(window);
+  app->_onWindowResizeInternal(width, height);
 }
