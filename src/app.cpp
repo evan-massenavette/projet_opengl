@@ -62,6 +62,9 @@ bool App::createWindow(const std::string& windowTitle,
   // Set window's static callbacks
   glfwSetWindowSizeCallback(_window, _onWindowResizeStatic);
 
+  // Manually update the window's size
+  glfwGetWindowSize(_window, &_windowWidth, &_windowHeight);
+
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(_window, GLFW_STICKY_KEYS, GL_TRUE);
   // Hide the mouse and enable unlimited mouvement
