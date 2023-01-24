@@ -31,6 +31,11 @@ struct PointLight {
 	bool isOn;
 };
 
+vec3 computeAmbientLighting(vec3 lightColor, Material material) {
+	vec3 ambientColor = lightColor * material.ambient;
+	return ambientColor;
+}
+
 vec3 computeDiffuseLighting(vec3 normal, vec3 lightToFragDir, vec3 lightColor, Material material) {
 	float diffuseIntensity = max(0.0, dot(normal, -lightToFragDir));
 	vec3 diffuseColor = lightColor * diffuseIntensity * material.diffuse;
@@ -51,7 +56,8 @@ vec3 getAmbientLightColor(AmbientLight ambientLight, Material material) {
 	if(!ambientLight.isOn)
 		return vec3(0);
 
-	vec3 finalColor = (ambientLight.color * material.ambient) * ambientLight.intensityFactor;
+	vec3 ambientColor = computeAmbientLighting(ambientLight.color, material);
+	vec3 finalColor = ambientColor * ambientLight.intensityFactor;
 
 	return clamp(finalColor, 0.0, 1.0);
 }
