@@ -25,7 +25,7 @@ bool App::createWindow(const std::string& windowTitle,
                        bool showFullscreen) {
   // Initialize and configure GLFW
   if (!glfwInit()) {
-    std::cerr << "Failed to initialize GLFW\n";
+    std::cerr << "Unable to initialize GLFW\n";
     return false;
   }
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, majorVersion);
@@ -47,7 +47,7 @@ bool App::createWindow(const std::string& windowTitle,
       glfwCreateWindow(defaultWidth, defaultHeight, windowTitle.c_str(),
                        showFullscreen ? primaryMonitor : nullptr, nullptr);
   if (_window == nullptr) {
-    std::cerr << "Failed to create GLFW window\n";
+    std::cerr << "Unable to create GLFW window\n";
     return false;
   }
   glfwMakeContextCurrent(_window);
@@ -69,7 +69,7 @@ bool App::createWindow(const std::string& windowTitle,
 
   // Load GLAD
   if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-    std::cerr << "Failed to initialize GLAD\n";
+    std::cerr << "Unable to initialize GLAD\n";
     return false;
   }
 
@@ -274,9 +274,7 @@ App* App::_getAppPtrFromWindow(GLFWwindow* window) {
   return app;
 }
 
-void App::_onWindowResizeStatic(GLFWwindow* window,
-                                     int width,
-                                     int height) {
+void App::_onWindowResizeStatic(GLFWwindow* window, int width, int height) {
   auto app = _getAppPtrFromWindow(window);
   app->_onWindowResizeInternal(width, height);
 }

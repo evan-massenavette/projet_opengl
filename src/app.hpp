@@ -33,8 +33,7 @@ class App {
 
   /**
    * Gets the pointer to the app's window.
-   * @return Pointer to GLFW window or nullptr, if the window does not exist
-   * yet.
+   * @return Pointer to GLFW window or nullptr, if the window does not exist.
    */
   GLFWwindow* getWindow() const;
 

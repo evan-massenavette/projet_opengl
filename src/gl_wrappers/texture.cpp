@@ -7,7 +7,7 @@
 #include "texture.hpp"
 
 Texture::~Texture() {
-  std::cout << "Deleting texture with ID " << _textureID << "\n";
+  std::cout << "Deleting texture (ID: " << _textureID << ")\n";
   deleteTexture();
 }
 
@@ -43,7 +43,7 @@ bool Texture::createFromData(const unsigned char* data,
     glGenerateMipmap(GL_TEXTURE_2D);
   }
 
-  std::cout << "Created texture with ID " << _textureID << "\n";
+  std::cout << "Created texture (ID: " << _textureID << ")\n";
 
   return true;
 }
@@ -54,7 +54,7 @@ bool Texture::loadTexture2D(const std::string& filePath, bool generateMipmaps) {
   const auto imageData =
       stbi_load(filePath.c_str(), &_width, &_height, &bytesPerPixel, 0);
   if (imageData == nullptr) {
-    std::cout << "Failed to load image " << filePath << "!" << std::endl;
+    std::cerr << "Unable to load texture image: " << filePath << "\n";
     return false;
   }
 
@@ -137,7 +137,8 @@ int Texture::getNumTextureImageUnits() {
 
 bool Texture::isLoadedCheck() const {
   if (!isLoaded()) {
-    std::cout << "Attempting to access non loaded texture!" << std::endl;
+    std::cout << "Attempting to access non-loaded texture"
+              << "\n";
     return false;
   }
 

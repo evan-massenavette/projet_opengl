@@ -32,8 +32,7 @@ bool Shader::loadShaderFromFile(const std::string& fileName,
   GLint compilationStatus;
   glGetShaderiv(_shaderID, GL_COMPILE_STATUS, &compilationStatus);
   if (compilationStatus == GL_FALSE) {
-    std::cerr << "Error during compilation of shader file '" << fileName
-              << "'\n";
+    std::cerr << "Unable to compile of shader '" << fileName << "'\n";
 
     // Get length of the error log first
     GLint logLength;
@@ -65,7 +64,7 @@ void Shader::deleteShader() {
     return;
   }
 
-  std::cout << "Deleting shader with ID " << _shaderID << std::endl;
+  std::cout << "Deleting shader (ID: " << _shaderID << ")\n";
   glDeleteShader(_shaderID);
   _isCompiled = false;
   _shaderID = 0;
@@ -85,7 +84,7 @@ bool Shader::getLinesFromFile(const std::string& fileName,
                               bool isReadingIncludedFile) const {
   std::ifstream file(fileName);
   if (!file.good()) {
-    std::cout << "File not found: '" << fileName << "'\n";
+    std::cerr << "Unable to load shader file: '" << fileName << "'\n";
     return false;
   }
 

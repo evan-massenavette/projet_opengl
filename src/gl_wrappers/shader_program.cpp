@@ -30,7 +30,7 @@ bool ShaderProgram::linkProgram() {
   _isLinked = linkStatus == GL_TRUE;
 
   if (!_isLinked) {
-    std::cerr << "Error! Shader program wasn't linked!";
+    std::cerr << "Unable to link shader program.";
 
     // Get length of the error log first
     GLint logLength;
@@ -40,13 +40,11 @@ bool ShaderProgram::linkProgram() {
     if (logLength > 0) {
       GLchar* logMessage = new GLchar[logLength];
       glGetProgramInfoLog(_shaderProgramID, logLength, nullptr, logMessage);
-      std::cerr << " The linker returned: " << std::endl
-                << std::endl
-                << logMessage;
+      std::cerr << "The linker returned: \n" << logMessage;
       delete[] logMessage;
     }
 
-    std::cerr << std::endl;
+    std::cerr << "\n";
     return false;
   }
 
@@ -64,8 +62,7 @@ void ShaderProgram::deleteProgram() {
     return;
   }
 
-  std::cout << "Deleting shader program with ID " << _shaderProgramID
-            << std::endl;
+  std::cout << "Deleting shader program (ID: " << _shaderProgramID << ")\n";
   glDeleteProgram(_shaderProgramID);
   _isLinked = false;
 }
@@ -94,16 +91,16 @@ void ShaderProgram::setModelAndNormalMatrix(const glm::mat4& modelMatrix) {
 GLuint ShaderProgram::getUniformBlockIndex(
     const std::string& uniformBlockName) const {
   if (!_isLinked) {
-    std::cerr << "Cannot get index of uniform block " << uniformBlockName
-              << " when program has not been linked!" << std::endl;
+    std::cerr << "Unable to get index of uniform block '" << uniformBlockName
+              << "' because the program isn't linked \n";
     return GL_INVALID_INDEX;
   }
 
   const auto result =
       glGetUniformBlockIndex(_shaderProgramID, uniformBlockName.c_str());
   if (result == GL_INVALID_INDEX) {
-    std::cerr << "Could not get index of uniform block " << uniformBlockName
-              << ", check if such uniform block really exists!" << std::endl;
+    std::cerr << "Faield to get index of uniform block '" << uniformBlockName
+              << "' because no such uniform block exists.\n";
   }
 
   return result;

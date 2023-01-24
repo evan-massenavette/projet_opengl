@@ -43,7 +43,7 @@ void SceneObject::_loadModel(const std::string& modelName) {
                               ("models/" + modelName + "/").c_str());
 
   if (!err.empty()) {
-    std::cerr << err << std::endl;
+    std::cerr << err << "\n";
   }
 
   if (!ret) {

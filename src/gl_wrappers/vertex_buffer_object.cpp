@@ -5,24 +5,22 @@
 
 void VertexBufferObject::createVBO(size_t reserveSizeBytes) {
   if (isBufferCreated()) {
-    std::cerr << "This buffer is already created! You need to delete it before "
-                 "re-creating it!"
-              << std::endl;
+    std::cerr << "Unable to create vertex buffer object because it's already "
+                 "created.\n";
     return;
   }
 
   glGenBuffers(1, &_bufferID);
   _rawData.reserve(reserveSizeBytes > 0 ? reserveSizeBytes : 1024);
-  std::cout << "Created vertex buffer object with ID " << _bufferID
-            << " and initial reserved size " << _rawData.capacity() << " bytes"
-            << std::endl;
+  std::cout << "Created vertex buffer object (ID:  " << _bufferID
+            << ", initial reserved size: " << _rawData.capacity()
+            << " bytes)\n";
 }
 
 void VertexBufferObject::bindVBO(GLenum bufferType) {
   if (!isBufferCreated()) {
-    std::cerr << "This buffer is not created yet! You cannot bind it before "
-                 "you create it!"
-              << std::endl;
+    std::cerr
+        << "Unable to bind vertex buffer object because it isn't created\n";
     return;
   }
 
@@ -32,9 +30,8 @@ void VertexBufferObject::bindVBO(GLenum bufferType) {
 
 void VertexBufferObject::unbindVBO() {
   if (!isBufferCreated()) {
-    std::cerr << "This buffer is not created yet! You cannot unbind it before "
-                 "you create it!"
-              << std::endl;
+    std::cerr
+        << "Unable to unbind vertex buffer object because it isn't created\n";
     return;
   }
   glBindBuffer(_bufferType, 0);
@@ -77,9 +74,8 @@ void* VertexBufferObject::getRawDataPointer() {
 
 void VertexBufferObject::uploadDataToGPU(GLenum usageHint) {
   if (!isBufferCreated()) {
-    std::cerr << "This buffer is not created yet! Call createVBO before "
-                 "uploading data to GPU!"
-              << std::endl;
+    std::cerr << "Unable to upload vertex buffer object data to GPU because it "
+                 "isn't created.\n";
     return;
   }
 
@@ -123,8 +119,7 @@ void VertexBufferObject::deleteVBO() {
     return;
   }
 
-  std::cout << "Deleting vertex buffer object with ID " << _bufferID << "..."
-            << std::endl;
+  std::cout << "Deleting vertex buffer object (ID: " << _bufferID << ")\n";
   glDeleteBuffers(1, &_bufferID);
   _bufferID = 0;
   _bytesAdded = 0;

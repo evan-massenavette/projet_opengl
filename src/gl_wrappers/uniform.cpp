@@ -9,7 +9,7 @@ Uniform::Uniform(const std::string& name, ShaderProgram* shaderProgram)
       glGetUniformLocation(_shaderProgram->getShaderProgramID(), _name.c_str());
   if (_location == -1) {
     std::cout << "WARNING: uniform with name " << name
-              << " does not exist, setting it will fail!" << std::endl;
+              << " does not exist, setting it will fail.\n";
   }
 }
 

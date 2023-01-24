@@ -8,9 +8,8 @@ UniformBufferObject::~UniformBufferObject() {
 
 void UniformBufferObject::createUBO(const size_t byteSize, GLenum usageHint) {
   if (_isBufferCreated) {
-    std::cerr << "This buffer is already created! You need to delete it before "
-                 "re-creating it!"
-              << std::endl;
+    std::cerr << "Unable to create uniform buffer object because it's already "
+                 "created.\n";
     return;
   }
 
@@ -23,15 +22,14 @@ void UniformBufferObject::createUBO(const size_t byteSize, GLenum usageHint) {
   _isBufferCreated = true;
   _byteSize = byteSize;
 
-  std::cout << "Created uniform buffer object with ID " << _bufferID
-            << " and size " << _byteSize << " bytes" << std::endl;
+  std::cout << "Created uniform buffer object (ID: " << _bufferID
+            << ", size: " << _byteSize << " bytes)\n";
 }
 
 void UniformBufferObject::bindUBO() const {
   if (!_isBufferCreated) {
-    std::cerr << "Uniform buffer object is not created yet! You cannot bind it "
-                 "before you create it!"
-              << std::endl;
+    std::cerr
+        << "Unable to bind uniform buffer object because it isn't created.\n";
     return;
   }
 
@@ -41,9 +39,7 @@ void UniformBufferObject::bindUBO() const {
 void UniformBufferObject::unbindUBO() const {
   if (!_isBufferCreated) {
     std::cerr
-        << "Uniform buffer object is not created yet! You cannot unbind it "
-           "before you create it!"
-        << std::endl;
+        << "Unable to unbind uniform buffer object because it isn't created.\n";
     return;
   }
 
@@ -54,23 +50,23 @@ void UniformBufferObject::setBufferData(const size_t offset,
                                         const void* ptrData,
                                         const size_t dataSize) {
   if (!_isBufferCreated) {
-    std::cerr << "Could not set data because uniform buffer object is not "
-                 "created yet!"
-              << std::endl;
+    std::cerr << "Unable to set data of uniform buffer object because it isn't "
+                 "created.\n";
     return;
   }
 
   if (offset >= _byteSize) {
-    std::cerr << "Tried to set data of uniform buffer object at offset "
-              << offset << ", but it's beyond buffer size " << _byteSize
-              << ", will be ignored..." << std::endl;
+    std::cerr << "Unable to set data of uniform buffer object because the "
+                 "offset is beyond the buffer's size (offset: "
+              << offset << ",  buffer size: " << _byteSize
+              << "). Will be ignored.\n";
     return;
   }
 
   if (offset + dataSize > _byteSize) {
-    std::cerr
-        << "Could not set data because it would overflow the buffer! Offset: "
-        << offset << ", data size: " << dataSize << std::endl;
+    std::cerr << "Unable to set data of uniform buffer object because it would "
+                 "overflow the buffer (offset: "
+              << offset << ", data size: " << dataSize << ")\n";
     return;
   }
 
@@ -80,9 +76,9 @@ void UniformBufferObject::setBufferData(const size_t offset,
 void UniformBufferObject::bindBufferBaseToBindingPoint(
     const GLuint bindingPoint) const {
   if (!_isBufferCreated) {
-    std::cerr << "Could not bind buffer base to binding point " << bindingPoint
-              << ", because uniform buffer object is not created yet!"
-              << std::endl;
+    std::cerr << "Unable to bind buffer base to binding point because it isn't "
+                 "created (binding point: "
+              << bindingPoint << ")\n";
     return;
   }
 
@@ -98,8 +94,7 @@ void UniformBufferObject::deleteUBO() {
     return;
   }
 
-  std::cout << "Deleting uniform buffer object with ID " << _bufferID << "..."
-            << std::endl;
+  std::cout << "Deleting uniform buffer object (ID: " << _bufferID << ")\n";
   glDeleteBuffers(1, &_bufferID);
   _isBufferCreated = false;
 }
