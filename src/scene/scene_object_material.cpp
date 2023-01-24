@@ -4,12 +4,14 @@
 SceneObjectMaterial::SceneObjectMaterial(shader_structs::Material material)
     : material{material} {}
 
-SceneObjectMaterial::~SceneObjectMaterial() {
+SceneObjectMaterial::~SceneObjectMaterial()
+{
   vbo.deleteVBO();
   glDeleteVertexArrays(1, &vao);
 }
 
-void SceneObjectMaterial::bufferData() {
+void SceneObjectMaterial::bufferData()
+{
   // VAO
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
@@ -29,23 +31,28 @@ void SceneObjectMaterial::bufferData() {
   glEnableVertexAttribArray(VERTEX_ATTR_UV);
   glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE,
                         sizeof(Vertex),
-                        (const GLvoid*)offsetof(Vertex, position));
+                        (const GLvoid *)offsetof(Vertex, position));
   glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE,
                         sizeof(Vertex),
-                        (const GLvoid*)offsetof(Vertex, normal));
+                        (const GLvoid *)offsetof(Vertex, normal));
   glVertexAttribPointer(VERTEX_ATTR_UV, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        (const GLvoid*)offsetof(Vertex, uv));
+                        (const GLvoid *)offsetof(Vertex, uv));
 
   vbo.unbindVBO();
   glBindVertexArray(0);
 }
-void SceneObjectMaterial::draw() {
+void SceneObjectMaterial::draw()
+{
   // Send Material to shader
-  auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
+  auto &mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
       ShaderProgramKeys::main());
   material.setUniform(mainProgram, ShaderConstants::material());
 
-  if (texture != nullptr) {
+  bool hasTexture = texture != nullptr;
+  mainProgram["missingTexture"] = !hasTexture;
+
+  if (hasTexture)
+  {
     // Bind our texture
     texture->bind();
     // Set our albedo sampler to use Texture Unit 0

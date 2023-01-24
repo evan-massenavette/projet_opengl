@@ -8,8 +8,9 @@
 /**
  *  Wraps OpenGL texture into convenient class.
  */
-class Texture {
- public:
+class Texture
+{
+public:
   ~Texture();
 
   /**
@@ -23,7 +24,7 @@ class Texture {
    *
    * @return True, if texture has been loaded correctly or false otherwise.
    */
-  bool createFromData(const unsigned char* data,
+  bool createFromData(const unsigned char *data,
                       GLsizei width,
                       GLsizei height,
                       GLenum format,
@@ -36,7 +37,7 @@ class Texture {
    *
    * @return True if the texture has been loaded correctly, false otherwise.
    */
-  bool loadTexture2D(const std::string& filePath, bool generateMipmaps = true);
+  bool loadTexture2D(const std::string &filePath, bool generateMipmaps = true);
 
   /**
    * Binds texture to specified texture unit.
@@ -82,13 +83,15 @@ class Texture {
    */
   static int getNumTextureImageUnits();
 
- private:
-  GLuint _textureID = 0;  // OpenGL-assigned texture ID
-  GLsizei _width = 0;     // Width of texture in pixels
-  GLsizei _height = 0;    // Height of texture in pixels
-  GLenum _format = 0;     // Format this texture is represented with
-  std::string _filePath;  // Path to file from which the texture has been loaded
-                          // (will be empty if texture was created from data)
+  static std::shared_ptr<Texture> getMissingTexture();
+
+private:
+  GLuint _textureID = 0; // OpenGL-assigned texture ID
+  GLsizei _width = 0;    // Width of texture in pixels
+  GLsizei _height = 0;   // Height of texture in pixels
+  GLenum _format = 0;    // Format this texture is represented with
+  std::string _filePath; // Path to file from which the texture has been loaded
+                         // (will be empty if texture was created from data)
 
   /**
    * Checks, if the texture has been loaded correctly and if not, logs it into
