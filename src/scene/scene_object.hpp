@@ -9,6 +9,7 @@
 
 #include "../gl_wrappers/texture.hpp"
 #include "../gl_wrappers/vertex_buffer_object.hpp"
+#include "../render_pass.hpp"
 #include "scene_object_material.hpp"
 #include "vertex.hpp"
 
@@ -44,7 +45,7 @@ class SceneObject {
   /**
    * Draw the object.
    */
-  void draw();
+  void draw(RenderPass renderPass);
 
   /**
    * Load the given model

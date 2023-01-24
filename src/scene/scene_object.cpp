@@ -141,7 +141,7 @@ void SceneObject::_loadModel(const std::string& modelName) {
   }
 }
 
-void SceneObject::draw() {
+void SceneObject::draw(RenderPass renderPass) {
   auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
       ShaderProgramKeys::main());
 
@@ -150,7 +150,7 @@ void SceneObject::draw() {
 
   // Draw all materials
   for (auto& objectMaterial : _objectMaterials) {
-    objectMaterial->draw();
+    objectMaterial->draw(renderPass);
   }
 }
 

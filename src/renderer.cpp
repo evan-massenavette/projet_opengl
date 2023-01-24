@@ -91,7 +91,12 @@ void Renderer::_createShaderStructsUBOs() {
       "PointLightsBlock", UniformBlockBindingPoints::POINT_LIGHTS);
 }
 
-Renderer::~Renderer() {}
+
+void Renderer::_drawScene(RenderPass pass) {
+  for (const auto& object : _scene.objects) {
+    object->draw(pass);
+  }
+}
 
 void Renderer::update(const glm::mat4& projectionMatrix, const Camera& camera) {
   // Clear the screen
@@ -109,9 +114,7 @@ void Renderer::update(const glm::mat4& projectionMatrix, const Camera& camera) {
   _sendShaderStructsToProgram();
 
   // Draw all objects in the scene
-  for (auto& object : _scene.objects) {
-    object->draw();
-  }
+  _drawScene(RenderPass::Main);
 }
 
 void Renderer::_sendShaderStructsToProgram() {

@@ -39,7 +39,7 @@ void SceneObjectMaterial::bufferData() {
   vbo.unbindVBO();
   glBindVertexArray(0);
 }
-void SceneObjectMaterial::draw() {
+void SceneObjectMaterial::draw(RenderPass renderPass) {
   // Send Material to shader
   auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
       ShaderProgramKeys::main());
