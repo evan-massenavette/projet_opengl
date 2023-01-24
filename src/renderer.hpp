@@ -7,6 +7,7 @@
 
 #include <glm/glm.hpp>
 
+#include "app.hpp"
 #include "camera/camera.hpp"
 #include "gl_wrappers/shader_program.hpp"
 #include "gl_wrappers/uniform_buffer_object.hpp"
@@ -15,12 +16,13 @@
 
 class Renderer {
  public:
-  Renderer(Scene& scene);
+  Renderer(const App& app, const Scene& scene);
   ~Renderer();
   void update(const glm::mat4& projectionMatrix, const Camera& camera);
 
  private:
-  Scene& _scene;
+  const App& _app;
+  const Scene& _scene;
 
   UniformBufferObject _uboAmbientLights;
   UniformBufferObject _uboDirectionalLights;

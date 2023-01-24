@@ -9,7 +9,8 @@
 
 #include "renderer.hpp"
 
-Renderer::Renderer(Scene& scene) : _scene(scene) {
+Renderer::Renderer(const App& app, const Scene& scene)
+    : _app(app), _scene(scene) {
   // Depth test (closest will be displayed)
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
