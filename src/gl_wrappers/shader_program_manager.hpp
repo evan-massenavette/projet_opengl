@@ -14,11 +14,11 @@
  * program.
  */
 class ShaderProgramManager {
-public:
+ public:
   /**
    * Gets the one and only instance of the shader program manager.
    */
-  static ShaderProgramManager &getInstance();
+  static ShaderProgramManager& getInstance();
 
   /**
    * Creates new shader program and stores it with specified key.
@@ -27,7 +27,7 @@ public:
    *
    * @return Shader program instance with specified key.
    */
-  ShaderProgram &createShaderProgram(const std::string &key);
+  ShaderProgram& createShaderProgram(const std::string& key);
 
   /**
    * Retrieves shader program with a specified key.
@@ -36,7 +36,7 @@ public:
    *
    * @return Shader program instance from a specified key.
    */
-  ShaderProgram &getShaderProgram(const std::string &key) const;
+  ShaderProgram& getShaderProgram(const std::string& key) const;
 
   /**
    * Performs linkage of all existing shader programs.
@@ -48,12 +48,12 @@ public:
    */
   void clearShaderProgramCache();
 
-private:
-  ShaderProgramManager() {} // Private constructor to make class singleton
-  ShaderProgramManager(const ShaderProgramManager &) =
-      delete; // No copy constructor allowed
-  void operator=(const ShaderProgramManager &) =
-      delete; // No copy assignment allowed
+ private:
+  ShaderProgramManager() {}  // Private constructor to make class singleton
+  ShaderProgramManager(const ShaderProgramManager&) =
+      delete;  // No copy constructor allowed
+  void operator=(const ShaderProgramManager&) =
+      delete;  // No copy assignment allowed
 
   /**
    * Checks, if shader program with specified key exists.
@@ -62,11 +62,11 @@ private:
    *
    * @return True if shader program exists, or false otherwise.
    */
-  bool containsShaderProgram(const std::string &key) const;
+  bool containsShaderProgram(const std::string& key) const;
 
   std::map<std::string, std::unique_ptr<ShaderProgram>>
-      _shaderProgramCache; // Shader program cache - stores shader programs
-                           // within their keys in std::map
+      _shaderProgramCache;  // Shader program cache - stores shader programs
+                            // within their keys in std::map
 };
 
 #endif

@@ -40,7 +40,8 @@ void VertexBufferObject::unbindVBO() {
   glBindBuffer(_bufferType, 0);
 }
 
-void VertexBufferObject::addRawData(const void *ptrData, size_t dataSizeBytes,
+void VertexBufferObject::addRawData(const void* ptrData,
+                                    size_t dataSizeBytes,
                                     size_t repeat) {
   const auto bytesToAdd = dataSizeBytes * repeat;
   const auto requiredCapacity = _bytesAdded + bytesToAdd;
@@ -70,7 +71,9 @@ void VertexBufferObject::addRawData(const void *ptrData, size_t dataSizeBytes,
   }
 }
 
-void *VertexBufferObject::getRawDataPointer() { return _rawData.data(); }
+void* VertexBufferObject::getRawDataPointer() {
+  return _rawData.data();
+}
 
 void VertexBufferObject::uploadDataToGPU(GLenum usageHint) {
   if (!isBufferCreated()) {
@@ -85,7 +88,7 @@ void VertexBufferObject::uploadDataToGPU(GLenum usageHint) {
   _bytesAdded = 0;
 }
 
-void *VertexBufferObject::mapBufferToMemory(GLenum usageHint) const {
+void* VertexBufferObject::mapBufferToMemory(GLenum usageHint) const {
   if (!isDataUploaded()) {
     return nullptr;
   }
@@ -93,7 +96,8 @@ void *VertexBufferObject::mapBufferToMemory(GLenum usageHint) const {
   return glMapBuffer(_bufferType, usageHint);
 }
 
-void *VertexBufferObject::mapSubBufferToMemory(GLenum usageHint, size_t offset,
+void* VertexBufferObject::mapSubBufferToMemory(GLenum usageHint,
+                                               size_t offset,
                                                size_t length) const {
   if (!isDataUploaded()) {
     return nullptr;
@@ -102,9 +106,13 @@ void *VertexBufferObject::mapSubBufferToMemory(GLenum usageHint, size_t offset,
   return glMapBufferRange(_bufferType, offset, length, usageHint);
 }
 
-void VertexBufferObject::unmapBuffer() const { glUnmapBuffer(_bufferType); }
+void VertexBufferObject::unmapBuffer() const {
+  glUnmapBuffer(_bufferType);
+}
 
-GLuint VertexBufferObject::getBufferID() const { return _bufferID; }
+GLuint VertexBufferObject::getBufferID() const {
+  return _bufferID;
+}
 
 size_t VertexBufferObject::getBufferSize() {
   return isDataUploaded() ? _uploadedDataSize : _bytesAdded;
@@ -123,7 +131,9 @@ void VertexBufferObject::deleteVBO() {
   _uploadedDataSize = 0;
 }
 
-bool VertexBufferObject::isBufferCreated() const { return _bufferID != 0; }
+bool VertexBufferObject::isBufferCreated() const {
+  return _bufferID != 0;
+}
 
 bool VertexBufferObject::isDataUploaded() const {
   return _uploadedDataSize > 0;

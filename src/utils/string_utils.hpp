@@ -40,7 +40,7 @@ inline std::vector<std::string> split(std::string s, char t) {
  *
  * @return Path with one directory up.
  */
-inline std::string upOneDirectory(const std::string &originalPath,
+inline std::string upOneDirectory(const std::string& originalPath,
                                   char slashCharacter) {
   bool isTrailingSlash = originalPath.back() == slashCharacter;
   std::vector<std::string> subPaths = split(originalPath, slashCharacter);
@@ -64,10 +64,10 @@ inline std::string upOneDirectory(const std::string &originalPath,
  *
  * @return Original path with same slash character everywhere.
  */
-inline std::string normalizeSlashes(const std::string &originalPath,
+inline std::string normalizeSlashes(const std::string& originalPath,
                                     char slashCharacter) {
   std::string result = originalPath;
-  for (char &c : result) {
+  for (char& c : result) {
     if (c == '\\' || c == '/')
       c = slashCharacter;
   }
@@ -75,7 +75,7 @@ inline std::string normalizeSlashes(const std::string &originalPath,
   return result;
 }
 
-inline std::string getDirectoryPath(const std::string &filePath) {
+inline std::string getDirectoryPath(const std::string& filePath) {
   auto lastSlashIndex = filePath.find_last_of('\\');
   if (lastSlashIndex == std::string::npos) {
     lastSlashIndex = filePath.find_last_of('/');
@@ -88,14 +88,16 @@ inline std::string getDirectoryPath(const std::string &filePath) {
   return filePath.substr(0, lastSlashIndex + 1);
 }
 
-inline std::string formatStringImpl(const char *s, std::stringstream &ss) {
+inline std::string formatStringImpl(const char* s, std::stringstream& ss) {
   ss << s;
   return ss.str();
 }
 
 template <typename T, typename... Args>
-inline std::string formatStringImpl(const char *s, std::stringstream &ss, T arg,
-                                    const Args &...args) {
+inline std::string formatStringImpl(const char* s,
+                                    std::stringstream& ss,
+                                    T arg,
+                                    const Args&... args) {
   std::string result;
   while (*s != 0) {
     if (*s == '{' && *(s + 1) == '}') {
@@ -110,11 +112,11 @@ inline std::string formatStringImpl(const char *s, std::stringstream &ss, T arg,
 }
 
 template <typename... Args>
-inline std::string formatString(const std::string &fmt, const Args &...args) {
+inline std::string formatString(const std::string& fmt, const Args&... args) {
   std::stringstream ss;
   return formatStringImpl(fmt.c_str(), ss, args...);
 }
 
-} // namespace string_utils
+}  // namespace string_utils
 
 #endif

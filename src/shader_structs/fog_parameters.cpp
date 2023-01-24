@@ -34,8 +34,7 @@ void FogParameters::setUniform(ShaderProgram& shaderProgram,
   }
 
   shaderProgram[getAttributeName(uniformName, "color")] = color;
-  shaderProgram[getAttributeName(uniformName, "linearStart")] =
-      linearStart;
+  shaderProgram[getAttributeName(uniformName, "linearStart")] = linearStart;
   shaderProgram[getAttributeName(uniformName, "linearEnd")] = linearEnd;
   shaderProgram[getAttributeName(uniformName, "density")] = density;
   shaderProgram[getAttributeName(uniformName, "equation")] = equation;
