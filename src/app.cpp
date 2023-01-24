@@ -126,7 +126,7 @@ void App::run() {
   Scene scene(glm::vec4(0.0, 0.0, 0.2, 1.0), true);
   FlyingCamera camera(glm::vec3(0, 0, 0), glm::vec3(1, 0, 0),
                       glm::vec3(0, 1, 0));
-  Renderer renderer(scene);
+  Renderer renderer(*this, scene, camera);
   Controls controls;
 
   while (glfwWindowShouldClose(_window) == 0) {

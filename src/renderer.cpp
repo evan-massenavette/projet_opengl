@@ -9,8 +9,8 @@
 
 #include "renderer.hpp"
 
-Renderer::Renderer(const App& app, const Scene& scene)
-    : _app(app), _scene(scene) {
+Renderer::Renderer(const App& app, const Scene& scene, const Camera& camera)
+    : _app(app), _scene(scene), _camera(camera) {
   // Depth test (closest will be displayed)
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -98,9 +98,7 @@ void Renderer::_drawScene(RenderPass pass) {
   }
 }
 
-void Renderer::update(const glm::mat4& projectionMatrix, const Camera& camera) {
-  // Clear the screen
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void Renderer::update() {
 
   // Get shader program
   auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
