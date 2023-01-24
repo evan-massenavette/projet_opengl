@@ -124,7 +124,7 @@ void App::run() {
 
   // Objects used during main loop
   Scene scene(glm::vec4(0.0, 0.0, 0.2, 1.0), true);
-  FlyingCamera camera(glm::vec3(0, 0, 0), glm::vec3(1, 0, 0),
+  FlyingCamera camera(glm::vec3(8, 5, 5), glm::vec3(0, 0, 0),
                       glm::vec3(0, 1, 0));
   Renderer renderer(*this, scene, camera);
   Controls controls;
