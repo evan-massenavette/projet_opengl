@@ -211,3 +211,86 @@ void Renderer::_sendShaderStructsToProgram() {
   }
   _uboPointLights.unbindUBO();
 }
+
+void Renderer::_drawScene(RenderPass pass) {
+  for (const auto& object : _scene.objects) {
+    object->draw(pass);
+  }
+}
+
+void Renderer::update() {
+  // Lights depth maps pass
+
+  // Get shader program
+  auto& depthProgram = ShaderProgramManager::getInstance().getShaderProgram(
+      ShaderProgramKeys::depth());
+  depthProgram.useProgram();
+
+  // Set OpenGL viewport to shadowmap size
+  glViewport(0, 0, _shadowMapSize, _shadowMapSize);
+
+  // Calculate projection matrix
+  const float vFov = 90.0f;
+  const float aspectRatio = 1;
+  const float zNear = 0.1f;
+  const float zFar = 1500.0f;
+  const auto projectionMatrix =
+      glm::perspective(glm::radians(vFov), aspectRatio, zNear, zFar);
+
+  // Send projection matrix and far plane uniforms
+  depthProgram[ShaderConstants::projectionMatrix()] = projectionMatrix;
+  depthProgram[ShaderConstants::farPlane()] = zFar;
+
+  // Point lights shadows
+  for (size_t i = 0; i < _scene.pointLights.size(); i++) {
+    // Needed vars
+    const auto& light = _scene.pointLights[i];
+    const auto& depthFBO = _fbosDepthPointLights[i];
+
+    // Get view matrix and send it to shader
+    const auto viewMatrix = _getCubeMapViewMatrix(i, light.position);
+    depthProgram[ShaderConstants::viewMatrix()] = viewMatrix;
+
+    // Send light position as camera position
+    depthProgram[ShaderConstants::cameraWorldPos()] = light.position;
+
+    // Bind this light's depth FBO
+    depthFBO->bindAsReadAndDraw();
+
+    // Clear depth buffer
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    _drawScene(RenderPass::Depth);
+  }
+
+  // Main pass
+
+  // Get shader program
+  auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
+      ShaderProgramKeys::main());
+  mainProgram.useProgram();
+
+  // Send uniforms to shader
+  mainProgram[ShaderConstants::projectionMatrix()] = _app.getProjectionMatrix();
+  mainProgram[ShaderConstants::viewMatrix()] = _camera.getViewMatrix();
+  mainProgram[ShaderConstants::cameraWorldPos()] = _camera.getPosition();
+
+  // TEMP
+  mainProgram[ShaderConstants::farPlane()] = zFar;
+  mainProgram[ShaderConstants::depthSampler()] = 1;
+
+  // Send structs to shaders
+  _sendShaderStructsToProgram();
+
+  // Bind default frame buffer for main pass
+  FrameBuffer::Default::bindAsReadAndDraw();
+
+  // Set OpenGL's viewport size to app's window size
+  FrameBuffer::Default::setFullViewport(_app);
+
+  // Clear the screen
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  // Draw all objects in the scene
+  _drawScene(RenderPass::Main);
+}
