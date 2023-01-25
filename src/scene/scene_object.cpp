@@ -142,11 +142,21 @@ void SceneObject::_loadModel(const std::string& modelName) {
 }
 
 void SceneObject::draw(RenderPass renderPass) {
-  auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
-      ShaderProgramKeys::main());
+  if (renderPass == RenderPass::Depth) {
+    auto& depthProgram = ShaderProgramManager::getInstance().getShaderProgram(
+        ShaderProgramKeys::depth());
 
-  // Set the model and normal matrix for this object
-  mainProgram.setModelAndNormalMatrix(_getModelMatrix());
+    // Set the model and normal matrix for this object
+    depthProgram[ShaderConstants::modelMatrix()] = _getModelMatrix();
+  }
+
+  else if (renderPass == RenderPass::Main) {
+    auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
+        ShaderProgramKeys::main());
+
+    // Set the model and normal matrix for this object
+    mainProgram.setModelAndNormalMatrix(_getModelMatrix());
+  }
 
   // Draw all materials
   for (auto& objectMaterial : _objectMaterials) {

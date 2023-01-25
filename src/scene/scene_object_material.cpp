@@ -40,18 +40,24 @@ void SceneObjectMaterial::bufferData() {
   glBindVertexArray(0);
 }
 void SceneObjectMaterial::draw(RenderPass renderPass) {
-  // Send Material to shader
-  auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
-      ShaderProgramKeys::main());
-  material.setUniform(mainProgram, ShaderConstants::material());
-
-  if (texture != nullptr) {
-    // Bind our texture
-    texture->bind();
-    // Set our albedo sampler to use Texture Unit 0
-    mainProgram[ShaderConstants::albedoSampler()] = 0;
+  if (renderPass == RenderPass::Depth) {
   }
 
+  if (renderPass == RenderPass::Main) {
+    // Send Material to shader
+    auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
+        ShaderProgramKeys::main());
+    material.setUniform(mainProgram, ShaderConstants::material());
+
+    if (texture != nullptr) {
+      // Bind our texture to texture unit 0
+      texture->bind(0);
+      // Set our albedo sampler to use Texture Unit 0
+      mainProgram[ShaderConstants::albedoSampler()] = 0;
+    }
+  }
+
+  // Draw
   glBindVertexArray(vao);
   glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertices.size());
   glBindVertexArray(0);
