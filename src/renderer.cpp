@@ -35,7 +35,7 @@ Renderer::Renderer(const App& app, const Scene& scene, const Camera& camera)
   _createShaderStructsUBOs();
 
   // Create shadows framebuffers
-  _createShadowsFramebuffers();
+  _createDepthFBOs();
 }
 
 void Renderer::_loadMainShaderProgram() {
@@ -121,25 +121,28 @@ void Renderer::_createShaderStructsUBOs() {
       "PointLightsBlock", UniformBlockBindingPoints::POINT_LIGHTS);
 }
 
-void Renderer::_createShadowsFramebuffers() {
+void Renderer::_createDepthFBOs() {
   // Point Lights
-  for (const auto& light : _scene.pointLights) {
-    auto depthFBO = std::make_unique<FrameBuffer>();
-    depthFBO->create(_shadowMapSize, _shadowMapSize);
-    depthFBO->bindAsReadAndDraw();
-    depthFBO->addTextureCubeMap(GL_DEPTH_COMPONENT, GL_DEPTH_ATTACHMENT);
-    _fbosDepthPointLights.emplace_back(std::move(depthFBO));
-  }
+
+  // Create depth frame buffer
+  glGenFramebuffers(1, &_depthFrameBufferID);
+
+  // Create depth texture cube map
+  _depthTextureCubeMap.create(_shadowMapSize, _shadowMapSize,
+                              GL_DEPTH_COMPONENT);
+
+  // Attach depth texture cube map to frame buffer
+  glBindFramebuffer(GL_FRAMEBUFFER, _depthFrameBufferID);
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _depthFrameBufferID,
+                       0);
+  glDrawBuffer(GL_NONE);
+  glReadBuffer(GL_NONE);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-glm::mat4 Renderer::_getCubeMapViewMatrix(size_t index,
-                                          const glm::vec3& position) {
-  if (index >= 6) {
-    throw std::runtime_error(
-        "Cannot get cube map view matrix with an index >= 6");
-  }
-
-  static const std::vector<glm::mat4> viewMatrices = {
+std::array<glm::mat4, 6> Renderer::_getCubeMapViewMatrices(
+    const glm::vec3& position) {
+  static const std::array<glm::mat4, 6> viewMatrices = {
       glm::lookAt(position, position + glm::vec3(1.0, 0.0, 0.0),
                   glm::vec3(0.0, -1.0, 0.0)),
       glm::lookAt(position, position + glm::vec3(-1.0, 0.0, 0.0),
@@ -154,7 +157,7 @@ glm::mat4 Renderer::_getCubeMapViewMatrix(size_t index,
                   glm::vec3(0.0, -1.0, 0.0)),
   };
 
-  return viewMatrices[index];
+  return viewMatrices;
 }
 
 void Renderer::_sendShaderStructsToProgram() {
@@ -245,22 +248,26 @@ void Renderer::update() {
   for (size_t i = 0; i < _scene.pointLights.size(); i++) {
     // Needed vars
     const auto& light = _scene.pointLights[i];
-    const auto& depthFBO = _fbosDepthPointLights[i];
 
     // Get view matrix and send it to shader
-    const auto viewMatrix = _getCubeMapViewMatrix(i, light.position);
-    depthProgram[ShaderConstants::viewMatrix()] = viewMatrix;
+    const auto viewMatrices = _getCubeMapViewMatrices(light.position);
+    depthProgram[ShaderConstants::cubeMapViewMatrices()].set(
+        viewMatrices.data(), (GLsizei)viewMatrices.size());
 
-    // Send light position as camera position
-    depthProgram[ShaderConstants::cameraWorldPos()] = light.position;
+    // Send light position
+    depthProgram[ShaderConstants::lightWorldPos()] = light.position;
 
-    // Bind this light's depth FBO
-    depthFBO->bindAsReadAndDraw();
+    // Bind this light's depth frame buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, _depthFrameBufferID);
 
     // Clear depth buffer
     glClear(GL_DEPTH_BUFFER_BIT);
 
+    // Draw the scene
     _drawScene(RenderPass::Depth);
+
+    // Unbind this light's depth frame buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 
   // Main pass
@@ -275,9 +282,11 @@ void Renderer::update() {
   mainProgram[ShaderConstants::viewMatrix()] = _camera.getViewMatrix();
   mainProgram[ShaderConstants::cameraWorldPos()] = _camera.getPosition();
 
-  // TEMP
+  // Depth
   mainProgram[ShaderConstants::farPlane()] = zFar;
-  mainProgram[ShaderConstants::depthSampler()] = 1;
+  GLint depthCubeMapTextureUnit = 1;
+  mainProgram[ShaderConstants::depthSampler()] = depthCubeMapTextureUnit;
+  _depthTextureCubeMap.bind(depthCubeMapTextureUnit);
 
   // Send structs to shaders
   _sendShaderStructsToProgram();
