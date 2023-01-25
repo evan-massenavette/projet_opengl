@@ -19,8 +19,10 @@ class FrameBuffer {
 
   bool create(GLsizei width, GLsizei height);
 
-  bool addTexture(GLenum internalFormat, GLenum attachment);
-  bool addTextureCubeMap(GLenum internalFormat, GLenum attachment);
+  bool addTexture(GLenum internalFormat, GLenum attachment, GLenum textureUnit);
+  bool addTextureCubeMap(GLenum internalFormat,
+                         GLenum attachment,
+                         GLenum textureUnit);
 
   bool isComplete() const;
 

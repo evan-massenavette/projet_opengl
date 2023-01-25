@@ -24,7 +24,9 @@ bool FrameBuffer::create(GLsizei width, GLsizei height) {
   return true;
 }
 
-bool FrameBuffer::addTexture(GLenum internalFormat, GLenum attachment) {
+bool FrameBuffer::addTexture(GLenum internalFormat,
+                             GLenum attachment,
+                             GLenum textureUnit) {
   if (_frameBufferID == 0) {
     return false;
   }
@@ -34,14 +36,15 @@ bool FrameBuffer::addTexture(GLenum internalFormat, GLenum attachment) {
   _texture->create(_width, _height, internalFormat);
 
   // Attach it to the framebuffer
-  _texture->bind();
+  _texture->bind(textureUnit);
   glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D,
                          _texture->getID(), 0);
-  _texture->unbind();
   return true;
 }
 
-bool FrameBuffer::addTextureCubeMap(GLenum internalFormat, GLenum attachment) {
+bool FrameBuffer::addTextureCubeMap(GLenum internalFormat,
+                                    GLenum attachment,
+                                    GLenum textureUnit) {
   if (_frameBufferID == 0) {
     return false;
   }
@@ -51,9 +54,8 @@ bool FrameBuffer::addTextureCubeMap(GLenum internalFormat, GLenum attachment) {
   _textureCubeMap->create(_width, _height, GL_FLOAT);
 
   // Attach it to the framebuffer
-  _textureCubeMap->bind(1);
+  _textureCubeMap->bind(textureUnit);
   glFramebufferTexture(GL_FRAMEBUFFER, attachment, _textureCubeMap->getID(), 0);
-  // _textureCubeMap->unbind();
   return true;
 }
 
