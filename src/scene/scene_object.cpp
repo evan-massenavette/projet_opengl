@@ -21,6 +21,8 @@ SceneObject::SceneObject(const std::string& modelName,
     : _position(position), _rotation(rotation), _scale(scale) {
   _loadModel(modelName);
   _bufferData();
+  _getModelMatrix();  // Calculate model matrix for first time
+  _hasChanged = false;
 }
 
 SceneObject::~SceneObject() {
@@ -148,6 +150,7 @@ void SceneObject::draw(RenderPass renderPass) {
 
     // Set the model and normal matrix for this object
     depthProgram[ShaderConstants::modelMatrix()] = _getModelMatrix();
+
   }
 
   else if (renderPass == RenderPass::Main) {
@@ -162,6 +165,9 @@ void SceneObject::draw(RenderPass renderPass) {
   for (auto& objectMaterial : _objectMaterials) {
     objectMaterial->draw(renderPass);
   }
+
+  // Set hasChanged flag
+  _hasChanged = false;
 }
 
 void SceneObject::_bufferData() {
@@ -172,22 +178,35 @@ void SceneObject::_bufferData() {
 
 void SceneObject::setScale(const glm::vec3& factors) {
   _scale = factors;
+  _hasChanged = true;
 }
 
 void SceneObject::rotate(const glm::vec3& angles) {
   _rotation += angles;
+  _hasChanged = true;
 }
 void SceneObject::setRotation(const glm::vec3& angles) {
   _rotation = angles;
+  _hasChanged = true;
 }
 void SceneObject::translate(const glm::vec3& distances) {
   _position += distances;
+  _hasChanged = true;
 }
 void SceneObject::setPosition(const glm::vec3& distances) {
   _position = distances;
+  _hasChanged = true;
 }
 
 glm::mat4 SceneObject::_getModelMatrix() {
+  // If the object hasn't changed, return cached model matrix
+  if (!_hasChanged) {
+    return _modelMatrix;
+  }
+
+  // Recalculate the model matrix
+  std::cout << "Recalculated model matrix\n";
+
   // Base model matrix = Identity Matrix
   glm::mat4 baseModelMatrix(1);
 
@@ -205,5 +224,8 @@ glm::mat4 SceneObject::_getModelMatrix() {
   // Translate
   auto translated = glm::translate(rotated_xyz, _position);
 
-  return translated;
+  // Cache the new model matrix
+  _modelMatrix = translated;
+
+  return _modelMatrix;
 }
