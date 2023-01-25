@@ -42,6 +42,8 @@ class Renderer {
   void _createShadowsFramebuffers();
   void _sendShaderStructsToProgram();
   void _drawScene(RenderPass pass);
+
+  glm::mat4 _getCubeMapViewMatrix(size_t index, const glm::vec3& position);
 };
 
 #endif

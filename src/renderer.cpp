@@ -132,74 +132,29 @@ void Renderer::_createShadowsFramebuffers() {
   }
 }
 
-void Renderer::_drawScene(RenderPass pass) {
-  for (const auto& object : _scene.objects) {
-    object->draw(pass);
-  }
-}
-
-void Renderer::update() {
-  // Shadows pass
-
-  // Get shader program
-  auto& shadowsProgram = ShaderProgramManager::getInstance().getShaderProgram(
-      ShaderProgramKeys::shadows());
-  shadowsProgram.useProgram();
-
-  // Set OpenGL viewport to shadowmap size
-  glViewport(0, 0, _shadowMapSize, _shadowMapSize);
-
-  // Point lights shadows
-  for (const auto& light : _scene.pointLights) {
-    // Calculate projection matrix
-    float vFov = 90.0f;
-    float aspectRatio = 1;
-    float zNear = 0.1f;
-    float zFar = 1500.0f;
-    auto projectionMatrix =
-        glm::perspective(glm::radians(vFov), aspectRatio, zNear, zFar);
-
-    // Calculate view matrix
-    glm::vec3 lookingTowards(0);
-    glm::vec3 upVector(1, 1, 0);
-    auto viewMatrix = glm::lookAt(light.position, lookingTowards, upVector);
-
-    // Send uniforms to shader
-    shadowsProgram[ShaderConstants::projectionMatrix()] = projectionMatrix;
-    shadowsProgram[ShaderConstants::viewMatrix()] = viewMatrix;
-
-    // Clear depth buffer
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-    _drawScene(RenderPass::Shadows);
+glm::mat4 Renderer::_getCubeMapViewMatrix(size_t index,
+                                          const glm::vec3& position) {
+  if (index >= 6) {
+    throw std::runtime_error(
+        "Cannot get cube map view matrix with an index >= 6");
   }
 
-  // Main pass
+  static const std::vector<glm::mat4> viewMatrices = {
+      glm::lookAt(position, position + glm::vec3(1.0, 0.0, 0.0),
+                  glm::vec3(0.0, -1.0, 0.0)),
+      glm::lookAt(position, position + glm::vec3(-1.0, 0.0, 0.0),
+                  glm::vec3(0.0, -1.0, 0.0)),
+      glm::lookAt(position, position + glm::vec3(0.0, 1.0, 0.0),
+                  glm::vec3(0.0, 0.0, 1.0)),
+      glm::lookAt(position, position + glm::vec3(0.0, -1.0, 0.0),
+                  glm::vec3(0.0, 0.0, -1.0)),
+      glm::lookAt(position, position + glm::vec3(0.0, 0.0, 1.0),
+                  glm::vec3(0.0, -1.0, 0.0)),
+      glm::lookAt(position, position + glm::vec3(0.0, 0.0, -1.0),
+                  glm::vec3(0.0, -1.0, 0.0)),
+  };
 
-  // Get shader program
-  auto& mainProgram = ShaderProgramManager::getInstance().getShaderProgram(
-      ShaderProgramKeys::main());
-  mainProgram.useProgram();
-
-  // Send uniforms to shader
-  mainProgram[ShaderConstants::projectionMatrix()] = _app.getProjectionMatrix();
-  mainProgram[ShaderConstants::viewMatrix()] = _camera.getViewMatrix();
-  mainProgram[ShaderConstants::cameraWorldPos()] = _camera.getPosition();
-
-  // Send structs to shaders
-  _sendShaderStructsToProgram();
-
-  // Bind default frame buffer for main pass
-  FrameBuffer::Default::bindAsBothReadAndDraw();
-
-  // Set OpenGL's viewport size to app's window size
-  FrameBuffer::Default::setFullViewport(_app);
-
-  // Clear the screen
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  // Draw all objects in the scene
-  _drawScene(RenderPass::Main);
+  return viewMatrices[index];
 }
 
 void Renderer::_sendShaderStructsToProgram() {
