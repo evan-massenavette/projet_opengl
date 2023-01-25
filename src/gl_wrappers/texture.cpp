@@ -103,6 +103,15 @@ void Texture::bind(const GLenum textureUnit) const {
   glBindTexture(GL_TEXTURE_2D, _textureID);
 }
 
+void Texture::unbind(const GLenum textureUnit) const {
+  if (!isLoadedLogged()) {
+    return;
+  }
+
+  glActiveTexture(GL_TEXTURE0 + textureUnit);
+  glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void Texture::deleteTexture() {
   if (!isLoaded()) {
     return;

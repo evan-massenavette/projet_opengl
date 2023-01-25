@@ -52,6 +52,12 @@ class Texture {
   void bind(GLenum textureUnit = 0) const;
 
   /**
+   * Unbinds texture from specified texture unit.
+   * @param textureUnit  Texture unit index (default is 0)
+   */
+  void unbind(GLenum textureUnit = 0) const;
+
+  /**
    * Deletes loaded texture from OpenGL. Does nothing if the texture has not
    * been loaded correctly.
    */
