@@ -31,12 +31,8 @@ bool Texture::createFromData(const unsigned char* data,
   glTexImage2D(GL_TEXTURE_2D, 0, _format, _width, _height, 0, _format,
                GL_UNSIGNED_BYTE, data);
 
-  // Trilinear filtering
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR_MIPMAP_LINEAR);
+  // Set the texture's parameters
+  _setParameters();
 
   if (generateMipmaps) {
     // Generate mipmaps automatically
@@ -142,4 +138,15 @@ bool Texture::isLoadedLogged() const {
   }
 
   return true;
+}
+
+void Texture::_setParameters() const {
+  // Filtering
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
+  // Wrapping
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }

@@ -97,6 +97,11 @@ class Texture {
    * @return True, if texture has been loaded correctly or false otherwise.
    */
   bool isLoadedLogged() const;
+
+  /**
+   * Sets the texture parmeters (filtering, wrapping, etc.)
+   */
+  void _setParameters() const;
 };
 
 #endif
