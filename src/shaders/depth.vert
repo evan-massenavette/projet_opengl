@@ -11,9 +11,6 @@ uniform struct {
 } matrices;
 
 void main() {
-	// Compute matrices
-    mat4 mvpMatrix = matrices.projection * matrices.view * matrices.model;
-
-	// Clip space position
-    gl_Position = mvpMatrix * vec4(aModelPos, 1.0);
+	// Transform vertex to world space
+    gl_Position = matrices.model * vec4(aModelPos, 1.0);
 }
