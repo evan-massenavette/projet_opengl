@@ -75,7 +75,7 @@ bool Texture::loadTexture2D(const std::string& filePath, bool generateMipmaps) {
 }
 
 void Texture::bind(const GLenum textureUnit) const {
-  if (!isLoadedCheck()) {
+  if (!isLoadedLogged()) {
     return;
   }
 
@@ -115,7 +115,7 @@ bool Texture::isLoaded() const {
 }
 
 bool Texture::resize(GLsizei newWidth, GLsizei newHeight) {
-  if (!isLoadedCheck()) {
+  if (!isLoadedLogged()) {
     return false;
   }
 
@@ -135,10 +135,9 @@ int Texture::getNumTextureImageUnits() {
   return maxTextureUnits;
 }
 
-bool Texture::isLoadedCheck() const {
+bool Texture::isLoadedLogged() const {
   if (!isLoaded()) {
-    std::cout << "Attempting to access non-loaded texture"
-              << "\n";
+    std::cout << "Attempting to access non-loaded texture\n";
     return false;
   }
 

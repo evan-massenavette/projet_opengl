@@ -96,7 +96,7 @@ class Texture {
    *
    * @return True, if texture has been loaded correctly or false otherwise.
    */
-  bool isLoadedCheck() const;
+  bool isLoadedLogged() const;
 };
 
 #endif
