@@ -46,7 +46,7 @@ void TextureCubeMap::bind(const GLenum textureUnit) const {
   }
 
   glActiveTexture(GL_TEXTURE0 + textureUnit);
-  glBindTexture(GL_TEXTURE_2D, _textureID);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, _textureID);
 }
 
 void TextureCubeMap::unbind(const GLenum textureUnit) const {
@@ -55,7 +55,7 @@ void TextureCubeMap::unbind(const GLenum textureUnit) const {
   }
 
   glActiveTexture(GL_TEXTURE0 + textureUnit);
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
 void TextureCubeMap::deleteTexture() {
