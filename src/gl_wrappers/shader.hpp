@@ -27,10 +27,12 @@ class ShaderConstants {
   // Color and textures
   DEFINE_SHADER_CONSTANT(color, "color");
   DEFINE_SHADER_CONSTANT(albedoSampler, "albedoSampler");
+  DEFINE_SHADER_CONSTANT(depthSampler, "depthSampler");
 
   // Lighting
   DEFINE_SHADER_CONSTANT(material, "material");
   DEFINE_SHADER_CONSTANT(cameraWorldPos, "cameraWorldPos");
+  DEFINE_SHADER_CONSTANT(farPlane, "farPlane");
 
   // Fog constants
   DEFINE_SHADER_CONSTANT(fogParams, "fogParams");
