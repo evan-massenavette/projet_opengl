@@ -20,27 +20,33 @@ class Texture {
    * @param height           Height of the texture
    * @param format           Format of the texture data (e.g. GL_RGB)
    * @param generateMipmaps  True, if mipmaps should be generated automatically
-   *
-   * @return True, if texture has been loaded correctly or false otherwise.
+   * @return True if texture has been loaded correctly, false otherwise.
    */
   bool createFromData(const unsigned char* data,
                       GLsizei width,
                       GLsizei height,
                       GLenum format,
                       bool generateMipmaps = false);
+
+  /**
+   * Creates texture (without data)
+   * @param width            Width of the texture
+   * @param height           Height of the texture
+   * @param format           Format of the texture data (e.g. GL_RGB)
+   * @return True if texture has been loaded correctly, false otherwise.
+   */
+  bool create(GLsizei width, GLsizei height, GLenum format);
+
   /**
    * Loads image file as 2D OpenGL texture.
-   *
    * @param filePath         Path to an image file
    * @param generateMipmaps  True if mipmaps should be generated automatically
-   *
    * @return True if the texture has been loaded correctly, false otherwise.
    */
   bool loadTexture2D(const std::string& filePath, bool generateMipmaps = true);
 
   /**
    * Binds texture to specified texture unit.
-   *
    * @param textureUnit  Texture unit index (default is 0)
    */
   void bind(GLenum textureUnit = 0) const;

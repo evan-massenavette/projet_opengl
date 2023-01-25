@@ -44,6 +44,30 @@ bool Texture::createFromData(const unsigned char* data,
   return true;
 }
 
+bool Texture::create(GLsizei width, GLsizei height, GLenum format) {
+  if (isLoaded()) {
+    return false;
+  }
+
+  // Update info
+  _width = width;
+  _height = height;
+  _format = format;
+
+  // Create the texture
+  glGenTextures(1, &_textureID);
+  glBindTexture(GL_TEXTURE_2D, _textureID);
+  glTexImage2D(GL_TEXTURE_2D, 0, _format, _width, _height, 0, _format,
+               GL_UNSIGNED_BYTE, nullptr);
+
+  // Set the texture's parameters
+  _setParameters();
+
+  std::cout << "Created texture (ID: " << _textureID << ")\n";
+
+  return true;
+}
+
 bool Texture::loadTexture2D(const std::string& filePath, bool generateMipmaps) {
   stbi_set_flip_vertically_on_load(1);
   int bytesPerPixel;
