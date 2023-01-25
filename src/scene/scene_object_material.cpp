@@ -51,9 +51,10 @@ void SceneObjectMaterial::draw(RenderPass renderPass) {
 
     if (texture != nullptr) {
       // Bind our texture to texture unit 0
-      texture->bind(0);
+      GLint albedoTextureUnit = 0;
+      texture->bind(albedoTextureUnit);
       // Set our albedo sampler to use Texture Unit 0
-      mainProgram[ShaderConstants::albedoSampler()] = 0;
+      mainProgram[ShaderConstants::albedoSampler()] = albedoTextureUnit;
     }
   }
 
