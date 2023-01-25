@@ -140,11 +140,10 @@ layout(std140) uniform PointLightsBlock {
 	PointLight data[MAX_POINT_LIGHTS];
 } pointLights;
 
-float calculateShadow(vec3 fragPos) {
-	vec3 lightPos = pointLights.data[0].position;
+float calculateShadow(vec3 fragPos, vec3 lightPos) {
 
     // Vector between fragment position and light position and its length
-	vec3 lightToFrag = fragPos - lightPos;
+	vec3 lightToFrag = lightPos - fragPos;
 	float currentDepth = length(lightToFrag);
 
     // Sample from the depth map and transform its value (in [0;1]) back to a distance
@@ -154,10 +153,6 @@ float calculateShadow(vec3 fragPos) {
     // Test for shadows
 	float bias = 0.05;
 	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
-
-	// TEMP
-	if(closestDepth == 0)
-		return 2.0;
 
 	return shadow;
 }
@@ -182,11 +177,7 @@ void main() {
 	// Point lights
 	for(int i = 0; i < pointLights.count; i++) {
 		PointLight pointLight = pointLights.data[i];
-		float shadow = calculateShadow(gWorldPos);
-		if(shadow == 2.0) {
-			fColor += vec3(0, 0, 1);
-			continue;
-		}
+		float shadow = calculateShadow(gWorldPos, pointLight.position);
 		fColor += (1.0 - shadow) * getPointLightColor(pointLight, material, normal, cameraWorldPos, gWorldPos);
 	}
 
