@@ -28,6 +28,10 @@ class FrameBuffer {
   void bindAsRead() const;
   void bindAsDraw() const;
 
+  void unbindAsReadAndDraw() const;
+  void unbindAsRead() const;
+  void unbindAsDraw() const;
+
   /**
    * Resizes yjr framebuffer with new width and height, while keeping
    * its original attachments.

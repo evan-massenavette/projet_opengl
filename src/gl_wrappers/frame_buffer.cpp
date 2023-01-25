@@ -159,6 +159,18 @@ void FrameBuffer::bindAsDraw() const {
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _frameBufferID);
 }
 
+void FrameBuffer::unbindAsReadAndDraw() const {
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void FrameBuffer::unbindAsRead() const {
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+}
+
+void FrameBuffer::unbindAsDraw() const {
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+}
+
 FrameBuffer::~FrameBuffer() {
   deleteFrameBuffer();
 }
