@@ -32,14 +32,12 @@ class Renderer {
   UniformBufferObject _uboDirectionalLights;
   UniformBufferObject _uboPointLights;
 
-  std::vector<std::unique_ptr<FrameBuffer>> _fbosAmbientLights;
-  std::vector<std::unique_ptr<FrameBuffer>> _fbosDirectionalLights;
-  std::vector<std::unique_ptr<FrameBuffer>> _fbosPointLights;
+  std::vector<std::unique_ptr<FrameBuffer>> _fbosDepthPointLights;
 
   const GLsizei _shadowMapSize = 1024;
 
   void _loadMainShaderProgram();
-  void _loadShadowsShaderProgram();
+  void _loadDepthShaderProgram();
   void _createShaderStructsUBOs();
   void _createShadowsFramebuffers();
   void _sendShaderStructsToProgram();

@@ -29,7 +29,7 @@ Renderer::Renderer(const App& app, const Scene& scene, const Camera& camera)
 
   // Load shaders
   _loadMainShaderProgram();
-  _loadShadowsShaderProgram();
+  _loadDepthShaderProgram();
 
   // Create UBOs for shaders structs
   _createShaderStructsUBOs();
@@ -60,31 +60,34 @@ void Renderer::_loadMainShaderProgram() {
   mainProgram.addShaderToProgram(
       shaderManager.getGeometryShader(ShaderProgramKeys::main()));
 
-  // Link program and use it
+  // Link program
   mainProgram.linkProgram();
 }
 
-void Renderer::_loadShadowsShaderProgram() {
+void Renderer::_loadDepthShaderProgram() {
   // Create shader program
-  auto& shadowsProgram =
-      ShaderProgramManager::getInstance().createShaderProgram(
-          ShaderProgramKeys::shadows());
+  auto& depthProgram = ShaderProgramManager::getInstance().createShaderProgram(
+      ShaderProgramKeys::depth());
 
   // Load shaders
   ShaderManager& shaderManager = ShaderManager::getInstance();
-  shaderManager.loadVertexShader(ShaderProgramKeys::shadows(),
-                                 "shaders/shadows.vert");
-  shaderManager.loadFragmentShader(ShaderProgramKeys::shadows(),
-                                   "shaders/shadows.frag");
+  shaderManager.loadVertexShader(ShaderProgramKeys::depth(),
+                                 "shaders/depth.vert");
+  shaderManager.loadGeometryShader(ShaderProgramKeys::depth(),
+                                   "shaders/depth.geom");
+  shaderManager.loadFragmentShader(ShaderProgramKeys::depth(),
+                                   "shaders/depth.frag");
 
   // Add loaded shaders to the program
-  shadowsProgram.addShaderToProgram(
-      shaderManager.getVertexShader(ShaderProgramKeys::shadows()));
-  shadowsProgram.addShaderToProgram(
-      shaderManager.getFragmentShader(ShaderProgramKeys::shadows()));
+  depthProgram.addShaderToProgram(
+      shaderManager.getVertexShader(ShaderProgramKeys::depth()));
+  depthProgram.addShaderToProgram(
+      shaderManager.getGeometryShader(ShaderProgramKeys::depth()));
+  depthProgram.addShaderToProgram(
+      shaderManager.getFragmentShader(ShaderProgramKeys::depth()));
 
-  // Link program and use it
-  shadowsProgram.linkProgram();
+  // Link program
+  depthProgram.linkProgram();
 }
 
 void Renderer::_createShaderStructsUBOs() {
@@ -121,12 +124,11 @@ void Renderer::_createShaderStructsUBOs() {
 void Renderer::_createShadowsFramebuffers() {
   // Point Lights
   for (const auto& light : _scene.pointLights) {
-    FrameBuffer::Builder fbBuilder;
-    auto shadowMapFBO = fbBuilder.createAndBind(_shadowMapSize, _shadowMapSize)
-                            .withDepthAttachment(GL_DEPTH_COMPONENT)
-                            .finishAndGetUnique();
-
-    _fbosPointLights.emplace_back(std::move(shadowMapFBO));
+    auto depthFBO = std::make_unique<FrameBuffer>();
+    depthFBO->create(_shadowMapSize, _shadowMapSize);
+    depthFBO->bindAsReadAndDraw();
+    depthFBO->addTextureCubeMap(GL_DEPTH_COMPONENT, GL_DEPTH_ATTACHMENT);
+    _fbosDepthPointLights.emplace_back(std::move(depthFBO));
   }
 }
 

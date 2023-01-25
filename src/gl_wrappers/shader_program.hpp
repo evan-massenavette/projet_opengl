@@ -114,7 +114,7 @@ class ShaderProgram {
 class ShaderProgramKeys {
  public:
   DEFINE_SHADER_CONSTANT(main, "main");
-  DEFINE_SHADER_CONSTANT(shadows, "shadows");
+  DEFINE_SHADER_CONSTANT(depth, "depth");
 };
 
 #endif
