@@ -38,19 +38,6 @@ class FlyingCamera : public Camera {
   void setMouseSensitivity(float mouseSensitivity);
 
   /**
-   * Sets keys to control camera with.
-   *
-   * @param forwardKeyCode      Key code to move forward
-   * @param backwardKeyCode     Key code to move backward
-   * @param strafeLeftKeyCode   Key code to strafe left
-   * @param strafeRightKeyCode  Key code to strafe right
-   */
-  void setControls(int forwardKeyCode,
-                   int backwardKeyCode,
-                   int strafeLeftKeyCode,
-                   int strafeRightKeyCode);
-
-  /**
    * Sets center of window position, in pixels.
    * This is required for camera rotation, that resets cursor position
    * constantly.
@@ -141,10 +128,6 @@ class FlyingCamera : public Camera {
 
   float _moveSpeed;  // Speed of camera (both for going forward / backward and
                      // for strafing left / right)
-  int _forwardKeyCode;      // Key code to move forward
-  int _backwardKeyCode;     // Key code to move backward
-  int _strafeLeftKeyCode;   // Key code to rotate left
-  int _strafeRightKeyCode;  // Key code to rotate right
 };
 
 #endif
