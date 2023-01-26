@@ -8,6 +8,7 @@
 
 #include "../gl_wrappers/texture.hpp"
 #include "../gl_wrappers/vertex_buffer_object.hpp"
+#include "../render_pass.hpp"
 #include "../shader_structs/material.hpp"
 #include "vertex.hpp"
 
@@ -27,6 +28,6 @@ class SceneObjectMaterial {
   SceneObjectMaterial& operator=(const SceneObjectMaterial&) = delete;
 
   void bufferData();
-  void draw();
+  void draw(RenderPass renderPass);
 };
 #endif

@@ -7,6 +7,7 @@
 #include "../app.hpp"
 #include "render_buffer.hpp"
 #include "texture.hpp"
+#include "texture_cube_map.hpp"
 
 /**
  * Wraps OpenGL framebuffer (copying data to / from framebuffer)
@@ -16,14 +17,22 @@ class FrameBuffer {
  public:
   ~FrameBuffer();
 
-  bool createFrameBufferWithColorAndDepth(GLsizei width, GLsizei height);
+  bool create(GLsizei width, GLsizei height);
 
-  /**
-   * Binds the framebuffer as either read, draw, or both.
-   */
-  void bindAsBothReadAndDraw() const;
+  bool addTexture(GLenum internalFormat, GLenum attachment, GLenum textureUnit);
+  bool addTextureCubeMap(GLenum internalFormat,
+                         GLenum attachment,
+                         GLenum textureUnit);
+
+  bool isComplete() const;
+
+  void bindAsReadAndDraw() const;
   void bindAsRead() const;
   void bindAsDraw() const;
+
+  void unbindAsReadAndDraw() const;
+  void unbindAsRead() const;
+  void unbindAsDraw() const;
 
   /**
    * Resizes yjr framebuffer with new width and height, while keeping
@@ -41,16 +50,6 @@ class FrameBuffer {
   void setFullViewport() const;
 
   /**
-   * Copies color values to the default framebuffer.
-   */
-  void copyColorToDefaultFrameBuffer(const App& app) const;
-
-  /**
-   * Copies depth from the default framebuffer.
-   */
-  void copyDepthFromDefaultFrameBuffer(const App& app) const;
-
-  /**
    * Gets width of the framebuffer in pixels.
    */
   GLsizei getWidth() const;
@@ -59,20 +58,6 @@ class FrameBuffer {
    * Gets height of the framebuffer in pixels.
    */
   GLsizei getHeight() const;
-
-  /**
-   * Queries, caches and returns how many bits are used to represent depth in
-   * this framebuffer. This value will be successfully queried only if
-   * framebuffer contains depth component.
-   */
-  GLint getDepthBits();
-
-  /**
-   * Queries, caches and returns how many bits are used to represent stencil in
-   * this framebuffer. This value will be successfully queried only if
-   * framebuffer contains stencil component.
-   */
-  GLint getStencilBits();
 
   /**
    * Reads the color value from the currently bound read framebuffer
@@ -87,16 +72,14 @@ class FrameBuffer {
   void deleteFrameBuffer();
 
   Texture* getTexture() const;
+  TextureCubeMap* getTextureCubeMap() const;
 
   /**
    * Static subclass for working with default window framebuffer.
    */
   class Default {
    public:
-    /**
-     * Binds default frame buffer as either read, draw, or both.
-     */
-    static void bindAsBothReadAndDraw();
+    static void bindAsReadAndDraw();
     static void bindAsRead();
     static void bindAsDraw();
 
@@ -118,71 +101,16 @@ class FrameBuffer {
     static void setFullViewport(const App& app);
   };
 
-  /**
-   * Subclass that builds a framebuffer object. Because of variety of options,
-   * it's a lot more practical to create and configure framebuffer like this.
-   */
-  class Builder {
-   public:
-    /**
-     * Creates and binds a new framebuffer.
-     * @param width New framebuffer width (in pixels)
-     * @param height New framebuffer height (in pixels)
-     */
-    Builder& createAndBind(GLsizei width, GLsizei height);
-
-    /**
-     * Adds color attachment with specified format.
-     * @param internalFormat Internal format of the color data (like GL_RGB8)
-     */
-    Builder& withColorAttachment(GLenum internalFormat);
-
-    /**
-     * Adds texture color attachment to the framebuffer with specified format.
-     * @param internalFormat Internal format of the texture data (like GL_RGB)
-     */
-    Builder& withTextureColorAttachment(GLenum internalFormat);
-
-    /**
-     * Adds depth attachment to the framebuffer.
-     * @param internalFormat Internal format of the depth data
-     */
-    Builder& withDepthAttachment(GLenum internalFormat);
-
-    /**
-     * Finishes building and returns unique pointer to the built framebuffer.
-     */
-    std::unique_ptr<FrameBuffer> finishAndGetUnique();
-
-    /**
-     * Finishes building and returns shared pointer to built framebuffer.
-     */
-    std::shared_ptr<FrameBuffer> finishAndGetShared();
-
-   private:
-    std::unique_ptr<FrameBuffer>
-        _frameBuffer;  // Holds framebuffer that is being built
-  };
-
  private:
-  friend class Builder;  // Builder has access to the private methods below
-
-  bool createAndBind(GLsizei width, GLsizei height);
-  bool withColorAttachment(GLenum internalFormat);
-  bool withDepthAttachment(GLenum internalFormat);
-  bool withTextureColorAttachment(GLenum internalFormat);
-  bool finishInitialization() const;
-
   GLuint _frameBufferID = 0;  // OpenGL-assignedd ID of the framebuffer
-  std::unique_ptr<RenderBuffer> _colorRenderBuffer;  // Held color renderbuffer
-  std::unique_ptr<RenderBuffer> _depthRenderBuffer;  // Held renderbuffer
   std::unique_ptr<Texture>
       _texture;  // The texture if framebuffer is used to render one
+  std::unique_ptr<TextureCubeMap>
+      _textureCubeMap;  // The texture cube map,
+                        // if the framebuffer is used to render one
 
-  GLsizei _width = 0;      // Width of the framebuffer in pixels
-  GLsizei _height = 0;     // Height of the framebuffer in pixels
-  GLint _depthBits = 1;    // Cached number of bits for depth
-  GLint _stencilBits = 1;  // Cached number of bits for stencil
+  GLsizei _width = 0;   // Width of the framebuffer in pixels
+  GLsizei _height = 0;  // Height of the framebuffer in pixels
 
   /**
    * Internal method that deletes only framebuffer object, but keeps

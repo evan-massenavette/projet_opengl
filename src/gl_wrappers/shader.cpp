@@ -11,6 +11,8 @@ Shader::~Shader() {
 
 bool Shader::loadShaderFromFile(const std::string& fileName,
                                 GLenum shaderType) {
+  std::cout << "Loading shader: " << fileName << "\n";
+
   std::vector<std::string> fileLines;
   std::set<std::string> filesIncludedAlready;
 

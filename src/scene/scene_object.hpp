@@ -9,6 +9,7 @@
 
 #include "../gl_wrappers/texture.hpp"
 #include "../gl_wrappers/vertex_buffer_object.hpp"
+#include "../render_pass.hpp"
 #include "scene_object_material.hpp"
 #include "vertex.hpp"
 
@@ -44,7 +45,7 @@ class SceneObject {
   /**
    * Draw the object.
    */
-  void draw();
+  void draw(RenderPass renderPass);
 
   /**
    * Load the given model
@@ -94,6 +95,11 @@ class SceneObject {
   glm::vec3 _rotation;
   glm::vec3 _scale;
 
+  // Flag for if the object has been changed since last draw.
+  // True at the beginning so that the object gets initialized.
+  bool _hasChanged = true;
+
+  glm::mat4 _modelMatrix;  // Cached model matrix
   /**
    * Computes the model matrix of this object
    * based on its position, rotation, and scale.

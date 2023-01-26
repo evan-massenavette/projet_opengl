@@ -31,6 +31,11 @@ struct PointLight {
 	bool isOn;
 };
 
+vec3 computeAmbientLighting(vec3 lightColor, Material material) {
+	vec3 ambientColor = lightColor * material.ambient;
+	return ambientColor;
+}
+
 vec3 computeDiffuseLighting(vec3 normal, vec3 lightToFragDir, vec3 lightColor, Material material) {
 	float diffuseIntensity = max(0.0, dot(normal, -lightToFragDir));
 	vec3 diffuseColor = lightColor * diffuseIntensity * material.diffuse;
@@ -51,7 +56,8 @@ vec3 getAmbientLightColor(AmbientLight ambientLight, Material material) {
 	if(!ambientLight.isOn)
 		return vec3(0);
 
-	vec3 finalColor = (ambientLight.color * material.ambient) * ambientLight.intensityFactor;
+	vec3 ambientColor = computeAmbientLighting(ambientLight.color, material);
+	vec3 finalColor = ambientColor * ambientLight.intensityFactor;
 
 	return clamp(finalColor, 0.0, 1.0);
 }
@@ -111,6 +117,10 @@ out vec3 fColor;
 uniform bool missingTexture;
 uniform sampler2D albedoSampler;
 
+// Depth maps for shadows
+uniform samplerCube depthSampler;
+uniform float farPlane;
+
 // Other uniforms
 uniform vec3 cameraWorldPos;
 uniform Material material;
@@ -131,6 +141,23 @@ layout(std140) uniform PointLightsBlock {
 	PointLight data[MAX_POINT_LIGHTS];
 } pointLights;
 
+float calculateShadow(vec3 fragPos, vec3 lightPos) {
+
+    // Vector between fragment position and light position and its length
+	vec3 lightToFrag = lightPos - fragPos;
+	float currentDepth = length(lightToFrag);
+
+    // Sample from the depth map and transform its value (in [0;1]) back to a distance
+	float closestDepth = texture(depthSampler, -lightToFrag).r;
+	closestDepth *= farPlane;
+
+    // Test for shadows
+	float bias = 0.05;
+	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+
+	return shadow;
+}
+
 void main() {
 	// Normal
 	vec3 normal = normalize(gNormal);
@@ -150,6 +177,7 @@ void main() {
 	// Point lights
 	for(int i = 0; i < pointLights.count; i++) {
 		PointLight pointLight = pointLights.data[i];
+		float shadow = calculateShadow(gWorldPos, pointLight.position);
 		fColor += getPointLightColor(pointLight, material, normal, cameraWorldPos, gWorldPos);
 	}
 	

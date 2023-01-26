@@ -27,6 +27,13 @@ class ShaderConstants {
   // Color and textures
   DEFINE_SHADER_CONSTANT(color, "color");
   DEFINE_SHADER_CONSTANT(albedoSampler, "albedoSampler");
+  DEFINE_SHADER_CONSTANT(missingTexture, "missingTexture");
+
+  // Depth specific
+  DEFINE_SHADER_CONSTANT(depthSampler, "depthSampler");
+  DEFINE_SHADER_CONSTANT(farPlane, "farPlane");
+  DEFINE_SHADER_CONSTANT(cubeMapViewMatrices, "cubeMapViewMatrices");
+  DEFINE_SHADER_CONSTANT(lightWorldPos, "lightWorldPos");
 
   // Lighting
   DEFINE_SHADER_CONSTANT(material, "material");

@@ -30,7 +30,7 @@ bool ShaderProgram::linkProgram() {
   _isLinked = linkStatus == GL_TRUE;
 
   if (!_isLinked) {
-    std::cerr << "Unable to link shader program.";
+    std::cerr << "Unable to link shader program. ";
 
     // Get length of the error log first
     GLint logLength;

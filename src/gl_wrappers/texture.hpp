@@ -8,9 +8,8 @@
 /**
  *  Wraps OpenGL texture into convenient class.
  */
-class Texture
-{
-public:
+class Texture {
+ public:
   ~Texture();
 
   /**
@@ -21,30 +20,42 @@ public:
    * @param height           Height of the texture
    * @param format           Format of the texture data (e.g. GL_RGB)
    * @param generateMipmaps  True, if mipmaps should be generated automatically
-   *
-   * @return True, if texture has been loaded correctly or false otherwise.
+   * @return True if texture has been loaded correctly, false otherwise.
    */
-  bool createFromData(const unsigned char *data,
+  bool createFromData(const unsigned char* data,
                       GLsizei width,
                       GLsizei height,
                       GLenum format,
                       bool generateMipmaps = false);
+
+  /**
+   * Creates texture (without data)
+   * @param width            Width of the texture
+   * @param height           Height of the texture
+   * @param format           Format of the texture data (e.g. GL_RGB)
+   * @return True if texture has been loaded correctly, false otherwise.
+   */
+  bool create(GLsizei width, GLsizei height, GLenum format);
+
   /**
    * Loads image file as 2D OpenGL texture.
-   *
    * @param filePath         Path to an image file
    * @param generateMipmaps  True if mipmaps should be generated automatically
-   *
    * @return True if the texture has been loaded correctly, false otherwise.
    */
-  bool loadTexture2D(const std::string &filePath, bool generateMipmaps = true);
+  bool loadTexture2D(const std::string& filePath, bool generateMipmaps = true);
 
   /**
    * Binds texture to specified texture unit.
-   *
    * @param textureUnit  Texture unit index (default is 0)
    */
   void bind(GLenum textureUnit = 0) const;
+
+  /**
+   * Unbinds texture from specified texture unit.
+   * @param textureUnit  Texture unit index (default is 0)
+   */
+  void unbind(GLenum textureUnit = 0) const;
 
   /**
    * Deletes loaded texture from OpenGL. Does nothing if the texture has not
@@ -85,13 +96,13 @@ public:
 
   static std::shared_ptr<Texture> getMissingTexture();
 
-private:
-  GLuint _textureID = 0; // OpenGL-assigned texture ID
-  GLsizei _width = 0;    // Width of texture in pixels
-  GLsizei _height = 0;   // Height of texture in pixels
-  GLenum _format = 0;    // Format this texture is represented with
-  std::string _filePath; // Path to file from which the texture has been loaded
-                         // (will be empty if texture was created from data)
+ private:
+  GLuint _textureID = 0;  // OpenGL-assigned texture ID
+  GLsizei _width = 0;     // Width of texture in pixels
+  GLsizei _height = 0;    // Height of texture in pixels
+  GLenum _format = 0;     // Format this texture is represented with
+  std::string _filePath;  // Path to file from which the texture has been loaded
+                          // (will be empty if texture was created from data)
 
   /**
    * Checks, if the texture has been loaded correctly and if not, logs it into
@@ -99,7 +110,12 @@ private:
    *
    * @return True, if texture has been loaded correctly or false otherwise.
    */
-  bool isLoadedCheck() const;
+  bool isLoadedLogged() const;
+
+  /**
+   * Sets the texture parmeters (filtering, wrapping, etc.)
+   */
+  void _setParameters() const;
 };
 
 #endif
