@@ -124,15 +124,15 @@ void Renderer::_createShaderStructsUBOs() {
 void Renderer::_createDepthFBOs() {
   // Point Lights
 
-  // Create depth frame buffer
+  // Create depth frame buffer and bind it
   glGenFramebuffers(1, &_depthFrameBufferID);
+  glBindFramebuffer(GL_FRAMEBUFFER, _depthFrameBufferID);
 
   // Create depth texture cube map
   _depthTextureCubeMap.create(_shadowMapSize, _shadowMapSize,
                               GL_DEPTH_COMPONENT);
 
   // Attach depth texture cube map to frame buffer
-  glBindFramebuffer(GL_FRAMEBUFFER, _depthFrameBufferID);
   glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _depthFrameBufferID,
                        0);
   glDrawBuffer(GL_NONE);
