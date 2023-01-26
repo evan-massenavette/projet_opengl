@@ -3,6 +3,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "../keybinds.hpp"
+
 #include "flying_camera.hpp"
 
 FlyingCamera::FlyingCamera(const glm::vec3& position,
@@ -14,10 +16,7 @@ FlyingCamera::FlyingCamera(const glm::vec3& position,
       _viewPoint(viewPoint),
       _upVector(upVector),
       _moveSpeed(moveSpeed),
-      _mouseSensitivity(mouseSensitivity) {
-  // Standard WSAD controls, as you are used to from games :)
-  setControls(GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
-}
+      _mouseSensitivity(mouseSensitivity) {}
 
 void FlyingCamera::setMoveSpeed(float moveSpeed) {
   _moveSpeed = moveSpeed;
@@ -25,16 +24,6 @@ void FlyingCamera::setMoveSpeed(float moveSpeed) {
 
 void FlyingCamera::setMouseSensitivity(float mouseSensitivity) {
   _mouseSensitivity = mouseSensitivity;
-}
-
-void FlyingCamera::setControls(int forwardKeyCode,
-                               int backwardKeyCode,
-                               int strafeLeftKeyCode,
-                               int strafeRightKeyCode) {
-  _forwardKeyCode = forwardKeyCode;
-  _backwardKeyCode = backwardKeyCode;
-  _strafeLeftKeyCode = strafeLeftKeyCode;
-  _strafeRightKeyCode = strafeRightKeyCode;
 }
 
 void FlyingCamera::setWindowCenterPosition(
@@ -63,19 +52,19 @@ void FlyingCamera::update(
     const std::function<glm::i32vec2()>& getCursorPosFunc,
     const std::function<void(const glm::i32vec2&)>& setCursorPosFunc,
     const std::function<float(float)>& speedCorrectionFunc) {
-  if (keyInputFunc(_forwardKeyCode)) {
+  if (keyInputFunc(Keybinds::forward)) {
     moveBy(speedCorrectionFunc(_moveSpeed));
   }
 
-  if (keyInputFunc(_backwardKeyCode)) {
+  if (keyInputFunc(Keybinds::backward)) {
     moveBy(-speedCorrectionFunc(_moveSpeed));
   }
 
-  if (keyInputFunc(_strafeLeftKeyCode)) {
+  if (keyInputFunc(Keybinds::left)) {
     strafeBy(-speedCorrectionFunc(_moveSpeed));
   }
 
-  if (keyInputFunc(_strafeRightKeyCode)) {
+  if (keyInputFunc(Keybinds::right)) {
     strafeBy(speedCorrectionFunc(_moveSpeed));
   }
 
