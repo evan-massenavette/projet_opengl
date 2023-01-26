@@ -215,9 +215,9 @@ void Renderer::_sendShaderStructsToProgram() {
   _uboPointLights.unbindUBO();
 }
 
-void Renderer::_drawScene(RenderPass pass) {
+void Renderer::_drawScene(RenderPass renderPass) {
   for (const auto& object : _scene.objects) {
-    object->draw(pass);
+    object->draw(renderPass);
   }
 }
 

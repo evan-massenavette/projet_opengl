@@ -43,7 +43,7 @@ class Renderer {
   void _createShaderStructsUBOs();
   void _createDepthFBOs();
   void _sendShaderStructsToProgram();
-  void _drawScene(RenderPass pass);
+  void _drawScene(RenderPass renderPass);
 
   std::array<glm::mat4, 6> _getCubeMapViewMatrices(const glm::vec3& position);
 };
