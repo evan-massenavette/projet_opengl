@@ -180,10 +180,13 @@ void main() {
 		float shadow = calculateShadow(gWorldPos, pointLight.position);
 		fColor += getPointLightColor(pointLight, material, normal, cameraWorldPos, gWorldPos);
 	}
-	
+
 	// Texture color
-	if(!missingTexture){
-		vec3 albedoColor = texture(albedoSampler, gUV).rgb;
-		fColor *= albedoColor;
+	if(!missingTexture) {
+		vec4 albedoColor = texture(albedoSampler, gUV);
+		if(albedoColor.a < 0.5) {
+			discard;
+		}
+		fColor *= albedoColor.rgb;
 	}
 }
