@@ -8,9 +8,8 @@
 #include "camera.hpp"
 
 /**
- * Implements a camera, that can fly around the world freely.
- * It cannot rotate more than 90 degrees up / down (so it's not suitable for
- * space flight simulators).
+ * Implements a camera,that can fly around the world freely.
+ * It cannot rotate more than 90 degrees up/down.
  */
 class FlyingCamera : public Camera {
  public:
@@ -23,7 +22,6 @@ class FlyingCamera : public Camera {
   /**
    * Sets movement speed of camera (how fast camera moves forward / backward and
    * strafes left / right).
-   *
    * @param moveSpeed  Movement speed (distance travelled per second)
    */
   void setMoveSpeed(float moveSpeed);
@@ -31,7 +29,6 @@ class FlyingCamera : public Camera {
   /**
    * Sets mouse sensitivity, or the speed, with which you rotate view with
    * mouse.
-   *
    * @param mouseSensitivity  Sensitivity in degrees per pixel - how many
    * degrees does camera turn for each pixel moved
    */
@@ -82,7 +79,6 @@ class FlyingCamera : public Camera {
   /**
    * Moves camera by specified distance (positive value = move forward, negative
    * value = move backward).
-   *
    * @param distance  Distance to move by
    */
   void moveBy(float distance);
@@ -90,27 +86,24 @@ class FlyingCamera : public Camera {
   /**
    * Strafes camera by specified distance (positive value = strafe right,
    * negative value = strafe left).
-   *
    * @param distance Distance to strafe by
    */
   void strafeBy(float distance);
 
   /**
    * Rotates camera view by specified angle to the left or right side.
-   *
    * @param angleInDegrees Angle to rotate by (in degrees)
    */
   void rotateLeftRight(float angleInDegrees);
 
   /**
    * Rotates camera view by specified angle up or down.
-   *
    * @param angleInDegrees Angle to rotate by (in degrees)
    */
   void rotateUpDown(float angleInDegrees);
 
   glm::vec3 _position;   // Camera's position (eye position)
-  glm::vec3 _viewPoint;  // Viewpoint - where does camera look to
+  glm::vec3 _viewPoint;  // Viewpoint (where the camera looks to)
   glm::vec3 _upVector;   // Up vector of the camera
 
   float _mouseSensitivity;  // Mouse sensitivity in degrees per pixel
