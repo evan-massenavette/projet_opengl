@@ -49,16 +49,16 @@ void FlyingCamera::update(
     const std::function<bool(int)>& keyInputFunc,
     const std::function<float(float)>& speedCorrectionFunc) {
   // Movement
-  if (keyInputFunc(Keybinds::forward)) {
+  if (keyInputFunc(Keybinds::moveForward)) {
     moveBy(speedCorrectionFunc(_moveSpeed));
   }
-  if (keyInputFunc(Keybinds::backward)) {
+  if (keyInputFunc(Keybinds::moveBackward)) {
     moveBy(-speedCorrectionFunc(_moveSpeed));
   }
-  if (keyInputFunc(Keybinds::left)) {
+  if (keyInputFunc(Keybinds::moveLeft)) {
     strafeBy(-speedCorrectionFunc(_moveSpeed));
   }
-  if (keyInputFunc(Keybinds::right)) {
+  if (keyInputFunc(Keybinds::moveRight)) {
     strafeBy(speedCorrectionFunc(_moveSpeed));
   }
 

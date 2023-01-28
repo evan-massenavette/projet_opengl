@@ -7,13 +7,16 @@
 class Keybinds {
  public:
   // App control
-  static const int exit = GLFW_KEY_ESCAPE;
+  static const int exitApp = GLFW_KEY_ESCAPE;
 
   // Movement
-  static const int forward = GLFW_KEY_W;
-  static const int left = GLFW_KEY_A;
-  static const int backward = GLFW_KEY_S;
-  static const int right = GLFW_KEY_D;
+  static const int moveForward = GLFW_KEY_W;
+  static const int moveLeft = GLFW_KEY_A;
+  static const int moveBackward = GLFW_KEY_S;
+  static const int moveRight = GLFW_KEY_D;
+
+  // Camera
+  static const int changeCameraType = GLFW_KEY_C;
 
  private:
   // When a keybind in unbound
