@@ -241,10 +241,8 @@ glm::ivec2 App::getWindowSize() const {
 }
 
 void App::_recalculateProjectionMatrix() {
-  // App width, height and aspect ratio
-  int width, height;
-  glfwGetWindowSize(_window, &width, &height);
-  float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+  float aspectRatio =
+      static_cast<float>(_windowWidth) / static_cast<float>(_windowHeight);
 
   // Other vars used for projection
   float vFov = 60.0f;  // Vertical fov in degrees
@@ -270,10 +268,10 @@ void App::_updateDeltaTimeAndFPS() {
 }
 
 void App::_onWindowResizeInternal(int width, int height) {
-  _recalculateProjectionMatrix();
-  glViewport(0, 0, width, height);
   _windowWidth = width;
   _windowHeight = height;
+  glViewport(0, 0, _windowWidth, _windowHeight);
+  _recalculateProjectionMatrix();
 }
 
 App* App::_getAppPtrFromWindow(GLFWwindow* window) {
