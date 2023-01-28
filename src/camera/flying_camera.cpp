@@ -26,11 +26,6 @@ void FlyingCamera::setMouseSensitivity(float mouseSensitivity) {
   _mouseSensitivity = mouseSensitivity;
 }
 
-void FlyingCamera::setWindowCenterPosition(
-    const glm::i32vec2& windowCenterPosition) {
-  _windowCenterPosition = windowCenterPosition;
-}
-
 glm::mat4 FlyingCamera::getViewMatrix() const {
   return glm::lookAt(_position, _viewPoint, _upVector);
 }
@@ -48,38 +43,38 @@ glm::vec3 FlyingCamera::getUpVector() const {
 }
 
 void FlyingCamera::update(
-    const std::function<bool(int)>& keyInputFunc,
-    const std::function<glm::i32vec2()>& getCursorPosFunc,
+    const glm::ivec2& windowSize,
+    const glm::ivec2& cursorPos,
     const std::function<void(const glm::i32vec2&)>& setCursorPosFunc,
+    const std::function<bool(int)>& keyInputFunc,
     const std::function<float(float)>& speedCorrectionFunc) {
+  // Movement
   if (keyInputFunc(Keybinds::forward)) {
     moveBy(speedCorrectionFunc(_moveSpeed));
   }
-
   if (keyInputFunc(Keybinds::backward)) {
     moveBy(-speedCorrectionFunc(_moveSpeed));
   }
-
   if (keyInputFunc(Keybinds::left)) {
     strafeBy(-speedCorrectionFunc(_moveSpeed));
   }
-
   if (keyInputFunc(Keybinds::right)) {
     strafeBy(speedCorrectionFunc(_moveSpeed));
   }
 
-  const auto curMousePosition = getCursorPosFunc();
-  const auto delta = _windowCenterPosition - curMousePosition;
+  auto windowCenterPos = windowSize / 2;
 
+  // Rotations
+  const auto delta = windowCenterPos - cursorPos;
   if (delta.x != 0) {
     rotateLeftRight(static_cast<float>(delta.x) * _mouseSensitivity);
   }
-
   if (delta.y != 0) {
     rotateUpDown(static_cast<float>(delta.y) * _mouseSensitivity);
   }
 
-  setCursorPosFunc(_windowCenterPosition);
+  // Set cursor position to center of window
+  setCursorPosFunc(windowCenterPos);
 }
 
 void FlyingCamera::moveBy(float distance) {

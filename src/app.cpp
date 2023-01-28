@@ -150,17 +150,12 @@ void App::run() {
     auto keyInputFunc = [this](int keyCode) {
       return this->keyPressed(keyCode);
     };
-    auto getCursorPosFunc = [this]() {
-      double curPosX, curPosY;
-      glfwGetCursorPos(this->_window, &curPosX, &curPosY);
-      return glm::u32vec2(curPosX, curPosY);
-    };
     auto setCursorPosFunc = [this](const glm::i32vec2& pos) {
       glfwSetCursorPos(this->_window, pos.x, pos.y);
     };
     auto speedCorrectionFunc = [this](float f) { return this->saf(f); };
-    camera.update(keyInputFunc, getCursorPosFunc, setCursorPosFunc,
-                  speedCorrectionFunc);
+    camera.update(getWindowSize(), getCursorPosition(), setCursorPosFunc,
+                  keyInputFunc, speedCorrectionFunc);
 
     // Update scene
   }

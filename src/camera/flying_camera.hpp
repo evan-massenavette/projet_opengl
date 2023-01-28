@@ -38,15 +38,6 @@ class FlyingCamera : public Camera {
   void setMouseSensitivity(float mouseSensitivity);
 
   /**
-   * Sets center of window position, in pixels.
-   * This is required for camera rotation, that resets cursor position
-   * constantly.
-   *
-   * @param windowCenterPosition  Center of the window
-   */
-  void setWindowCenterPosition(const glm::i32vec2& windowCenterPosition);
-
-  /**
    * Gets the camera's current view matrix, calculated from position and
    * viewpoint of camera.
    */
@@ -73,18 +64,18 @@ class FlyingCamera : public Camera {
   glm::vec3 getNormalizedViewVector() const;
 
   /**
-   * Updates camera - reacts on key presses and updates camera's internal state
-   * (position, view vector...).
-   *
-   * @param keyInputFunc         Function that detects key presses
-   * @param getCursorPosFunc     Function that retrieves current cursor position
+   * Updates camera: reacts to key presses and, updates camera's internal state.
+   * @param windowSize Current size of the window
+   * @param cursorPos Current position of the cursor in the window
    * @param setCursorPosFunc     Function that sets current cursor position
-   * @param speedCorrectionFunc  Function that corrects floating point value
-   * according to the time passed
+   * @param keyInputFunc Function that detects key presses
+   * @param speedCorrectionFunc Function that corrects values based on time
+   * passed
    */
-  void update(const std::function<bool(int)>& keyInputFunc,
-              const std::function<glm::i32vec2()>& getCursorPosFunc,
+  void update(const glm::ivec2& windowSize,
+              const glm::ivec2& cursorPos,
               const std::function<void(const glm::i32vec2&)>& setCursorPosFunc,
+              const std::function<bool(int)>& keyInputFunc,
               const std::function<float(float)>& speedCorrectionFunc);
 
  private:
@@ -122,12 +113,8 @@ class FlyingCamera : public Camera {
   glm::vec3 _viewPoint;  // Viewpoint - where does camera look to
   glm::vec3 _upVector;   // Up vector of the camera
 
-  glm::i32vec2 _windowCenterPosition;  // Center of the window (to restore
-                                       // cursor position every frame to)
-  float _mouseSensitivity;             // Mouse sensitivity in degrees per pixel
-
-  float _moveSpeed;  // Speed of camera (both for going forward / backward and
-                     // for strafing left / right)
+  float _mouseSensitivity;  // Mouse sensitivity in degrees per pixel
+  float _moveSpeed;         // Speed of camera (in all directions)
 };
 
 #endif
