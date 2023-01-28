@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <iostream>
+#include <stdexcept>
 
 #include <glm/gtc/matrix_transform.hpp>
 
