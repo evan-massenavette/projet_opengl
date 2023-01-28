@@ -225,7 +225,6 @@ glm::mat4 SceneObject::_getModelMatrix() {
   }
 
   // Recalculate the model matrix
-  std::cout << "Recalculated model matrix\n";
 
   // Base model matrix = Identity Matrix
   glm::mat4 baseModelMatrix(1);
