@@ -128,8 +128,13 @@ void App::run() {
                       glm::vec3(0, 1, 0));
   Renderer renderer(*this, scene, camera);
   Controls controls;
+  Renderer renderer(*this, scene);
 
   while (glfwWindowShouldClose(_window) == 0) {
+    // Get the right camera based from the controls
+    Camera& camera = controls.getCurrentCamera(flyingCamera, followingCamera);
+    renderer.setCamera(&camera);
+
     // Delta time and FPS
     _updateDeltaTimeAndFPS();
 
