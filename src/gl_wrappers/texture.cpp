@@ -71,8 +71,8 @@ bool Texture::create(GLsizei width, GLsizei height, GLenum format) {
 bool Texture::loadTexture2D(const std::string& filePath, bool generateMipmaps) {
   stbi_set_flip_vertically_on_load(1);
   int bytesPerPixel;
-  const auto imageData =
-      stbi_load(filePath.c_str(), &_width, &_height, &bytesPerPixel, 0);
+  const auto imageData = stbi_load(filePath.c_str(), &_width, &_height,
+                                   &bytesPerPixel, STBI_default);
   if (imageData == nullptr) {
     std::cerr << "Unable to load texture image: " << filePath << "\n";
     return false;
