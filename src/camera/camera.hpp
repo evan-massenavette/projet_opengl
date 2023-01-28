@@ -20,6 +20,8 @@ class Camera {
    */
   virtual glm::vec3 getPosition() const = 0;
 
+  enum class Type { Flying, Following };
+
  protected:
   Camera() = default;
 };
