@@ -15,9 +15,11 @@ void Scene::_initDefaultScene()
   // Objects
   auto object1 = new SceneObject("coaster");
   auto object2 = new SceneObject("tree");
+  auto object3 = new SceneObject("cart");
 
   objects.emplace_back(object1);
   objects.emplace_back(object2);
+  objects.emplace_back(object3);
 
   // Ambient lights
   shader_structs::AmbientLight ambientLight(glm::vec3(1, 1, 1), 0.1f);
