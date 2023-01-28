@@ -5,12 +5,13 @@
 
 #include "following_camera.hpp"
 
-FollowingCamera::FollowingCamera(const SceneObject& sceneObject,
-                                 const glm::vec3& positionOffset,
-                                 const glm::vec3& rotationOffset,
-                                 const glm::vec3& initialViewPoint,
-                                 const glm::vec3& upVector,
-                                 float mouseSensitivity)
+FollowingCamera::FollowingCamera(
+    const std::unique_ptr<SceneObject>& sceneObject,
+    const glm::vec3& positionOffset,
+    const glm::vec3& rotationOffset,
+    const glm::vec3& initialViewPoint,
+    const glm::vec3& upVector,
+    float mouseSensitivity)
     : _sceneObject(sceneObject),
       _positionOffset(positionOffset),
       _rotationOffset(rotationOffset),
@@ -53,11 +54,11 @@ void FollowingCamera::update(
   // auto rotationOffset = getNormalizedViewVector();
 
   // Set camera positon
-  _position = _sceneObject.getPosition() + positionOffset;
+  _position = _sceneObject->getPosition() + positionOffset;
 
   // Object movement and rotation
   const glm::vec3 objectMovement =
-      _sceneObject.getPosition() - _lastObjectPosition;
+      _sceneObject->getPosition() - _lastObjectPosition;
 
   // Update camera's view point if the object has moved
   if (objectMovement != glm::vec3(0)) {
@@ -69,8 +70,8 @@ void FollowingCamera::update(
   setCursorPosFunc(windowCenterPos);
 
   // Update attributes
-  _lastObjectPosition = _sceneObject.getPosition();
-  _lastObjectRotation = _sceneObject.getRotation();
+  _lastObjectPosition = _sceneObject->getPosition();
+  _lastObjectRotation = _sceneObject->getRotation();
 }
 
 glm::vec3 FollowingCamera::getNormalizedViewVector() const {

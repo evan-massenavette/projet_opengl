@@ -2,6 +2,7 @@
 #define FOLLOWING_CAMERA_HPP
 
 #include <functional>
+#include <memory>
 
 #include <glm/glm.hpp>
 
@@ -15,7 +16,7 @@
  */
 class FollowingCamera : public Camera {
  public:
-  FollowingCamera(const SceneObject& sceneObject,
+  FollowingCamera(const std::unique_ptr<SceneObject>& sceneObject,
                   const glm::vec3& positionOffset,
                   const glm::vec3& rotationOffset,
                   const glm::vec3& initialViewPoint,
@@ -69,7 +70,8 @@ class FollowingCamera : public Camera {
               const std::function<void(const glm::i32vec2&)>& setCursorPosFunc);
 
  private:
-  const SceneObject& _sceneObject;  // Object the camera is attached to
+  const std::unique_ptr<SceneObject>&
+      _sceneObject;  // Object the camera is attached to
 
   glm::vec3 _lastObjectPosition;
   glm::vec3 _lastObjectRotation;
