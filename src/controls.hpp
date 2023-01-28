@@ -8,7 +8,13 @@
 
 class Controls {
  public:
-  void processInputs(GLFWwindow* window);
+  // Constructor
+  Controls(Camera::Type cameraType = Camera::Type::Flying);
+  Camera& getCurrentCamera(FlyingCamera& flyingCamera,
+                           FollowingCamera& followingCamera);
+
+ private:
+  Camera::Type _cameraType;
 };
 
 #endif

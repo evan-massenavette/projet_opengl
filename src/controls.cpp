@@ -4,7 +4,14 @@
 
 void Controls::processInputs(GLFWwindow* window) {
   // Exit the app
-  if (glfwGetKey(window, Keybinds::exit) == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, true);
+Camera& Controls::getCurrentCamera(FlyingCamera& flyingCamera,
+                                   FollowingCamera& followingCamera) {
+  switch (_cameraType) {
+    case Camera::Type::Flying:
+      return flyingCamera;
+    case Camera::Type::Following:
+      return followingCamera;
+    default:
+      throw std::runtime_error("Unkown camera type");
   }
 }
