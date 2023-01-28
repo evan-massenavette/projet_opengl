@@ -149,7 +149,7 @@ void App::run() {
     glfwPollEvents();
 
     // Process inputs
-    controls.processInputs(_window);
+    controls.processInputs(*this);
 
     // Update camera
     auto keyInputFunc = [this](int keyCode) {
@@ -159,8 +159,10 @@ void App::run() {
       glfwSetCursorPos(this->_window, pos.x, pos.y);
     };
     auto speedCorrectionFunc = [this](float f) { return this->saf(f); };
-    camera.update(getWindowSize(), getCursorPosition(), setCursorPosFunc,
-                  keyInputFunc, speedCorrectionFunc);
+    flyingCamera.update(getWindowSize(), getCursorPosition(), setCursorPosFunc,
+                        keyInputFunc, speedCorrectionFunc);
+    followingCamera.update(getWindowSize(), getCursorPosition(),
+                           setCursorPosFunc);
 
     // Update scene
     scene.update();
