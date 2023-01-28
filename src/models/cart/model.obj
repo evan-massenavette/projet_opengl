@@ -1,6 +1,6 @@
 # Blender 3.4.1
 # www.blender.org
-mtllib untitled.mtl
+mtllib material.mtl
 o cart
 v 0.240000 0.081378 0.339744
 v 0.240000 0.081378 0.339744
