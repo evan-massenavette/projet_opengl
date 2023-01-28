@@ -232,8 +232,12 @@ int App::getWindowHeight() const {
 glm::ivec2 App::getCursorPosition() const {
   double posX, posY;
   glfwGetCursorPos(_window, &posX, &posY);
-  return glm::ivec2(static_cast<int>(posX),
-                    _windowHeight - static_cast<int>(posY));
+  return glm::ivec2(static_cast<int>(posX), static_cast<int>(posY));
+}
+
+glm::ivec2 App::getWindowSize() const {
+  // Use cached window width and height
+  return glm::ivec2(_windowWidth, _windowHeight);
 }
 
 void App::_recalculateProjectionMatrix() {

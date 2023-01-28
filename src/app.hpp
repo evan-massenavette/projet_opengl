@@ -116,9 +116,14 @@ class App {
   int getWindowHeight() const;
 
   /**
-   * Gets the cursor's current position.
+   * Gets the cursor's current position (in pixels).
    */
   glm::ivec2 getCursorPosition() const;
+
+  /**
+   * Gets the window's current size (in pixels).
+   */
+  glm::ivec2 getWindowSize() const;
 
  private:
   GLFWwindow* _window = nullptr;  // Pointer to GLFWwindow, nullptr by default
