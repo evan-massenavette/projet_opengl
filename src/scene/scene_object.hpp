@@ -88,6 +88,10 @@ class SceneObject {
    */
   void setPosition(const glm::vec3& distances);
 
+  const glm::vec3 getPosition() const;
+  const glm::vec3 getRotation() const;
+  const glm::vec3 getScale() const;
+
  private:
   std::vector<std::unique_ptr<SceneObjectMaterial>> _objectMaterials;
 

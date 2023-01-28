@@ -206,6 +206,18 @@ void SceneObject::setPosition(const glm::vec3& distances) {
   _hasChanged = true;
 }
 
+const glm::vec3 SceneObject::getPosition() const {
+  return _position;
+}
+
+const glm::vec3 SceneObject::getRotation() const {
+  return _rotation;
+}
+
+const glm::vec3 SceneObject::getScale() const {
+  return _scale;
+}
+
 glm::mat4 SceneObject::_getModelMatrix() {
   // If the object hasn't changed, return cached model matrix
   if (!_hasChanged) {
