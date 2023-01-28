@@ -34,6 +34,8 @@ class Scene {
   Scene(const glm::vec4& backgroundColor = glm::vec4(0),
         const bool isDefault = false);
 
+  void update();
+
  private:
   void _initDefaultScene();
 };

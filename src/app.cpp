@@ -163,6 +163,7 @@ void App::run() {
                   keyInputFunc, speedCorrectionFunc);
 
     // Update scene
+    scene.update();
   }
 
   destroyWindow();
