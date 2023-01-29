@@ -23,7 +23,7 @@ void Scene::_initDefaultScene()
   object1->setPosition(glm::vec3(0.0, 0.0, 0.0));
   object2->setPosition(glm::vec3(3.0, 12.0, -20.0));
   object3->setScale(glm::vec3(3, 3, 3));
-  object3->setPosition(glm::vec3(0, 5, -8));
+  object3->setPosition(glm::vec3(0.490937, 16.066832, -27.641771));
 
   objects.emplace_back(object1);
   objects.emplace_back(object2);
