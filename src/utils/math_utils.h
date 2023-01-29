@@ -16,7 +16,7 @@ inline int pos_mod(int i, int n) {
   return (i % n + n) % n;
 }
 
-inline int pos_mod(size_t i, size_t n) {
+inline size_t pos_mod(size_t i, size_t n) {
   return (i % n + n) % n;
 }
 
