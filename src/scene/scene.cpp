@@ -8,15 +8,15 @@
 #include <glm/gtx/vector_angle.hpp>
 
 #include "../spline.hpp"
-#include "../utils/colors.hpp"
+#include "../utils/colors_utils.hpp"
 
 #include "scene.hpp"
 
 constexpr double PI = 3.1415926535897932384626433832795028841971693993751058209;
 
 Scene::Scene(const bool isDefault)
-    : fogParams(colors::skyBlue, 0.015f),
-      backgroundColor(glm::vec4(colors::skyBlue, 1)) {
+    : fogParams(colors_utils::skyBlue, 0.015f),
+      backgroundColor(glm::vec4(colors_utils::skyBlue, 1)) {
   if (isDefault)
     _initDefaultScene();
 }
