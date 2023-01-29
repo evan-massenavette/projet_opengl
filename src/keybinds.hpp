@@ -15,6 +15,12 @@ class Keybinds {
   static const int moveBackward = GLFW_KEY_S;
   static const int moveRight = GLFW_KEY_D;
 
+  // Alternative movement
+  static const int moveForwardAlt = GLFW_KEY_UP;
+  static const int moveLeftAlt = GLFW_KEY_LEFT;
+  static const int moveBackwardAlt = GLFW_KEY_DOWN;
+  static const int moveRightAlt = GLFW_KEY_RIGHT;
+
   // Camera
   static const int changeCameraType = GLFW_KEY_C;
 
