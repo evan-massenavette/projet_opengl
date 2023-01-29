@@ -77,7 +77,8 @@ void Scene::update() {
 
   // Rotation angles
   float yAngle = -glm::orientedAngle(normalizedMovement, xAxis, yAxis);
-  float zAngle = PI / 2 - glm::angle(normalizedMovement, yAxis);
+  float zAngle =
+      static_cast<float>(PI / 2) - glm::angle(normalizedMovement, yAxis);
 
   // Set the cart's position and rotation
   auto& cart = objects.front();
