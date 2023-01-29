@@ -127,9 +127,9 @@ void App::run() {
   Scene scene(true);
   FlyingCamera flyingCamera(glm::vec3(8, 20, 10), glm::vec3(0, 20, -35),
                             glm::vec3(0, 1, 0));
-  FollowingCamera followingCamera(scene.objects.back(), glm::vec3(0, 1, 0),
-                                  glm::vec3(0), glm::vec3(1, 0, 0),
-                                  glm::vec3(0, 1, 0));
+  auto& cart = scene.objects.front();
+  FollowingCamera followingCamera(cart, glm::vec3(0, 1, 0), glm::vec3(0),
+                                  glm::vec3(1, 0, 0), glm::vec3(0, 1, 0));
   Controls controls;
   Renderer renderer(*this, scene);
 
