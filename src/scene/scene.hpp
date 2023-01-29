@@ -36,10 +36,20 @@ class Scene {
 
   Scene(const bool isDefault = false);
 
-  void update();
+  void update(float timeDelta);
 
  private:
-  glm::vec3 _lastCartPosition;
+  struct {
+    glm::vec3 lastPosition;
+    float minSpeed = 0.5;
+    float maxSpeed = 4;
+    float speed = 0.5;
+    float acceleration = 0;
+    float gravity = 9.81f;
+    float weight = 5;
+    float realIndex = 0;
+    bool needsInit = true;
+  } _cart;
   void _initDefaultScene();
 };
 

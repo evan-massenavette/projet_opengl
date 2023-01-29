@@ -168,7 +168,7 @@ void App::run() {
                            setCursorPosFunc);
 
     // Update scene
-    scene.update();
+    scene.update(static_cast<float>(_timeDelta));
   }
 
   destroyWindow();
