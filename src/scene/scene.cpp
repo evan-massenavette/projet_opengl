@@ -12,8 +12,6 @@
 
 #include "scene.hpp"
 
-constexpr double PI = 3.1415926535897932384626433832795028841971693993751058209;
-
 Scene::Scene(const bool isDefault)
     : fogParams(colors_utils::skyBlue, 0.015f),
       backgroundColor(glm::vec4(colors_utils::skyBlue, 1)) {
