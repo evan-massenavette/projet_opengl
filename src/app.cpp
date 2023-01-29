@@ -12,19 +12,23 @@
 #include "renderer.hpp"
 #include "scene/scene.hpp"
 
-App::App() {
+App::App()
+{
   // Set all keys as not pressed
-  for (auto& kwp : _keyWasPressed) {
+  for (auto &kwp : _keyWasPressed)
+  {
     kwp = false;
   }
 }
 
-bool App::createWindow(const std::string& windowTitle,
+bool App::createWindow(const std::string &windowTitle,
                        int majorVersion,
                        int minorVersion,
-                       bool showFullscreen) {
+                       bool showFullscreen)
+{
   // Initialize and configure GLFW
-  if (!glfwInit()) {
+  if (!glfwInit())
+  {
     std::cerr << "Unable to initialize GLFW\n";
     return false;
   }
@@ -46,7 +50,8 @@ bool App::createWindow(const std::string& windowTitle,
   _window =
       glfwCreateWindow(defaultWidth, defaultHeight, windowTitle.c_str(),
                        showFullscreen ? primaryMonitor : nullptr, nullptr);
-  if (_window == nullptr) {
+  if (_window == nullptr)
+  {
     std::cerr << "Unable to create GLFW window\n";
     return false;
   }
@@ -71,7 +76,8 @@ bool App::createWindow(const std::string& windowTitle,
   glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   // Load GLAD
-  if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+  if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+  {
     std::cerr << "Unable to initialize GLAD\n";
     return false;
   }
@@ -79,38 +85,42 @@ bool App::createWindow(const std::string& windowTitle,
   return true;
 }
 
-void App::destroyWindow() {
+void App::destroyWindow()
+{
   glfwDestroyWindow(_window);
   glfwTerminate();
 }
 
-GLFWwindow* App::getWindow() const {
+GLFWwindow *App::getWindow() const
+{
   return _window;
 }
 
-void App::_updateWindowTitle(const std::string& baseTitle,
-                             const glm::vec3& cameraPos,
-                             const std::string& separator) {
+void App::_updateWindowTitle(const std::string &baseTitle,
+                             const glm::vec3 &cameraPos,
+                             const std::string &separator)
+{
   // FPS
   const auto FPS_str = std::to_string(getFPS());
 
   // Camera position
   std::stringstream cameraPos_sstr;
-  cameraPos_sstr << std::fixed << std::setprecision(2)  //
-                 << "(" << cameraPos.x                  //
-                 << ", " << cameraPos.y                 //
-                 << ", " << cameraPos.z                 //
+  cameraPos_sstr << std::fixed << std::setprecision(2) //
+                 << "(" << cameraPos.x                 //
+                 << ", " << cameraPos.y                //
+                 << ", " << cameraPos.z                //
                  << ")";
   const auto cameraPos_str = cameraPos_sstr.str();
 
   // Set the window's title
-  const std::string newWindowTitle = baseTitle + separator            //
-                                     + "FPS: " + FPS_str + separator  //
+  const std::string newWindowTitle = baseTitle + separator           //
+                                     + "FPS: " + FPS_str + separator //
                                      + "Position: " + cameraPos_str;
   glfwSetWindowTitle(_window, newWindowTitle.c_str());
 }
 
-void App::run() {
+void App::run()
+{
   // Open window
   const std::string baseWindowTitle = "Projet OpenGL Evan & Vincent";
   createWindow(baseWindowTitle.c_str(), 3, 3, false);
@@ -129,7 +139,8 @@ void App::run() {
   Renderer renderer(*this, scene, camera);
   Controls controls;
 
-  while (glfwWindowShouldClose(_window) == 0) {
+  while (glfwWindowShouldClose(_window) == 0)
+  {
     // Delta time and FPS
     _updateDeltaTimeAndFPS();
 
@@ -147,100 +158,123 @@ void App::run() {
     controls.processInputs(_window);
 
     // Update camera
-    auto keyInputFunc = [this](int keyCode) {
+    auto keyInputFunc = [this](int keyCode)
+    {
       return this->keyPressed(keyCode);
     };
-    auto setCursorPosFunc = [this](const glm::i32vec2& pos) {
+    auto setCursorPosFunc = [this](const glm::i32vec2 &pos)
+    {
       glfwSetCursorPos(this->_window, pos.x, pos.y);
     };
-    auto speedCorrectionFunc = [this](float f) { return this->saf(f); };
+    auto speedCorrectionFunc = [this](float f)
+    { return this->saf(f); };
     camera.update(getWindowSize(), getCursorPosition(), setCursorPosFunc,
                   keyInputFunc, speedCorrectionFunc);
 
     // Update scene
+    scene.update();
   }
 
   destroyWindow();
 }
 
-bool App::keyPressed(int keyCode) const {
+bool App::keyPressed(int keyCode) const
+{
   return glfwGetKey(_window, keyCode) == GLFW_PRESS;
 }
 
-bool App::keyPressedOnce(int keyCode) {
+bool App::keyPressedOnce(int keyCode)
+{
   bool result = false;
-  if (keyPressed(keyCode)) {
-    if (!_keyWasPressed[keyCode]) {
+  if (keyPressed(keyCode))
+  {
+    if (!_keyWasPressed[keyCode])
+    {
       result = true;
     }
 
     _keyWasPressed[keyCode] = true;
-  } else {
+  }
+  else
+  {
     _keyWasPressed[keyCode] = false;
   }
 
   return result;
 }
 
-void App::closeWindow(bool hasErrorOccurred) {
+void App::closeWindow(bool hasErrorOccurred)
+{
   glfwSetWindowShouldClose(_window, true);
   _hasErrorOccurred = hasErrorOccurred;
 }
 
-bool App::hasErrorOccurred() const {
+bool App::hasErrorOccurred() const
+{
   return _hasErrorOccurred;
 }
 
-glm::mat4 App::getProjectionMatrix() const {
+glm::mat4 App::getProjectionMatrix() const
+{
   return _projectionMatrix;
 }
 
-float App::saf(float value) const {
+float App::saf(float value) const
+{
   return value * static_cast<float>(_timeDelta);
 }
 
-double App::getTimeDelta() const {
+double App::getTimeDelta() const
+{
   return _timeDelta;
 }
 
-int App::getFPS() const {
+int App::getFPS() const
+{
   return _FPS;
 }
 
-void App::setVerticalSync(bool enable) {
+void App::setVerticalSync(bool enable)
+{
   glfwSwapInterval(enable ? 1 : 0);
   _isVerticalSyncEnabled = enable;
 }
 
-bool App::isVerticalSyncEnabled() const {
+bool App::isVerticalSyncEnabled() const
+{
   return _isVerticalSyncEnabled;
 }
 
-int App::getWindowWidth() const {
+int App::getWindowWidth() const
+{
   return _windowWidth;
 }
 
-int App::getWindowHeight() const {
+int App::getWindowHeight() const
+{
   return _windowHeight;
 }
 
-glm::ivec2 App::getCursorPosition() const {
+glm::ivec2 App::getCursorPosition() const
+{
   double posX, posY;
   glfwGetCursorPos(_window, &posX, &posY);
   return glm::ivec2(static_cast<int>(posX), static_cast<int>(posY));
 }
 
-glm::ivec2 App::getWindowSize() const {
+glm::ivec2 App::getWindowSize() const
+{
   // Use cached window width and height
   return glm::ivec2(_windowWidth, _windowHeight);
 }
 
-void App::_recalculateProjectionMatrix() {
+void App::_recalculateProjectionMatrix()
+{
   float aspectRatio =
       static_cast<float>(_windowWidth) / static_cast<float>(_windowHeight);
 
   // Other vars used for projection
-  float vFov = 60.0f;  // Vertical fov in degrees
+  float vFov = 60.0f; // Vertical fov in degrees
   float zNear = 0.1f;
   float zFar = 1500.0f;
 
@@ -249,32 +283,37 @@ void App::_recalculateProjectionMatrix() {
       glm::perspective(glm::radians(vFov), aspectRatio, zNear, zFar);
 }
 
-void App::_updateDeltaTimeAndFPS() {
+void App::_updateDeltaTimeAndFPS()
+{
   const auto currentTime = glfwGetTime();
   _timeDelta = currentTime - _lastFrameTime;
   _lastFrameTime = currentTime;
   _nextFPS++;
 
-  if (currentTime - _lastFrameTimeFPS > 1.0) {
+  if (currentTime - _lastFrameTimeFPS > 1.0)
+  {
     _lastFrameTimeFPS = currentTime;
     _FPS = _nextFPS;
     _nextFPS = 0;
   }
 }
 
-void App::_onWindowResizeInternal(int width, int height) {
+void App::_onWindowResizeInternal(int width, int height)
+{
   _windowWidth = width;
   _windowHeight = height;
   glViewport(0, 0, _windowWidth, _windowHeight);
   _recalculateProjectionMatrix();
 }
 
-App* App::_getAppPtrFromWindow(GLFWwindow* window) {
-  auto app = reinterpret_cast<App*>(glfwGetWindowUserPointer(window));
+App *App::_getAppPtrFromWindow(GLFWwindow *window)
+{
+  auto app = reinterpret_cast<App *>(glfwGetWindowUserPointer(window));
   return app;
 }
 
-void App::_onWindowResizeStatic(GLFWwindow* window, int width, int height) {
+void App::_onWindowResizeStatic(GLFWwindow *window, int width, int height)
+{
   auto app = _getAppPtrFromWindow(window);
   app->_onWindowResizeInternal(width, height);
 }

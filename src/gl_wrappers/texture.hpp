@@ -4,12 +4,14 @@
 #include <string>
 
 #include <glad/glad.h>
+#include <memory>
 
 /**
  *  Wraps OpenGL texture into convenient class.
  */
-class Texture {
- public:
+class Texture
+{
+public:
   ~Texture();
 
   /**
@@ -22,7 +24,7 @@ class Texture {
    * @param generateMipmaps  True, if mipmaps should be generated automatically
    * @return True if texture has been loaded correctly, false otherwise.
    */
-  bool createFromData(const unsigned char* data,
+  bool createFromData(const unsigned char *data,
                       GLsizei width,
                       GLsizei height,
                       GLenum format,
@@ -43,7 +45,7 @@ class Texture {
    * @param generateMipmaps  True if mipmaps should be generated automatically
    * @return True if the texture has been loaded correctly, false otherwise.
    */
-  bool loadTexture2D(const std::string& filePath, bool generateMipmaps = true);
+  bool loadTexture2D(const std::string &filePath, bool generateMipmaps = true);
 
   /**
    * Binds texture to specified texture unit.
@@ -96,13 +98,13 @@ class Texture {
 
   static std::shared_ptr<Texture> getMissingTexture();
 
- private:
-  GLuint _textureID = 0;  // OpenGL-assigned texture ID
-  GLsizei _width = 0;     // Width of texture in pixels
-  GLsizei _height = 0;    // Height of texture in pixels
-  GLenum _format = 0;     // Format this texture is represented with
-  std::string _filePath;  // Path to file from which the texture has been loaded
-                          // (will be empty if texture was created from data)
+private:
+  GLuint _textureID = 0; // OpenGL-assigned texture ID
+  GLsizei _width = 0;    // Width of texture in pixels
+  GLsizei _height = 0;   // Height of texture in pixels
+  GLenum _format = 0;    // Format this texture is represented with
+  std::string _filePath; // Path to file from which the texture has been loaded
+                         // (will be empty if texture was created from data)
 
   /**
    * Checks, if the texture has been loaded correctly and if not, logs it into
