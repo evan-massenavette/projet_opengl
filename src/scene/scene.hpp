@@ -39,7 +39,7 @@ class Scene {
   void update(float timeDelta);
 
  private:
-  struct {
+  struct Cart {
     glm::vec3 lastPosition;
     float minSpeed = 0.5;
     float maxSpeed = 4;
@@ -49,7 +49,9 @@ class Scene {
     float weight = 5;
     float realIndex = 0;
     bool needsInit = true;
-  } _cart;
+  };
+
+  Cart _cart;
   void _initDefaultScene();
 };
 
