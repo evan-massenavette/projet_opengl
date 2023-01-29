@@ -38,7 +38,7 @@ public:
   void update();
 
 private:
-  int _t = 0;
+  glm::vec3 _lastCartPosition;
   void _initDefaultScene();
 };
 

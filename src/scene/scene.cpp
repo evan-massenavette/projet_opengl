@@ -5,6 +5,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <glm/gtx/vector_angle.hpp>
+
 #include "../spline.hpp"
 #include "scene.hpp"
 
@@ -46,7 +48,7 @@ void Scene::_initDefaultScene() {
 }
 
 void Scene::update() {
-  // Get the current index in the spline
+  // Get the current index in the cart spline
   double totalCycleTime = 10;
   double currentCycleTime = std::fmod(glfwGetTime(), totalCycleTime);
 
@@ -55,16 +57,15 @@ void Scene::update() {
   size_t index = static_cast<size_t>(realIndex);
   size_t nextIndex = index < spline::cart.size() - 1 ? index + 1 : 0;
 
-  // Interpolate between 2 positions in spline (for smooth movement)
+  // Cart position (interpolated, for smooth movement)
   float interp = static_cast<float>(realIndex - index);
   glm::vec3 position =
       (1 - interp) * spline::cart[index] + interp * spline::cart[nextIndex];
-
   glm::vec3 positionOffset(0, 4, 0);
 
-  auto& cart = objects.back();
-
-  cart->setPosition(position + positionOffset);
+  // Movement vectors
+  glm::vec3 movement = position - _lastCartPosition;
+  glm::vec3 normalizedMovement = glm::normalize(movement);
 
   // World axes
   glm::vec3 xAxis(1, 0, 0);
@@ -72,7 +73,17 @@ void Scene::update() {
   glm::vec3 zAxis(0, 0, 1);
 
   // Rotation angles
-  double horizontalAngle = (currentCycleTime / totalCycleTime) * 2 * PI + PI;
+  glm::vec3 xzMovement =
+      glm::dot(movement, xAxis) * xAxis + glm::dot(movement, zAxis) * zAxis;
+  glm::vec3 xzNormalizedMovement = glm::normalize(xzMovement);
+  float xAngle = glm::angle(normalizedMovement, xzNormalizedMovement);
+  float yAngle = -glm::orientedAngle(normalizedMovement, xAxis, yAxis);
 
-  cart->setRotation(glm::vec3(0, horizontalAngle, 0));
+  // Set the cart's position and rotation
+  auto& cart = objects.back();
+  cart->setPosition(position + positionOffset);
+  cart->setRotation(glm::vec3(xAngle, yAngle, 0));
+
+  // Update member vars
+  _lastCartPosition = position;
 }
