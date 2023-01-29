@@ -23,17 +23,17 @@ Scene::Scene(const bool isDefault)
 
 void Scene::_initDefaultScene() {
   // Objects
-  auto object1 = new SceneObject("coaster");
-  auto object2 = new SceneObject("tree");
-  auto object3 = new SceneObject("cart");
-  object1->setPosition(glm::vec3(0.0, 0.0, 0.0));
-  object2->setPosition(glm::vec3(3.0, 12.0, -20.0));
-  object3->setScale(glm::vec3(3, 3, 3));
-  object3->setPosition(glm::vec3(0.490937, 16.066832, -27.641771));
+  auto cart = new SceneObject("cart");
+  auto coaster = new SceneObject("coaster");
+  auto tree = new SceneObject("tree");
+  coaster->setPosition(glm::vec3(0.0, 0.0, 0.0));
+  tree->setPosition(glm::vec3(3.0, 12.0, -20.0));
+  cart->setScale(glm::vec3(3, 3, 3));
+  cart->setPosition(glm::vec3(0.490937, 16.066832, -27.641771));
 
-  objects.emplace_back(object1);
-  objects.emplace_back(object2);
-  objects.emplace_back(object3);
+  objects.emplace_back(cart);
+  objects.emplace_back(coaster);
+  objects.emplace_back(tree);
 
   // Ambient lights
   shader_structs::AmbientLight ambientLight(glm::vec3(1.0, 1.0, 1.0), 0.1f);
@@ -76,16 +76,13 @@ void Scene::update() {
   glm::vec3 zAxis(0, 0, 1);
 
   // Rotation angles
-  glm::vec3 xzMovement =
-      glm::dot(movement, xAxis) * xAxis + glm::dot(movement, zAxis) * zAxis;
-  glm::vec3 xzNormalizedMovement = glm::normalize(xzMovement);
-  float xAngle = glm::angle(normalizedMovement, xzNormalizedMovement);
   float yAngle = -glm::orientedAngle(normalizedMovement, xAxis, yAxis);
+  float zAngle = PI / 2 - glm::angle(normalizedMovement, yAxis);
 
   // Set the cart's position and rotation
   auto& cart = objects.back();
   cart->setPosition(position + positionOffset);
-  cart->setRotation(glm::vec3(xAngle, yAngle, 0));
+  cart->setRotation(glm::vec3(0, yAngle, zAngle));
 
   // Update member vars
   _lastCartPosition = position;
