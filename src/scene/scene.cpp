@@ -1,21 +1,22 @@
+#include <cmath>
 #include <iostream>
 #include <utility>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "scene.hpp"
 #include "../spline.hpp"
+#include "scene.hpp"
 
-Scene::Scene(const glm::vec4 &backgroundColor, const bool isDefault)
-    : backgroundColor(backgroundColor)
-{
+constexpr double PI = 3.1415926535897932384626433832795028841971693993751058209;
+
+Scene::Scene(const glm::vec4& backgroundColor, const bool isDefault)
+    : backgroundColor(backgroundColor) {
   if (isDefault)
     _initDefaultScene();
 }
 
-void Scene::_initDefaultScene()
-{
+void Scene::_initDefaultScene() {
   // Objects
   auto object1 = new SceneObject("coaster");
   auto object2 = new SceneObject("tree");
@@ -34,8 +35,8 @@ void Scene::_initDefaultScene()
   ambientLights.emplace_back(ambientLight);
 
   // Directional lights
-  shader_structs::DirectionalLight directionalLight1(glm::vec3(1.0, 1.0, 1.0), 0.5f,
-                                                     glm::vec3(-1.0, -1.0, 1.0));
+  shader_structs::DirectionalLight directionalLight1(
+      glm::vec3(1.0, 1.0, 1.0), 0.5f, glm::vec3(-1.0, -1.0, 1.0));
   directionalLights.emplace_back(directionalLight1);
 
   // Point lights
@@ -44,8 +45,34 @@ void Scene::_initDefaultScene()
   // pointLights.emplace_back(pointLight1);
 }
 
-void Scene::update()
-{
-  // objects[2]->setPosition(spline[_t % 60] + glm::vec3(0, 5, 0));
-  //_t++;
+void Scene::update() {
+  // Get the current index in the spline
+  double totalCycleTime = 10;
+  double currentCycleTime = std::fmod(glfwGetTime(), totalCycleTime);
+
+  // Calculate indices
+  double realIndex = currentCycleTime / totalCycleTime * spline::cart.size();
+  size_t index = static_cast<size_t>(realIndex);
+  size_t nextIndex = index < spline::cart.size() - 1 ? index + 1 : 0;
+
+  // Interpolate between 2 positions in spline (for smooth movement)
+  float interp = static_cast<float>(realIndex - index);
+  glm::vec3 position =
+      (1 - interp) * spline::cart[index] + interp * spline::cart[nextIndex];
+
+  glm::vec3 positionOffset(0, 4, 0);
+
+  auto& cart = objects.back();
+
+  cart->setPosition(position + positionOffset);
+
+  // World axes
+  glm::vec3 xAxis(1, 0, 0);
+  glm::vec3 yAxis(0, 1, 0);
+  glm::vec3 zAxis(0, 0, 1);
+
+  // Rotation angles
+  double horizontalAngle = (currentCycleTime / totalCycleTime) * 2 * PI + PI;
+
+  cart->setRotation(glm::vec3(0, horizontalAngle, 0));
 }
