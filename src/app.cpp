@@ -8,6 +8,7 @@
 
 #include "app.hpp"
 #include "camera/flying_camera.hpp"
+#include "camera/following_camera.hpp"
 #include "controls.hpp"
 #include "renderer.hpp"
 #include "scene/scene.hpp"
@@ -134,13 +135,20 @@ void App::run()
 
   // Objects used during main loop
   Scene scene(glm::vec4(0.0, 0.0, 0.2, 1.0), true);
-  FlyingCamera camera(glm::vec3(8, 5, 5), glm::vec3(0, 0, 0),
-                      glm::vec3(0, 1, 0));
-  Renderer renderer(*this, scene, camera);
+  FlyingCamera flyingCamera(glm::vec3(8, 5, 5), glm::vec3(0, 0, 0),
+                            glm::vec3(0, 1, 0));
+  FollowingCamera followingCamera(scene.objects.back(), glm::vec3(0, 1, 0),
+                                  glm::vec3(0), glm::vec3(1, 0, 0),
+                                  glm::vec3(0, 1, 0));
   Controls controls;
+  Renderer renderer(*this, scene);
 
   while (glfwWindowShouldClose(_window) == 0)
   {
+    // Get the right camera based from the controls
+    Camera &camera = controls.getCurrentCamera(flyingCamera, followingCamera);
+    renderer.setCamera(&camera);
+
     // Delta time and FPS
     _updateDeltaTimeAndFPS();
 
@@ -155,7 +163,7 @@ void App::run()
     glfwPollEvents();
 
     // Process inputs
-    controls.processInputs(_window);
+    controls.processInputs(*this);
 
     // Update camera
     auto keyInputFunc = [this](int keyCode)
@@ -168,8 +176,10 @@ void App::run()
     };
     auto speedCorrectionFunc = [this](float f)
     { return this->saf(f); };
-    camera.update(getWindowSize(), getCursorPosition(), setCursorPosFunc,
-                  keyInputFunc, speedCorrectionFunc);
+    flyingCamera.update(getWindowSize(), getCursorPosition(), setCursorPosFunc,
+                        keyInputFunc, speedCorrectionFunc);
+    followingCamera.update(getWindowSize(), getCursorPosition(),
+                           setCursorPosFunc);
 
     // Update scene
     scene.update();

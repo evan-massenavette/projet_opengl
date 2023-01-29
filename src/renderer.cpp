@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <iostream>
+#include <stdexcept>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -11,8 +12,8 @@
 
 #include "renderer.hpp"
 
-Renderer::Renderer(const App& app, const Scene& scene, const Camera& camera)
-    : _app(app), _scene(scene), _camera(camera) {
+Renderer::Renderer(const App& app, const Scene& scene)
+    : _app(app), _scene(scene) {
   // Depth test (closest will be displayed)
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -222,6 +223,11 @@ void Renderer::_drawScene(RenderPass renderPass) {
 }
 
 void Renderer::update() {
+  if (_camera == nullptr) {
+    throw std::runtime_error(
+        "Renderer must have a valid camera before updating");
+  }
+
   // Lights depth maps pass
 
   // Get shader program
@@ -279,8 +285,8 @@ void Renderer::update() {
 
   // Send uniforms to shader
   mainProgram[ShaderConstants::projectionMatrix()] = _app.getProjectionMatrix();
-  mainProgram[ShaderConstants::viewMatrix()] = _camera.getViewMatrix();
-  mainProgram[ShaderConstants::cameraWorldPos()] = _camera.getPosition();
+  mainProgram[ShaderConstants::viewMatrix()] = _camera->getViewMatrix();
+  mainProgram[ShaderConstants::cameraWorldPos()] = _camera->getPosition();
 
   // Depth
   mainProgram[ShaderConstants::farPlane()] = zFar;
@@ -302,4 +308,8 @@ void Renderer::update() {
 
   // Draw all objects in the scene
   _drawScene(RenderPass::Main);
+}
+
+void Renderer::setCamera(Camera* camera) {
+  _camera = camera;
 }

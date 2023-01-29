@@ -1,6 +1,9 @@
 #include <iostream>
 #include <utility>
 
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
 #include "scene.hpp"
 #include "../spline.hpp"
 
@@ -13,7 +16,7 @@ Scene::Scene(const glm::vec4 &backgroundColor, const bool isDefault)
 
 void Scene::_initDefaultScene()
 {
-  //  Objects
+  // Objects
   auto object1 = new SceneObject("coaster");
   auto object2 = new SceneObject("tree");
   auto object3 = new SceneObject("cart");

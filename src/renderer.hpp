@@ -22,13 +22,14 @@ class App;
 
 class Renderer {
  public:
-  Renderer(const App& app, const Scene& scene, const Camera& camera);
+  Renderer(const App& app, const Scene& scene);
+  void setCamera(Camera* camera);
   void update();
 
  private:
   const App& _app;
   const Scene& _scene;
-  const Camera& _camera;
+  Camera* _camera;
 
   UniformBufferObject _uboAmbientLights;
   UniformBufferObject _uboDirectionalLights;
