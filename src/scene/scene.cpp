@@ -80,7 +80,7 @@ void Scene::update() {
   float zAngle = PI / 2 - glm::angle(normalizedMovement, yAxis);
 
   // Set the cart's position and rotation
-  auto& cart = objects.back();
+  auto& cart = objects.front();
   cart->setPosition(position + positionOffset);
   cart->setRotation(glm::vec3(0, yAngle, zAngle));
 
