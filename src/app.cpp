@@ -134,7 +134,7 @@ void App::run()
   _lastFrameTime = _lastFrameTimeFPS = glfwGetTime();
 
   // Objects used during main loop
-  Scene scene(glm::vec4(0.0, 0.0, 0.2, 1.0), true);
+  Scene scene(true);
   FlyingCamera flyingCamera(glm::vec3(8, 20, 10), glm::vec3(0, 20, -35),
                             glm::vec3(0, 1, 0));
   FollowingCamera followingCamera(scene.objects.back(), glm::vec3(0, 1, 0),

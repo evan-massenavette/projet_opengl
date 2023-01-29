@@ -1,5 +1,11 @@
 #version 330 core
 
+struct FogParameters {
+	vec3 color;
+	float density;
+	bool isEnabled;
+};
+
 struct Material {
 	vec3 ambient;
 	vec3 diffuse;
@@ -104,6 +110,34 @@ vec3 getPointLightColor(PointLight pointLight, Material material, vec3 normal, v
 	return clamp(finalColor, 0.0, 1.0);
 }
 
+// float calculateShadow(vec3 fragPos, vec3 lightPos) {
+
+//     // Vector between fragment position and light position and its length
+// 	vec3 lightToFrag = lightPos - fragPos;
+// 	float currentDepth = length(lightToFrag);
+
+//     // Sample from the depth map and transform its value (in [0;1]) back to a distance
+// 	float closestDepth = texture(depthSampler, -lightToFrag).r;
+// 	closestDepth *= farPlane;
+
+//     // Test for shadows
+// 	float bias = 0.05;
+// 	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+
+// 	return shadow;
+// }
+
+float getFogFactor(FogParameters fogParams, vec3 fragPos, vec3 cameraPos) {
+	// Distance between fragment and camera
+	float distance = distance(fragPos, cameraPos);
+
+	// Calculate fog factor
+	float result = exp(-pow(fogParams.density * distance, 2.0));
+
+	result = 1.0 - clamp(result, 0.0, 1.0);
+	return result;
+}
+
 // Inputs
 in vec3 gNormal;
 in vec2 gUV;
@@ -124,6 +158,7 @@ uniform float farPlane;
 // Other uniforms
 uniform vec3 cameraWorldPos;
 uniform Material material;
+uniform FogParameters fogParams;
 
 // Lighting uniforms
 layout(std140) uniform AmbientLightsBlock {
@@ -140,23 +175,6 @@ layout(std140) uniform PointLightsBlock {
 	int count;
 	PointLight data[MAX_POINT_LIGHTS];
 } pointLights;
-
-float calculateShadow(vec3 fragPos, vec3 lightPos) {
-
-    // Vector between fragment position and light position and its length
-	vec3 lightToFrag = lightPos - fragPos;
-	float currentDepth = length(lightToFrag);
-
-    // Sample from the depth map and transform its value (in [0;1]) back to a distance
-	float closestDepth = texture(depthSampler, -lightToFrag).r;
-	closestDepth *= farPlane;
-
-    // Test for shadows
-	float bias = 0.05;
-	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
-
-	return shadow;
-}
 
 void main() {
 	// Normal
@@ -177,7 +195,7 @@ void main() {
 	// Point lights
 	for(int i = 0; i < pointLights.count; i++) {
 		PointLight pointLight = pointLights.data[i];
-		float shadow = calculateShadow(gWorldPos, pointLight.position);
+		// float shadow = calculateShadow(gWorldPos, pointLight.position);
 		fColor += getPointLightColor(pointLight, material, normal, cameraWorldPos, gWorldPos);
 	}
 
@@ -188,5 +206,10 @@ void main() {
 			discard;
 		}
 		fColor *= albedoColor.rgb;
+	}
+
+	if(fogParams.isEnabled) {
+		float fogFactor = getFogFactor(fogParams, gWorldPos, cameraWorldPos);
+		fColor = mix(fColor, fogParams.color, fogFactor);
 	}
 }

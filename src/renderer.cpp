@@ -283,12 +283,15 @@ void Renderer::update() {
       ShaderProgramKeys::main());
   mainProgram.useProgram();
 
-  // Send uniforms to shader
+  // Send matrices uniforms to shader
   mainProgram[ShaderConstants::projectionMatrix()] = _app.getProjectionMatrix();
   mainProgram[ShaderConstants::viewMatrix()] = _camera->getViewMatrix();
   mainProgram[ShaderConstants::cameraWorldPos()] = _camera->getPosition();
 
-  // Depth
+  // Send other uniforms to shader
+  _scene.fogParams.setUniform(mainProgram, ShaderConstants::fogParams());
+
+  // Depth uniforms
   mainProgram[ShaderConstants::farPlane()] = zFar;
   GLint depthCubeMapTextureUnit = 1;
   mainProgram[ShaderConstants::depthSampler()] = depthCubeMapTextureUnit;
