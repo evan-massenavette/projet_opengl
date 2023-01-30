@@ -1,6 +1,7 @@
 # Cmake
 build/
 CMakeFiles/
+src/models/coaster/**
 
 # IDE files
 .vscode/
