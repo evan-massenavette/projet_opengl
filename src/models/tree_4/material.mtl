@@ -1,0 +1,14 @@
+newmtl maple_bark
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ns 16
+map_Kd maple_bark.png
+
+newmtl maple_leaf
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ns 16
+map_Kd maple_leaf.png
+

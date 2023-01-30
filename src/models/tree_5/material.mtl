@@ -1,0 +1,15 @@
+newmtl None
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ns 16
+map_Kd HazelnutBark.png
+
+newmtl HazelnutLeaves
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ns 16
+map_Kd HazelnutLeaves.png
+
+
