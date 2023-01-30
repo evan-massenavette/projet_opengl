@@ -24,7 +24,7 @@ void main() {
     vec3 v3Pos = gl_in[2].gl_Position.xyz;
     vec3 edge1 = v2Pos - v1Pos;
     vec3 edge2 = v3Pos - v1Pos;
-    vec3 newNormal = normalize(cross(edge1, edge2));
+    vec3 newNormal = normalize(cross(edge2, edge1));
 
     for(int i = 0; i < VERTICES_COUNT; i++) {
         // Set position
