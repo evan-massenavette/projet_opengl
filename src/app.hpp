@@ -9,6 +9,8 @@
 
 #include <glm/glm.hpp>
 
+#include "camera/camera.hpp"
+
 class App {
  public:
   /**
@@ -139,6 +141,9 @@ class App {
   int _FPS = 0;             // Current FPS
   int _nextFPS = 0;  // Next FPS, that is being counted and will update the _FPS
 
+  glm::vec3 _lastCameraPos;  // Position of camera during last update
+  float _movementSpeed;      // Speed at which the camera is moving
+
   bool _isVerticalSyncEnabled = false;  // Stores whether VSync is enabled
 
   int _minWindowWidth = 800;   // Minimum window width
@@ -153,8 +158,7 @@ class App {
    * @param separator Separator between informations
    */
   void _updateWindowTitle(const std::string& baseTitle,
-                          const glm::vec3& cameraPos,
-                          const std::string& separator = " | ");
+                          const glm::vec3& cameraPos);
 
   /**
    * Recalculates the app's projection matrix
@@ -165,6 +169,12 @@ class App {
    * Updates frame times and FPS counters.
    */
   void _updateDeltaTimeAndFPS();
+
+  /**
+   * Update the movement speed based on the camera's current and last locations
+   * @param camera The currently used camera
+   */
+  void _updateMovementSpeed(Camera& camera);
 
   /**
    * Gets called when window size is changed. Does some internal stuff

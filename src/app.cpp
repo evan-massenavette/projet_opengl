@@ -126,13 +126,6 @@ void App::run() {
   while (glfwWindowShouldClose(_window) == 0) {
     // Get the right camera based from the controls
     Camera& camera = controls.getCurrentCamera(flyingCamera, followingCamera);
-    renderer.setCamera(&camera);
-
-    // Delta time and FPS
-    _updateDeltaTimeAndFPS();
-
-    // Show information in window title
-    _updateWindowTitle(baseWindowTitle, camera.getPosition());
 
     // Render
     renderer.update(camera);
@@ -141,8 +134,18 @@ void App::run() {
     glfwSwapBuffers(_window);
     glfwPollEvents();
 
+    // Show information in window title
+    _updateWindowTitle(baseWindowTitle, camera.getPosition());
+
+    // Delta time, FPS and movement speed
+    _updateDeltaTimeAndFPS();
+    _updateMovementSpeed(camera);
+
     // Process inputs
     controls.processInputs(*this);
+
+    // Update scene
+    scene.update(static_cast<float>(_timeDelta));
 
     // Update camera
     auto keyInputFunc = [this](int keyCode) {
@@ -156,12 +159,16 @@ void App::run() {
                         keyInputFunc, speedCorrectionFunc);
     followingCamera.update(getWindowSize(), getCursorPosition(),
                            setCursorPosFunc);
-
-    // Update scene
-    scene.update(static_cast<float>(_timeDelta));
   }
 
   destroyWindow();
+}
+
+void App::_updateMovementSpeed(Camera& camera) {
+  auto currentCameraPos = camera.getPosition();
+  _movementSpeed = glm::distance(currentCameraPos, _lastCameraPos) /
+                   static_cast<float>(_timeDelta);
+  _lastCameraPos = currentCameraPos;
 }
 
 bool App::keyPressed(int keyCode) const {
