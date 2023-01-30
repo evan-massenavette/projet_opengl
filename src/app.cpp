@@ -12,6 +12,7 @@
 #include "controls.hpp"
 #include "renderer.hpp"
 #include "scene/scene.hpp"
+#include "utils/string_utils.hpp"
 
 App::App() {
   // Set all keys as not pressed
@@ -90,24 +91,14 @@ GLFWwindow* App::getWindow() const {
 }
 
 void App::_updateWindowTitle(const std::string& baseTitle,
-                             const glm::vec3& cameraPos,
-                             const std::string& separator) {
-  // FPS
-  const auto FPS_str = std::to_string(getFPS());
-
+                             const glm::vec3& cameraPos) {
   // Camera position
-  std::stringstream cameraPos_sstr;
-  cameraPos_sstr << std::fixed << std::setprecision(2)  //
-                 << "(" << cameraPos.x                  //
-                 << ", " << cameraPos.y                 //
-                 << ", " << cameraPos.z                 //
-                 << ")";
-  const auto cameraPos_str = cameraPos_sstr.str();
+  const auto cameraPosStr = string_utils::vecToString(cameraPos);
 
   // Set the window's title
-  const std::string newWindowTitle = baseTitle + separator            //
-                                     + "FPS: " + FPS_str + separator  //
-                                     + "Position: " + cameraPos_str;
+  const auto newWindowTitle =
+      string_utils::formatString("{} | FPS: {} | Position: {} | Speed: {}",
+                                 baseTitle, _FPS, cameraPosStr, _movementSpeed);
   glfwSetWindowTitle(_window, newWindowTitle.c_str());
 }
 
