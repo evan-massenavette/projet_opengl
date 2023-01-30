@@ -1,7 +1,10 @@
+#include <iostream>
+
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include "following_camera.hpp"
 
@@ -9,15 +12,15 @@ FollowingCamera::FollowingCamera(
     const std::unique_ptr<SceneObject>& sceneObject,
     const glm::vec3& positionOffset,
     const glm::vec3& rotationOffset,
-    const glm::vec3& initialViewPoint,
     const glm::vec3& upVector,
     float mouseSensitivity)
     : _sceneObject(sceneObject),
       _positionOffset(positionOffset),
       _rotationOffset(rotationOffset),
-      _viewPoint(initialViewPoint),
-      _upVector(upVector),
-      _mouseSensitivity(mouseSensitivity) {}
+      _viewPoint(_sceneObject->getPosition() + glm::vec3(1, 0, 0)),
+      _upVector(glm::normalize(upVector)),
+      _mouseSensitivity(mouseSensitivity),
+      _position(_sceneObject->getPosition()) {}
 
 void FollowingCamera::setMouseSensitivity(float mouseSensitivity) {
   _mouseSensitivity = mouseSensitivity;
@@ -43,37 +46,38 @@ void FollowingCamera::update(
     const glm::ivec2& windowSize,
     const glm::ivec2& cursorPos,
     const std::function<void(const glm::i32vec2&)>& setCursorPosFunc) {
+  // Object movement
+  const auto objectMovement = getObjectMovement();
+  const auto normalizedViewVector = getNormalizedViewVector();
+
   // Coordinate system for the object
-  auto xAxis = glm::normalize(glm::cross(getNormalizedViewVector(), _upVector));
-  auto yAxis = glm::normalize(_upVector);
+  auto xAxis = normalizedViewVector;
+  auto yAxis = _upVector;
   auto zAxis = glm::normalize(glm::cross(xAxis, yAxis));
 
   auto positionOffset = _positionOffset.x * xAxis + _positionOffset.y * yAxis +
                         _positionOffset.z * zAxis;
 
-  // auto rotationOffset = getNormalizedViewVector();
-
   // Set camera positon
   _position = _sceneObject->getPosition() + positionOffset;
-
-  // Object movement and rotation
-  const glm::vec3 objectMovement =
-      _sceneObject->getPosition() - _lastObjectPosition;
-
-  // Update camera's view point if the object has moved
-  if (objectMovement != glm::vec3(0)) {
-    _viewPoint = _position + glm::normalize(objectMovement);
-  }
 
   // Set cursor position to center of window
   auto windowCenterPos = windowSize / 2;
   setCursorPosFunc(windowCenterPos);
 
   // Update attributes
+  if (objectMovement != glm::vec3(0)) {
+    _viewPoint = _position + normalizedViewVector;
+  }
+  _viewPoint = _position + normalizedViewVector;
   _lastObjectPosition = _sceneObject->getPosition();
   _lastObjectRotation = _sceneObject->getRotation();
 }
 
 glm::vec3 FollowingCamera::getNormalizedViewVector() const {
-  return glm::normalize(_viewPoint - _position);
+  return glm::normalize(getObjectMovement());
+}
+
+glm::vec3 FollowingCamera::getObjectMovement() const {
+  return _sceneObject->getPosition() - _lastObjectPosition;
 }

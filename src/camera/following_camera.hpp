@@ -19,7 +19,6 @@ class FollowingCamera : public Camera {
   FollowingCamera(const std::unique_ptr<SceneObject>& sceneObject,
                   const glm::vec3& positionOffset,
                   const glm::vec3& rotationOffset,
-                  const glm::vec3& initialViewPoint,
                   const glm::vec3& upVector,
                   float mouseSensitivity = 0.15f);
 
@@ -56,6 +55,11 @@ class FollowingCamera : public Camera {
    * Gets normalized view vector of the camera.
    */
   glm::vec3 getNormalizedViewVector() const;
+
+  /**
+   * Gets movement of the object the camera is attached to
+   */
+  glm::vec3 getObjectMovement() const;
 
   /**
    * Updates camera: reacts to key presses and, updates camera's internal state.

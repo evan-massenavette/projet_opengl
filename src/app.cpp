@@ -129,7 +129,7 @@ void App::run() {
                             glm::vec3(0, 1, 0));
   auto& cart = scene.objects.front();
   FollowingCamera followingCamera(cart, glm::vec3(0, 1, 0), glm::vec3(0),
-                                  glm::vec3(1, 0, 0), glm::vec3(0, 1, 0));
+                                  glm::vec3(0, 1, 0));
   Controls controls;
   Renderer renderer(*this, scene);
 
