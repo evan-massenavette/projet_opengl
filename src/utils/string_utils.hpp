@@ -124,6 +124,7 @@ inline std::string formatStringImpl(const char* s,
 template <typename... Args>
 inline std::string formatString(const std::string& fmt, const Args&... args) {
   std::stringstream ss;
+  ss << std::fixed << std::setprecision(2);
   return formatStringImpl(fmt.c_str(), ss, args...);
 }
 
