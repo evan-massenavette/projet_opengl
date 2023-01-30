@@ -42,7 +42,7 @@ class Scene {
  private:
   struct Cart {
     glm::vec3 lastPosition;
-    float minSpeed = 40.0f;
+    float minSpeed = 25.0f;
     float maxSpeed = 250.0f;
     float speed = minSpeed;
     float acceleration = 0.0f;
