@@ -1,18 +1,17 @@
-#include <iomanip>
 #include <iostream>
-#include <sstream>
 #include <vector>
 
 #include <glm/glm.hpp>
-#include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-#include "app.hpp"
 #include "camera/flying_camera.hpp"
 #include "camera/following_camera.hpp"
 #include "controls.hpp"
 #include "renderer.hpp"
 #include "scene/scene.hpp"
 #include "utils/string_utils.hpp"
+
+#include "app.hpp"
 
 App::App() {
   // Set all keys as not pressed
