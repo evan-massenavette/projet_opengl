@@ -1,11 +1,21 @@
 #ifndef STRING_UTILS_HPP
 #define STRING_UTILS_HPP
 
+#include <iomanip>
 #include <sstream>
 #include <string>
 #include <vector>
 
+#include <glm/glm.hpp>
+
 namespace string_utils {
+
+inline std::string vecToString(const glm::vec3& vec) {
+  std::stringstream sstr;
+  sstr << std::fixed << std::setprecision(2)  //
+       << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
+  return sstr.str();
+}
 
 /**
  * Splits given string with given delimiter and returns std::vector of tokens.
