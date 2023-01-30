@@ -17,14 +17,12 @@
 
 Scene::Scene(const bool isDefault)
     : fogParams(colors_utils::skyBlue, 0.015f),
-      backgroundColor(glm::vec4(colors_utils::skyBlue, 1))
-{
+      backgroundColor(glm::vec4(colors_utils::skyBlue, 1)) {
   if (isDefault)
     _initDefaultScene();
 }
 
-void Scene::_initDefaultScene()
-{
+void Scene::_initDefaultScene() {
   // Objects
   auto cart = new SceneObject("cart");
   auto coaster = new SceneObject("coaster");
@@ -53,11 +51,9 @@ void Scene::_initDefaultScene()
   // pointLights.emplace_back(pointLight1);
 }
 
-void Scene::update(const std::function<float(float)> &speedCorrectionFunc)
-{
+void Scene::update(const std::function<float(float)>& speedCorrectionFunc) {
   // If first update, initialize the cart
-  if (_cart.needsInit && !spline::cart.empty())
-  {
+  if (_cart.needsInit && !spline::cart.empty()) {
     _cart.lastPosition = spline::cart.front();
     _cart.needsInit = false;
     return;
@@ -92,7 +88,7 @@ void Scene::update(const std::function<float(float)> &speedCorrectionFunc)
                  glm::angle(normalizedMovement, yAxis);
 
   // Set the cart's position and rotation
-  auto &cart = objects.front();
+  auto& cart = objects.front();
   cart->setPosition(position + positionOffset);
   cart->setRotation(glm::vec3(0, yAngle, zAngle));
 
