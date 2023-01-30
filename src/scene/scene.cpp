@@ -17,20 +17,22 @@
 
 Scene::Scene(const bool isDefault)
     : fogParams(colors_utils::skyBlue, 0.015f),
-      backgroundColor(glm::vec4(colors_utils::skyBlue, 1)) {
+      backgroundColor(glm::vec4(colors_utils::skyBlue, 1))
+{
   if (isDefault)
     _initDefaultScene();
 }
 
-void Scene::_initDefaultScene() {
+void Scene::_initDefaultScene()
+{
   // Objects
   auto cart = new SceneObject("cart");
   auto coaster = new SceneObject("coaster");
   auto tree = new SceneObject("tree");
   coaster->setPosition(glm::vec3(0.0, 0.0, 0.0));
-  tree->setPosition(glm::vec3(3.0, 12.0, -20.0));
+  tree->setPosition(glm::vec3(3.0, 0.0, -20.0));
   cart->setScale(glm::vec3(3, 3, 3));
-  cart->setPosition(glm::vec3(0.490937, 16.066832, -27.641771));
+  cart->setPosition(glm::vec3(-25.204239, 9.094718, -24.467152));
 
   objects.emplace_back(cart);
   objects.emplace_back(coaster);
@@ -51,9 +53,11 @@ void Scene::_initDefaultScene() {
   // pointLights.emplace_back(pointLight1);
 }
 
-void Scene::update(const std::function<float(float)>& speedCorrectionFunc) {
+void Scene::update(const std::function<float(float)> &speedCorrectionFunc)
+{
   // If first update, initialize the cart
-  if (_cart.needsInit && !spline::cart.empty()) {
+  if (_cart.needsInit && !spline::cart.empty())
+  {
     _cart.lastPosition = spline::cart.front();
     _cart.needsInit = false;
     return;
@@ -71,7 +75,7 @@ void Scene::update(const std::function<float(float)>& speedCorrectionFunc) {
   float interp = static_cast<float>(_cart.realIndex - index);
   glm::vec3 position =
       (1 - interp) * spline::cart[index] + interp * spline::cart[nextIndex];
-  glm::vec3 positionOffset(0, 4, 0);
+  glm::vec3 positionOffset(0, 2, 0);
 
   // Movement vectors
   glm::vec3 movement = position - _cart.lastPosition;
@@ -88,7 +92,7 @@ void Scene::update(const std::function<float(float)>& speedCorrectionFunc) {
                  glm::angle(normalizedMovement, yAxis);
 
   // Set the cart's position and rotation
-  auto& cart = objects.front();
+  auto &cart = objects.front();
   cart->setPosition(position + positionOffset);
   cart->setRotation(glm::vec3(0, yAngle, zAngle));
 
