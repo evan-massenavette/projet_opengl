@@ -1,6 +1,7 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -36,7 +37,7 @@ class Scene {
 
   Scene(const bool isDefault = false);
 
-  void update(float timeDelta);
+  void update(const std::function<float(float)>& speedCorrectionFunc);
 
  private:
   struct Cart {

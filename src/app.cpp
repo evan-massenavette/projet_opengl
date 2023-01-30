@@ -144,10 +144,7 @@ void App::run() {
     // Process inputs
     controls.processInputs(*this);
 
-    // Update scene
-    scene.update(static_cast<float>(_timeDelta));
-
-    // Update camera
+    // Functions used for updates
     auto keyInputFunc = [this](int keyCode) {
       return this->keyPressed(keyCode);
     };
@@ -155,6 +152,11 @@ void App::run() {
       glfwSetCursorPos(this->_window, pos.x, pos.y);
     };
     auto speedCorrectionFunc = [this](float f) { return this->saf(f); };
+
+    // Update scene
+    scene.update(speedCorrectionFunc);
+
+    // Update cameras
     flyingCamera.update(getWindowSize(), getCursorPosition(), setCursorPosFunc,
                         keyInputFunc, speedCorrectionFunc);
     followingCamera.update(getWindowSize(), getCursorPosition(),

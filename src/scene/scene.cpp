@@ -50,7 +50,7 @@ void Scene::_initDefaultScene() {
   // pointLights.emplace_back(pointLight1);
 }
 
-void Scene::update(float timeDelta) {
+void Scene::update(const std::function<float(float)>& speedCorrectionFunc) {
   // If first update, initialize the cart
   if (_cart.needsInit && !spline::cart.empty()) {
     _cart.lastPosition = spline::cart.front();
