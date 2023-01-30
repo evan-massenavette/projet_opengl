@@ -2,8 +2,8 @@
 
 ## Configure a release build
 
-cmake -S . -B build/ -D CMAKE_BUILD_TYPE=Debug
+cmake -S . -B build/
 
 ## Build release binaries
 
-cmake --build build/
+cmake --build build/ --config Release
