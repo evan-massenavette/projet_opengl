@@ -135,7 +135,7 @@ void App::run() {
     _updateWindowTitle(baseWindowTitle, camera.getPosition());
 
     // Render
-    renderer.update();
+    renderer.update(camera);
 
     // Draw to screen + poll events
     glfwSwapBuffers(_window);

@@ -222,12 +222,7 @@ void Renderer::_drawScene(RenderPass renderPass) {
   }
 }
 
-void Renderer::update() {
-  if (_camera == nullptr) {
-    throw std::runtime_error(
-        "Renderer must have a valid camera before updating");
-  }
-
+void Renderer::update(Camera& camera) {
   // Lights depth maps pass
 
   // Get shader program
@@ -285,8 +280,8 @@ void Renderer::update() {
 
   // Send matrices uniforms to shader
   mainProgram[ShaderConstants::projectionMatrix()] = _app.getProjectionMatrix();
-  mainProgram[ShaderConstants::viewMatrix()] = _camera->getViewMatrix();
-  mainProgram[ShaderConstants::cameraWorldPos()] = _camera->getPosition();
+  mainProgram[ShaderConstants::viewMatrix()] = camera.getViewMatrix();
+  mainProgram[ShaderConstants::cameraWorldPos()] = camera.getPosition();
 
   // Send other uniforms to shader
   _scene.fogParams.setUniform(mainProgram, ShaderConstants::fogParams());
@@ -311,8 +306,4 @@ void Renderer::update() {
 
   // Draw all objects in the scene
   _drawScene(RenderPass::Main);
-}
-
-void Renderer::setCamera(Camera* camera) {
-  _camera = camera;
 }
