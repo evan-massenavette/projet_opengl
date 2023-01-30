@@ -26,7 +26,7 @@ void Scene::_initDefaultScene() {
   // Objects
   auto cart = new SceneObject("cart");
   auto coaster = new SceneObject("coaster");
-  auto tree = new SceneObject("tree");
+  auto tree = new SceneObject("tree_1");
   coaster->setPosition(glm::vec3(0.0, 0.0, 0.0));
   tree->setPosition(glm::vec3(3.0, 0.0, -20.0));
   cart->setScale(glm::vec3(3, 3, 3));
