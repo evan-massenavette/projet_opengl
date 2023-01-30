@@ -42,13 +42,13 @@ class Scene {
  private:
   struct Cart {
     glm::vec3 lastPosition;
-    float minSpeed = 0.2f;
-    float maxSpeed = 2.5;
-    float speed = 0.5;
-    float acceleration = 0;
+    float minSpeed = 40.0f;
+    float maxSpeed = 400.0f;
+    float speed = minSpeed;
+    float acceleration = 0.0f;
     float gravity = 9.81f;
-    float weight = 10;
-    float realIndex = 0;
+    float weight = 300.0f;
+    float realIndex = 0.0f;
     bool needsInit = true;
   };
 

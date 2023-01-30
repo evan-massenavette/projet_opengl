@@ -11,6 +11,7 @@
 #include "../spline.hpp"
 #include "../utils/colors_utils.hpp"
 #include "../utils/math_utils.h"
+#include "../utils/string_utils.hpp"
 
 #include "scene.hpp"
 
@@ -93,9 +94,11 @@ void Scene::update(const std::function<float(float)>& speedCorrectionFunc) {
 
   // Update member vars
   _cart.lastPosition = position;
-  _cart.acceleration = timeDelta * (-movement.y * _cart.gravity * _cart.weight);
-  _cart.speed = std::clamp(_cart.speed + _cart.acceleration, _cart.minSpeed,
-                           _cart.maxSpeed);
-  _cart.realIndex = math_utils::pos_fmod(
-      _cart.realIndex + _cart.speed, static_cast<float>(spline::cart.size()));
+  _cart.acceleration = -movement.y * _cart.gravity * _cart.weight;
+  _cart.speed =
+      std::clamp(_cart.speed + speedCorrectionFunc(_cart.acceleration),
+                 _cart.minSpeed, _cart.maxSpeed);
+  _cart.realIndex =
+      math_utils::pos_fmod(_cart.realIndex + speedCorrectionFunc(_cart.speed),
+                           static_cast<float>(spline::cart.size()));
 }
