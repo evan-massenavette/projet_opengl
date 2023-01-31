@@ -17,24 +17,50 @@
 
 Scene::Scene(const bool isDefault)
     : fogParams(colors_utils::skyBlue, 0.015f),
-      backgroundColor(glm::vec4(colors_utils::skyBlue, 1)) {
+      backgroundColor(glm::vec4(colors_utils::skyBlue, 1))
+{
   if (isDefault)
     _initDefaultScene();
 }
 
-void Scene::_initDefaultScene() {
+void Scene::_initDefaultScene()
+{
   // Objects
   auto cart = new SceneObject("cart");
   auto coaster = new SceneObject("coaster");
   auto tree = new SceneObject("tree_1");
+  auto building1 = new SceneObject("building_1");
+  auto building2 = new SceneObject("building_2");
+
+  auto lamp = new SceneObject("lamp_post");
+  auto lantern = new SceneObject("lantern");
+  auto rock = new SceneObject("rock");
+
   coaster->setPosition(glm::vec3(0.0, 0.0, 0.0));
   tree->setPosition(glm::vec3(3.0, 0.0, -20.0));
-  cart->setScale(glm::vec3(3, 3, 3));
   cart->setPosition(glm::vec3(-25.204239, 9.094718, -24.467152));
+  lamp->setPosition(glm::vec3(10.0, 0.0, 0.0));
+  lantern->setPosition(glm::vec3(14.0, 0.0, 0.0));
+  rock->setPosition(glm::vec3(20.0, 0.0, 0.0));
+  building1->setPosition(glm::vec3(25.0, 0.0, -60.0));
+  building2->setPosition(glm::vec3(-80.0, 0.0, 0.0));
+
+  cart->setScale(glm::vec3(3.0));
+  lantern->setScale(glm::vec3(0.01));
+  building1->setScale(glm::vec3(0.10));
+  building2->setScale(glm::vec3(0.10));
+
+  building2->setRotation(glm::vec3(0.0, 1.57, 0.0));
 
   objects.emplace_back(cart);
   objects.emplace_back(coaster);
   objects.emplace_back(tree);
+  objects.emplace_back(building1);
+  objects.emplace_back(building2);
+
+  objects.emplace_back(lamp);
+  objects.emplace_back(lantern);
+  objects.emplace_back(rock);
 
   // Ambient lights
   shader_structs::AmbientLight ambientLight(glm::vec3(1.0, 1.0, 1.0), 0.1f);
@@ -51,9 +77,11 @@ void Scene::_initDefaultScene() {
   // pointLights.emplace_back(pointLight1);
 }
 
-void Scene::update(const std::function<float(float)>& speedCorrectionFunc) {
+void Scene::update(const std::function<float(float)> &speedCorrectionFunc)
+{
   // If first update, initialize the cart
-  if (_cart.needsInit && !spline::cart.empty()) {
+  if (_cart.needsInit && !spline::cart.empty())
+  {
     _cart.lastPosition = spline::cart.front();
     _cart.needsInit = false;
     return;
@@ -88,7 +116,7 @@ void Scene::update(const std::function<float(float)>& speedCorrectionFunc) {
                  glm::angle(normalizedMovement, yAxis);
 
   // Set the cart's position and rotation
-  auto& cart = objects.front();
+  auto &cart = objects.front();
   cart->setPosition(position + positionOffset);
   cart->setRotation(glm::vec3(0, yAngle, zAngle));
 

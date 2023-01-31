@@ -1,15 +1,22 @@
-newmtl None
+# Blender MTL File: 'untitled.blend'
+# Material Count: 2
+
+newmtl Material.001
+Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
-Ns 16
-map_Kd HazelnutBark.png
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd branches.png
 
-newmtl HazelnutLeaves
+newmtl Material.002
+Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
-Ns 16
-map_Kd HazelnutLeaves.png
-
-
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd bark.jpg

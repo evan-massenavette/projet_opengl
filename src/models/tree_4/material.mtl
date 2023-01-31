@@ -1,14 +1,15 @@
-newmtl maple_bark
+newmtl None
 Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
 Ns 16
-map_Kd maple_bark.png
+map_Kd HazelnutBark.png
 
-newmtl maple_leaf
+newmtl HazelnutLeaves
 Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
 Ns 16
-map_Kd maple_leaf.png
+map_Kd HazelnutLeaves.png
+
 

@@ -1,14 +1,14 @@
-newmtl Trank_bark
+newmtl maple_bark
 Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
 Ns 16
-map_Kd bark_0004.jpg
+map_Kd maple_bark.png
 
-newmtl DB2X2_L01
+newmtl maple_leaf
 Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000
 Ns 16
-map_Kd DB2X2_L01.png
+map_Kd maple_leaf.png
 
