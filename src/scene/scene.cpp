@@ -31,36 +31,64 @@ void Scene::_initDefaultScene()
   auto tree = new SceneObject("tree_1");
   auto building1 = new SceneObject("building_1");
   auto building2 = new SceneObject("building_2");
-
   auto lamp = new SceneObject("lamp_post");
   auto lantern = new SceneObject("lantern");
-  auto rock = new SceneObject("rock");
+  auto rock_1 = new SceneObject("rock");
+  auto rock_2 = new SceneObject("rock");
+  auto tree1 = new SceneObject("tree_1");
+  auto tree2 = new SceneObject("tree_2");
+  auto tree3 = new SceneObject("tree_3");
+  auto tree4_1 = new SceneObject("tree_4");
+  auto tree4_2 = new SceneObject("tree_4");
+  auto tree4_3 = new SceneObject("tree_4");
+  auto tree5 = new SceneObject("tree_5");
 
   coaster->setPosition(glm::vec3(0.0, 0.0, 0.0));
   tree->setPosition(glm::vec3(3.0, 0.0, -20.0));
   cart->setPosition(glm::vec3(-25.204239, 9.094718, -24.467152));
-  lamp->setPosition(glm::vec3(10.0, 0.0, 0.0));
-  lantern->setPosition(glm::vec3(14.0, 0.0, 0.0));
-  rock->setPosition(glm::vec3(20.0, 0.0, 0.0));
+  lamp->setPosition(glm::vec3(20.0, 0.0, 20.0));
+  lantern->setPosition(glm::vec3(30.0, 1.65, -18.0));
+  rock_1->setPosition(glm::vec3(40.0, 0.0, -20.0));
+  rock_2->setPosition(glm::vec3(0.0, 9.0, 0.0));
   building1->setPosition(glm::vec3(25.0, 0.0, -60.0));
   building2->setPosition(glm::vec3(-80.0, 0.0, 0.0));
+  tree4_1->setPosition(glm::vec3(-60, 0, 60));
+  tree4_2->setPosition(glm::vec3(0, 0, 70));
+  tree4_3->setPosition(glm::vec3(0, 0, -70));
+  tree1->setPosition(glm::vec3(-20, 7, 0));
+  tree2->setPosition(glm::vec3(-20, 0, 20));
+  tree3->setPosition(glm::vec3(20, 0, -20));
+  tree5->setPosition(glm::vec3(-60, 0, 60));
 
   cart->setScale(glm::vec3(3.0));
   lantern->setScale(glm::vec3(0.01));
   building1->setScale(glm::vec3(0.10));
   building2->setScale(glm::vec3(0.10));
+  tree3->setScale(glm::vec3(0.4));
+  lamp->setScale(glm::vec3(0.5));
+  rock_2->setScale(glm::vec3(1.5));
 
   building2->setRotation(glm::vec3(0.0, 1.57, 0.0));
+  tree4_2->setRotation(glm::vec3(0.0, 1.57, 0.0));
+  tree4_3->setRotation(glm::vec3(0.0, 3.14, 0.0));
+  rock_2->setRotation(glm::vec3(3.14, 0.0, 0.0));
 
   objects.emplace_back(cart);
   objects.emplace_back(coaster);
   objects.emplace_back(tree);
   objects.emplace_back(building1);
   objects.emplace_back(building2);
-
   objects.emplace_back(lamp);
   objects.emplace_back(lantern);
-  objects.emplace_back(rock);
+  objects.emplace_back(rock_1);
+  objects.emplace_back(rock_2);
+  objects.emplace_back(tree1);
+  objects.emplace_back(tree2);
+  objects.emplace_back(tree3);
+  objects.emplace_back(tree4_1);
+  objects.emplace_back(tree4_2);
+  objects.emplace_back(tree4_3);
+  objects.emplace_back(tree5);
 
   // Ambient lights
   shader_structs::AmbientLight ambientLight(glm::vec3(1.0, 1.0, 1.0), 0.1f);
@@ -72,9 +100,12 @@ void Scene::_initDefaultScene()
   directionalLights.emplace_back(directionalLight1);
 
   // Point lights
-  shader_structs::PointLight pointLight1(glm::vec3(1.0, 1.0, 1.0), 1.0f,
-                                         glm::vec3(5.0, 5.0, 5.0), 1e-3f);
-  // pointLights.emplace_back(pointLight1);
+  shader_structs::PointLight pointLight1(glm::vec3(1.0, 1.0, 0.8), 1.0f,
+                                         glm::vec3(30.0, 2.0, -18.0), 1e-3f);
+  shader_structs::PointLight pointLight2(glm::vec3(1.0, 1.0, 0.8), 1.0f,
+                                         glm::vec3(22.0, 9.0, 20.0), 1e-4f);
+  pointLights.emplace_back(pointLight1);
+  pointLights.emplace_back(pointLight2);
 }
 
 void Scene::update(const std::function<float(float)> &speedCorrectionFunc)
