@@ -16,8 +16,8 @@
 #include "scene.hpp"
 
 Scene::Scene(const bool isDefault)
-    : fogParams(colors_utils::skyBlue, 0.015f),
-      backgroundColor(glm::vec4(colors_utils::skyBlue, 1))
+    : fogParams(colors_utils::blue, 0.015f),
+      backgroundColor(glm::vec4(colors_utils::blue, 1))
 {
   if (isDefault)
     _initDefaultScene();
